@@ -31,7 +31,7 @@ const initialProperties = [
 const initialFormData = {
     type: "Sell",
     location: "",
-    agent_id: 0,
+    agent_id: 3,
     property_availability: "",
     price: "",
     living_room: "1",
@@ -39,10 +39,12 @@ const initialFormData = {
     bathroom: "1",
     finance: false,
     property_description: "",
-    amenities: [],
+    amenities: [ "" ],
     property_images: [],
     floor_plan: [],
-    video_upload: []
+    video_upload: [],
+
+    property_type_id: '4'
 }
 
 const PropertiesPage = () => {
@@ -52,6 +54,8 @@ const PropertiesPage = () => {
     const [ editingId, setEditingId ] = useState( null );
     const [ properties, setProperties ] = useState([ ...initialProperties ]);
     const [ formData, setFormData ] = useState({ ...initialFormData });
+
+    const [ newAmenity, setNewAmenity ] = useState("");
 
     useEffect(() => {
         const fetchData = async () => {
@@ -86,6 +90,33 @@ const PropertiesPage = () => {
             ...prev,
             [ name ]: type === 'checkbox' ? checked : value
         }));
+    };
+
+    const handleFileChange = (e) => {
+        const files = Array.from(e.target.files);
+        setFormData({ ...formData, property_images: [...formData.property_images, ...files] });
+    };
+
+    const handleVideoAndFloorPlanChange = (e) => {
+        const { name, files } = e.target;
+        setFormData({ ...formData, [name]: name === "videos" ? Array.from(files) : files[0] });
+    };
+
+    const handleAddAmenity = () => {
+        if (newAmenity.trim() && !formData.amenities.includes(newAmenity)) {
+            setFormData({
+                ...formData,
+                amenities: [...formData.amenities, newAmenity],
+            });
+            setNewAmenity(""); // Clear input
+        }
+    };
+
+    const handleRemoveAmenity = (amenity) => {
+        setFormData({
+            ...formData,
+            amenities: formData.amenities.filter((a) => a !== amenity),
+        });
     };
     
     const handleSubmit = ( e ) => {
@@ -154,15 +185,15 @@ const PropertiesPage = () => {
                 </div>
 
                 <div className="space-y-2">
-                <label className="block text-sm font-medium text-gray-700">Location</label>
-                <input
-                    type="text"
-                    name="location"
-                    value={ formData.location }
-                    onChange={ handleInputChange }
-                    className="w-full border rounded-lg p-3 focus:ring-2 focus:ring-black focus:border-transparent"
-                    placeholder="Enter property location"
-                />
+                    <label className="block text-sm font-medium text-gray-700">Location</label>
+                    <input
+                        type="text"
+                        name="location"
+                        value={ formData.location }
+                        onChange={ handleInputChange }
+                        className="w-full border rounded-lg p-3 focus:ring-2 focus:ring-black focus:border-transparent"
+                        placeholder="Enter property location"
+                    />
                 </div>
 
                 <div className="space-y-2">
@@ -175,6 +206,26 @@ const PropertiesPage = () => {
                         className="w-full border rounded-lg p-3 focus:ring-2 focus:ring-black focus:border-transparent"
                         placeholder="Enter property price"
                         min="0"
+                    />
+                </div>
+
+                <div className="space-y-2">
+                    <label className="block text-sm font-medium text-gray-700">Property Availability</label>
+                    {/* <input
+                        type="number"
+                        name="price"
+                        value={ formData.price }
+                        onChange={ handleInputChange }
+                        className="w-full border rounded-lg p-3 focus:ring-2 focus:ring-black focus:border-transparent"
+                        placeholder="Enter property price"
+                        min="0"
+                    /> */}
+                    <input 
+                        type="datetime-local" 
+                        className="w-full p-2 border rounded-lg focus:ring-2 focus:ring-black focus:border-transparent"
+                        name="property_availability"
+                        value={ formData.property_availability }
+                        onChange={ handleInputChange}
                     />
                 </div>
 
@@ -214,6 +265,44 @@ const PropertiesPage = () => {
                     <label>Financing Available</label>
                 </div>
 
+                    {/* Amenities Input */}
+                    <div className="space-y-2">
+                    <label className="block text-sm font-medium text-gray-700">Amenities</label>
+                    <div className="flex space-x-2">
+                        <input
+                            type="text"
+                            value={newAmenity}
+                            onChange={(e) => setNewAmenity(e.target.value)}
+                            className="flex-1 border rounded-lg p-3 focus:ring-2 focus:ring-black focus:border-transparent"
+                            placeholder="Add an amenity"
+                        />
+                        <button
+                            onClick={handleAddAmenity}
+                            type="button"
+                            className="px-4 py-2 bg-black text-white rounded-lg hover:bg-gray-800 transition"
+                        >
+                            Add
+                        </button>
+                    </div>
+                    <ul className="space-y-1 mt-2 text-sm text-gray-700">
+                        {formData.amenities.map((amenity, index) => (
+                            <li
+                                key={index}
+                                className="flex items-center justify-between border rounded-lg px-3 py-2"
+                            >
+                                <span>{amenity}</span>
+                                <button
+                                    onClick={() => handleRemoveAmenity( amenity ) }
+                                    type="button"
+                                    className="text-red-500 hover:underline text-xs"
+                                >
+                                    Remove
+                                </button>
+                            </li>
+                        ))}
+                    </ul>
+                </div>
+
                 <div className="space-y-2">
                     <label className="block text-sm font-medium text-gray-700">Description</label>
                     <textarea
@@ -225,13 +314,82 @@ const PropertiesPage = () => {
                     />
                 </div>
 
-                <div className="space-y-2">
+                <div className="space-y-4">
                     <label className="block text-sm font-medium text-gray-700">Images</label>
-                    <div className="border-2 border-dashed rounded-lg p-8 text-center hover:bg-gray-50 transition-colors cursor-pointer">
+                    <div
+                        className="border-2 border-dashed rounded-lg p-8 text-center hover:bg-gray-50 transition-colors cursor-pointer relative"
+                        onClick={() => document.getElementById("fileInput").click()} // Trigger file input on click
+                    >
                         <Upload className="w-8 h-8 mx-auto mb-4 text-gray-400" />
                         <p className="text-sm text-gray-600">Drop files here or click to upload</p>
                         <p className="text-xs text-gray-500 mt-1">Maximum file size: 10MB</p>
+                        <input
+                            id="fileInput"
+                            type="file"
+                            accept="image/*"
+                            className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                            onChange={ handleFileChange }
+                            multiple
+                        />
                     </div>
+
+                    {formData.property_images.length > 0 && (
+                        <div className="space-y-2">
+                            <h4 className="text-sm font-medium text-gray-700">Uploaded Files</h4>
+                            <ul className="list-disc pl-5 space-y-1 text-sm text-gray-600">
+                                {formData.property_images.map((file, index) => (
+                                    <li key={index}>
+                                        {file.name} ({(file.size / 1024 / 1024).toFixed(2)} MB)
+                                    </li>
+                                ))}
+                            </ul>
+                        </div>
+                    )}
+                </div>
+
+                {/* Video Upload */}
+                <div className="space-y-2">
+                    <label className="block text-sm font-medium text-gray-700">Video Upload</label>
+                    <div className="border-2 border-dashed rounded-lg p-8 text-center hover:bg-gray-50 transition-colors cursor-pointer relative">
+                        <p className="text-sm text-gray-600">Drop videos here or click to upload</p>
+                        <p className="text-xs text-gray-500 mt-1">Supported formats: mp4, avi</p>
+                        <input
+                            type="file"
+                            name="video_upload"
+                            accept="video/*"
+                            className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                            onChange={ handleVideoAndFloorPlanChange }
+                            multiple
+                        />
+                    </div>
+                    {formData.video_upload.length > 0 && (
+                        <ul className="space-y-1 mt-2 text-sm text-gray-700">
+                            {formData.video_upload.map((video, index) => (
+                                <li key={index}>{video.name}</li>
+                            ))}
+                        </ul>
+                    )}
+                </div>
+
+                {/* Image Upload */}
+                <div className="space-y-2">
+                    <label className="block text-sm font-medium text-gray-700">Floor Plan Upload</label>
+                    <div className="border-2 border-dashed rounded-lg p-8 text-center hover:bg-gray-50 transition-colors cursor-pointer relative">
+                        <p className="text-sm text-gray-600">Drop an image here or click to upload</p>
+                        <p className="text-xs text-gray-500 mt-1">Supported formats: jpg, png</p>
+                        <input
+                            type="file"
+                            name="floor_plan"
+                            accept="image/*"
+                            className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                            onChange={ handleVideoAndFloorPlanChange }
+                        />
+                    </div>
+                    {formData.floor_plan && (
+                        <div className="mt-2 text-sm text-gray-700">
+                            Uploaded Image: { formData.floor_plan.name }
+                        </div>
+                    )}
                 </div>
 
                 <div className="flex items-center justify-end gap-4 pt-4">
