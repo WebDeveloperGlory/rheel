@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { Plus, Upload } from 'lucide-react'
 import PropertyCard from '../components/properties/PropertyCard';
 import Modal from '../components/general/Modal';
-import { getProperties } from '../api/properties/requests';
+import { createProperty, getProperties } from '../api/properties/requests';
 
 const initialProperties = [
     {
@@ -39,12 +39,12 @@ const initialFormData = {
     bathroom: "1",
     finance: false,
     property_description: "",
-    amenities: [ "" ],
+    amenities: [],
     property_images: [],
-    floor_plan: [],
+    floor_plan: null,
     video_upload: [],
 
-    property_type_id: '4'
+    property_type_id: 4
 }
 
 const PropertiesPage = () => {
@@ -119,15 +119,53 @@ const PropertiesPage = () => {
         });
     };
     
-    const handleSubmit = ( e ) => {
+    const handleSubmit = async ( e ) => {
         e.preventDefault();
-        console.log({ ...formData, id: Date.now() })
+
         if ( isEditing ) {
             setProperties( properties.map( p => 
                 p.id === editingId ? { ...p, ...formData } : p
             ) );
         } else {
             setProperties([ ...properties, { ...formData, id: Date.now() } ]);
+            // Create a new FormData object
+            const updatedFormData = new FormData();
+
+            // Append all key-value pairs from the object
+            updatedFormData.append("type", formData.type);
+            updatedFormData.append("location", formData.location);
+            updatedFormData.append("agent_id", formData.agent_id);
+            updatedFormData.append("property_availability", formData.property_availability);
+            updatedFormData.append("price", formData.price);
+            updatedFormData.append("living_room", formData.living_room);
+            updatedFormData.append("bedroom", formData.bedroom);
+            updatedFormData.append("bathroom", formData.bathroom);
+            updatedFormData.append("finance", formData.finance);
+            updatedFormData.append("property_description", formData.property_description);
+            updatedFormData.append("property_type_id", formData.property_type_id);
+
+            // Handle amenities (Array of strings)
+            updatedFormData.append("amenities", JSON.stringify(formData.amenities));
+
+            // Handle property images (Array of files)
+            formData.property_images.forEach((file, index) => {
+                updatedFormData.append(`property_images`, file);
+            });
+
+            // Handle floor plans (Array of files)
+            updatedFormData.append(`floor_plan`, formData.floor_plan);
+
+            // Handle video uploads (Array of files)
+            formData.video_upload.forEach((file, index) => {
+                updatedFormData.append(`video_upload`, file);
+            });
+
+            const data = await createProperty( updatedFormData );
+            if( data.status ) {
+                console.log('Property created successfully: ', data );
+                window.alert('Property created successfully');
+                setLoading( true );
+            }
         }
         closeModal();
     };
@@ -402,7 +440,8 @@ const PropertiesPage = () => {
                     </button>
                     <button
                         type="submit"
-                        className="px-6 py-2 bg-black text-white rounded-lg hover:bg-gray-800 transition-colors cursor-pointer"
+                        className="px-6 py-2 bg-black text-white rounded-lg hover:bg-gray-800 transition-colors cursor-pointer disabled:opacity-50"
+                        disabled={ !formData.location || !formData.price || !formData.property_description || !formData.property_images.length || !formData.amenities.length || !formData.property_availability }
                     >
                         { isEditing ? 'Save Changes' : 'Add Property' }
                     </button>
