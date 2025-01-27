@@ -14,7 +14,7 @@ const PropertyCard = ({ property, onEdit, onDelete }) => {
             />
 
             <div className="absolute top-4 left-4 bg-black bg-opacity-75 text-white px-3 py-1 rounded-full text-sm">
-                { property.status || property.type }
+                For { property.type }
             </div>
 
             <div className="absolute top-4 right-4">

@@ -4,9 +4,9 @@ export const getProperties = async () => {
     try {
         const response = await axiosInstance.get(
             `/data/properties`,
-            {
-                withCredentials: true
-            }
+            // {
+            //     withCredentials: true
+            // }
         );
         const { data, status } = response;
 

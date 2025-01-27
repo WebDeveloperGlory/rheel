@@ -56,7 +56,8 @@ const PropertiesPage = () => {
     useEffect(() => {
         const fetchData = async () => {
             const data = await getProperties();
-            console.log( data );
+            setProperties( data.data );
+            console.log( data )
             setLoading( false );
         }
 
