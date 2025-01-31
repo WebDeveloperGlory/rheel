@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { Plus, Upload } from 'lucide-react'
 import PropertyCard from '../components/properties/PropertyCard';
 import Modal from '../components/general/Modal';
-import { createProperty, getProperties } from '../api/properties/requests';
+import { createProperty, deleteProperty, getProperties, updateProperty } from '../api/properties/requests';
 
 const initialProperties = [
     {
@@ -73,14 +73,25 @@ const PropertiesPage = () => {
         setEditingId( property.id );
         setFormData({
           ...formData,
-          ...property
+            ...property,
+            property_images: [],
+            floor_plan: null,
+            video_upload: [],
+            property_availability: property.property_availability.slice(0, 16)
         });
         setShowModal( true );
     };
     
-    const handleDelete = ( id ) => {
+    const handleDelete = async ( id ) => {
         if (window.confirm('Are you sure you want to delete this property?')) {
-            setProperties( properties.filter( p => p.id !== id ) );
+            const data = await deleteProperty( id );
+            if( data.status ) {
+                console.log('Property deleted successfully: ', data.message );
+                window.alert('Property deleted successfully');
+                setLoading( true );
+            } else {
+                window.alert('An Error Occurred');
+            }
         }
     };
     
@@ -122,50 +133,58 @@ const PropertiesPage = () => {
     const handleSubmit = async ( e ) => {
         e.preventDefault();
 
+        // Create a new FormData object
+        const updatedFormData = new FormData();
+
+        // Append all key-value pairs from the object
+        updatedFormData.append("type", formData.type);
+        updatedFormData.append("location", formData.location);
+        updatedFormData.append("agent_id", formData.agent_id);
+        updatedFormData.append("property_availability", formData.property_availability);
+        updatedFormData.append("price", formData.price);
+        updatedFormData.append("living_room", formData.living_room);
+        updatedFormData.append("bedroom", formData.bedroom);
+        updatedFormData.append("bathroom", formData.bathroom);
+        updatedFormData.append("finance", formData.finance);
+        updatedFormData.append("property_description", formData.property_description);
+        updatedFormData.append("property_type_id", formData.property_type_id);
+
+        // Handle amenities (Array of strings)
+        updatedFormData.append("amenities", JSON.stringify(formData.amenities));
+
+        // Handle property images (Array of files)
+        formData.property_images.forEach((file, index) => {
+            updatedFormData.append(`property_images`, file);
+        });
+
+        // Handle floor plans (Array of files)
+        updatedFormData.append(`floor_plan`, formData.floor_plan);
+
+        // Handle video uploads (Array of files)
+        formData.video_upload.forEach((file, index) => {
+            updatedFormData.append(`video_upload`, file);
+        });
+
         if ( isEditing ) {
-            setProperties( properties.map( p => 
-                p.id === editingId ? { ...p, ...formData } : p
-            ) );
+            const data = await updateProperty( editingId, updatedFormData );
+            if( data.status ) {
+                console.log('Property edited successfully: ', data );
+                window.alert('Property edited successfully');
+                setLoading( true );
+            } else {
+                window.alert('An Error Occurred');
+            }  
         } else {
             setProperties([ ...properties, { ...formData, id: Date.now() } ]);
-            // Create a new FormData object
-            const updatedFormData = new FormData();
-
-            // Append all key-value pairs from the object
-            updatedFormData.append("type", formData.type);
-            updatedFormData.append("location", formData.location);
-            updatedFormData.append("agent_id", formData.agent_id);
-            updatedFormData.append("property_availability", formData.property_availability);
-            updatedFormData.append("price", formData.price);
-            updatedFormData.append("living_room", formData.living_room);
-            updatedFormData.append("bedroom", formData.bedroom);
-            updatedFormData.append("bathroom", formData.bathroom);
-            updatedFormData.append("finance", formData.finance);
-            updatedFormData.append("property_description", formData.property_description);
-            updatedFormData.append("property_type_id", formData.property_type_id);
-
-            // Handle amenities (Array of strings)
-            updatedFormData.append("amenities", JSON.stringify(formData.amenities));
-
-            // Handle property images (Array of files)
-            formData.property_images.forEach((file, index) => {
-                updatedFormData.append(`property_images`, file);
-            });
-
-            // Handle floor plans (Array of files)
-            updatedFormData.append(`floor_plan`, formData.floor_plan);
-
-            // Handle video uploads (Array of files)
-            formData.video_upload.forEach((file, index) => {
-                updatedFormData.append(`video_upload`, file);
-            });
-
+            // Check if its an edit or create request
             const data = await createProperty( updatedFormData );
             if( data.status ) {
                 console.log('Property created successfully: ', data );
                 window.alert('Property created successfully');
                 setLoading( true );
-            }
+            } else {
+                window.alert('An Error Occurred');
+            }    
         }
         closeModal();
     };
