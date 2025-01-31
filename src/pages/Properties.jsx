@@ -110,8 +110,13 @@ const PropertiesPage = () => {
 
     const handleVideoAndFloorPlanChange = (e) => {
         const { name, files } = e.target;
-        setFormData({ ...formData, [name]: name === "videos" ? Array.from(files) : files[0] });
+        
+        setFormData((prevFormData) => ({
+            ...prevFormData,
+            [name]: name === "video_upload" ? [...prevFormData.video_upload, ...files] : files[0]
+        }));
     };
+    
 
     const handleAddAmenity = () => {
         if (newAmenity.trim() && !formData.amenities.includes(newAmenity)) {
