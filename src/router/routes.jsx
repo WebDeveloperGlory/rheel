@@ -2,6 +2,7 @@ import React from "react";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import Home from "../pages/Home";
 import Properties from "../pages/Properties";
+import Banners from "../pages/Banners";
 
 const router = createBrowserRouter([
     {
@@ -11,6 +12,10 @@ const router = createBrowserRouter([
     {
         path: "/properties",
         element: <Properties />,
+    },
+    {
+        path: "/banners",
+        element: <Banners />
     },
 ]);
 
