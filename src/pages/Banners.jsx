@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Camera, Upload, X } from 'lucide-react';
-import { createBanner, getBanners } from '../api/banners/requests';
+import { createBanner, deleteBanner, getBanners } from '../api/banners/requests';
 
 const initialBannerState = [
     {
@@ -109,8 +109,19 @@ const BannerManagement = () => {
         }
     };
 
-    const handleDelete = ( id ) => {
-        setBanners( banners.filter( ( banner ) => banner.id !== id ) );
+    const handleDelete = async ( id ) => {
+        if (window.confirm('Are you sure you want to delete this property?')) {
+            const data = await deleteBanner( id );
+            if( data.status ) {
+                console.log('Banner deleted successfully: ', data.message );
+                window.alert('Banner deleted successfully');
+                setLoading( true );
+            } else {
+                window.alert('An Error Occurred');
+            }
+        } else {
+            window.alert('Delete Cancelled')
+        }
     };
 
   return (

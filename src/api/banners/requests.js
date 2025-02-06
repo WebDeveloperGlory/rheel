@@ -42,3 +42,20 @@ export const createBanner = async ( formData ) => {
         return null;
     }
 }
+
+export const deleteBanner = async ( bannerId ) => {
+    try {
+        const response = await axiosInstance.delete( 
+            `/admin/banners/delete/${ bannerId }`
+        );
+        const { data, status } = response;
+
+        if( !status ) {
+            throw response;
+        }
+        return data;
+    } catch( err ) {
+        console.error('Error deleting property: ', err );
+        return null;
+    }
+}
