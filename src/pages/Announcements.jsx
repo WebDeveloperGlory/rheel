@@ -32,7 +32,7 @@ const AnnouncementsPage = () => {
     useEffect(() => {
         const fetchData = async () => {
             const data = await getAnnouncements();
-            setAnnouncements( data.data.rows );
+            setAnnouncements( data.data );
             console.log( data )
             setLoading( false );
         }
