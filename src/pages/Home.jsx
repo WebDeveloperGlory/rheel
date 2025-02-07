@@ -51,11 +51,11 @@ const HomePage = () => {
   ];
 
   return (
-    <div className='p-4'>
+    <div className='p-5'>
       {/* Top Section */}
-      <div className='md:flex justify-between p-5 bg-white items-center rounded-lg hidden mb-8'>
+      <div className='flex justify-between p-5 bg-white items-center rounded-lg  mb-8'>
         <h2 className='font-bold text-2xl'>Dashboard</h2>
-        <div className="relative">
+        <div className="relative hidden md:block">
           <Bell className="w-6 h-6 text-gray-600" />
           <div className="absolute -top-1 -right-1 w-2 h-2 bg-red-500 rounded-full"></div>
         </div>
@@ -165,7 +165,7 @@ const HomePage = () => {
       {/* Properties Section */}
       <div className='bg-white rounded-lg p-5'>
         <h1 className='font-bold mb-5'>Properties</h1>
-        <ul className='flex text-[#181818] text-[14px] items-center gap-5 mb-7 cursor-pointer'>
+        <ul className='flex text-[#181818] md:text-[14px] items-center gap-5 mb-7 cursor-pointer'>
           <li>Recommended</li>
           <li>Popular</li>
           <li>Nearest</li>

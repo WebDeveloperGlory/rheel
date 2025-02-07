@@ -13,7 +13,7 @@ export const getProperties = async () => {
         if( !status ) {
             throw response;
         }
-        return data;
+        return data; 
     } catch( err ) {
         console.error('Error fetching properties: ', err );
         return null;

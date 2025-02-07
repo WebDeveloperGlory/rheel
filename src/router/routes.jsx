@@ -4,6 +4,7 @@ import Home from "../pages/Home";
 import Properties from "../pages/Properties";
 import Banners from "../pages/Banners";
 import Announcements from "../pages/Announcements";
+import Agents from "../pages/Agents";
 
 const AppRoutes = () => {
     return useRoutes([
@@ -22,6 +23,10 @@ const AppRoutes = () => {
         {
             path: "/announcements",
             element: <Announcements />,
+        },
+        {
+            path: "/agents",
+            element: <Agents />,
         }
     ]);
 };
