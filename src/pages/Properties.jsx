@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { Plus, Upload, Bell } from 'lucide-react'
+import { Bell } from 'lucide-react'
 import PropertyCard from '../components/properties/PropertyCard';
 import Modal from '../components/general/Modal';
 import { createProperty, deleteProperty, getProperties, updateProperty } from '../api/properties/requests';
