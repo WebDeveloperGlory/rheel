@@ -4,31 +4,8 @@ import PropertyCard from '../components/properties/PropertyCard';
 import Modal from '../components/general/Modal';
 import { createProperty, deleteProperty, getProperties, updateProperty } from '../api/properties/requests';
 import house from '../assets/images/house.png'
+import PropertySkeleton from '../components/skeletons/PropertySkeleton';
 
-const initialProperties = [
-    {
-        id: 1,
-        location: "Durumi",
-        price: "40,000,000",
-        bedroom: "1",
-        bathroom: "1",
-        type: "Apartments",
-        property_description: "Luxury 1 Bedroom Apartment for Sale - Durumi, Abuja An exquisite and spacious luxury apartment",
-        property_images: ["/api/placeholder/400/300"],
-        status: "For Sale"
-    },
-    {
-        id: 2,
-        location: "Jabi Lake, Abuja",
-        price: "65,000,000",
-        bedroom: "2",
-        bathroom: "2",
-        type: "Villa",
-        property_description: "Stunning lakefront villa with panoramic views",
-        property_images: ["/api/placeholder/400/300"],
-        status: "For Sale"
-    }
-];
 const initialFormData = {
     type: "Sell",
     location: "",
@@ -53,7 +30,7 @@ const PropertiesPage = () => {
     const [ showModal, setShowModal ] = useState( false );
     const [ isEditing, setIsEditing ] = useState( false );
     const [ editingId, setEditingId ] = useState( null );
-    const [ properties, setProperties ] = useState([ ...initialProperties ]);
+    const [ properties, setProperties ] = useState([]);
     const [ formData, setFormData ] = useState({ ...initialFormData });
 
     const [ newAmenity, setNewAmenity ] = useState("");
@@ -262,7 +239,7 @@ const PropertiesPage = () => {
         </div>
 
         {/* Categories */}
-        <ul className='flex text-[#181818] items-center gap-5 mb-7 cursor-pointer'>
+        <ul className='flex text-[#181818] text-[14px] items-center gap-5 mb-7 cursor-pointer'>
             <li>Recommended</li>
             <li>Popular</li>
             <li>Nearest</li>
@@ -271,8 +248,13 @@ const PropertiesPage = () => {
 
         {/* Properties List */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-            {
-                properties && properties.map( property => (
+            {loading ? (
+                // Show 8 skeleton cards while loading
+                Array(8).fill(0).map((_, index) => (
+                    <PropertySkeleton key={index} />
+                ))
+            ) : (
+                properties.map(property => (
                     <PropertyCard
                         key={ property.id }
                         property={ property }
@@ -280,7 +262,7 @@ const PropertiesPage = () => {
                         onDelete={ handleDelete }
                     />
                 ))
-            }
+            )}
         </div>
 
         {/* Modal */}

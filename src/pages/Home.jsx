@@ -6,6 +6,7 @@ import vector from '../assets/images/Vector.png'
 import { Bell, EllipsisVertical } from 'lucide-react'
 import { getProperties } from '../api/properties/requests'
 import PropertyCard from '../components/properties/PropertyCard'
+import PropertySkeleton from '../components/skeletons/PropertySkeleton';
 
 const HomePage = () => {
   const [properties, setProperties] = useState([]);
@@ -147,7 +148,7 @@ const HomePage = () => {
           {[1, 2, 3, 4, 5, 6].map((page) => (
             <button
               key={page}
-              className={`px-3 py-1 text-sm rounded ${
+              className={`px-3 py-1 text-sm rounded cursor-pointer ${
                 page === 1
                   ? 'bg-blue-500 text-white'
                   : 'bg-[#A5C2F9] text-gray-700 hover:bg-gray-200'
@@ -164,20 +165,23 @@ const HomePage = () => {
       {/* Properties Section */}
       <div className='bg-white rounded-lg p-5'>
         <h1 className='font-bold mb-5'>Properties</h1>
-        <ul className='flex text-[#181818] items-center gap-5 mb-7 cursor-pointer'>
+        <ul className='flex text-[#181818] text-[14px] items-center gap-5 mb-7 cursor-pointer'>
           <li>Recommended</li>
           <li>Popular</li>
           <li>Nearest</li>
         </ul>
 
-        {/* Show loading indicator */}
-        {loading ? <p>Loading properties...</p> : (
-          <div className='grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-5'>
-            {properties.map((property) => (
+        <div className='grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-5'>
+          {loading ? (
+            Array(8).fill(0).map((_, index) => (
+              <PropertySkeleton key={index} />
+            ))
+          ) : (
+            properties.map((property) => (
               <PropertyCard key={property.id} property={property} />
-            ))}
-          </div>
-        )}
+            ))
+          )}
+        </div>
       </div>
     </div>
   );
