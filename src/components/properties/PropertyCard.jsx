@@ -5,19 +5,16 @@ const PropertyCard = ({ property, onEdit, onDelete }) => {
     const [ showActions, setShowActions ] = useState( false );
 
   return (
-    <div className="bg-white rounded-xl overflow-hidden shadow-lg hover:shadow-xl transition-shadow relative">
+    <div className="bg-white rounded-2xl overflow-hidden pt-3 md:w-[230px] cursor-pointer border border-[#F4F4F4] relative">
         <div className="relative">
             <img
                 src={ property.property_images[ 0 ] }
                 alt="Property"
-                className="w-full h-64 object-cover"
+                className="w-[90%] mx-auto h-44 object-cover  rounded-xl"
             />
 
-            <div className="absolute top-4 left-4 bg-black bg-opacity-75 text-white px-3 py-1 rounded-full text-sm">
-                For { property.type }
-            </div>
 
-            <div className="absolute top-4 right-4">
+            {/*<div className="absolute top-4 right-4">
                 <button 
                     onClick={ () => setShowActions( !showActions ) }
                     className="p-2 bg-white rounded-full shadow-lg hover:bg-gray-50 transition-colors cursor-pointer"
@@ -48,31 +45,16 @@ const PropertyCard = ({ property, onEdit, onDelete }) => {
                         </div>
                     )
                 }
-            </div>
+            </div> */}
         </div>
 
-        <div className="p-6">
+        <div className="p-3 ">
+            <h1 className='text-[#181818] font-bold text-xl mb-2'>Property Name</h1>
+            <h3 className="text-[15px]  text-[#FF5B19] mb-2">₦ { property.price }</h3>
             <div className="flex items-center gap-2 mb-3">
-                <MapPin className="w-5 h-5 text-gray-500" />
-                <span className="text-gray-600 font-medium">{ property.location }</span>
+                <MapPin className="w-5 h-5 text-[#7F7F7F]" />
+                <span className="text-[#7F7F7F] text-[14px]">{ property.location }</span>
             </div>
-
-            <h3 className="text-2xl font-bold mb-4">N{ property.price }</h3>
-            
-            <div className="grid grid-cols-3 gap-4 mb-4">
-                <div className="flex items-center gap-2">
-                    <Bed className="w-5 h-5 text-gray-500" />
-                    <span className="font-medium">{ property.bedroom } Beds</span>
-                </div>
-
-                <div className="flex items-center gap-2">
-                    <Bath className="w-5 h-5 text-gray-500" />
-                    <span className="font-medium">{ property.bathroom } Bath</span>
-                </div>
-    
-                <div className="font-medium text-gray-600">{ property.type }</div>
-            </div>
-            <p className="text-gray-600 line-clamp-2">{ property.property_description }</p>
         </div>
     </div>
   )

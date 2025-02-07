@@ -3,7 +3,7 @@ import { Bell, Home, Menu } from 'lucide-react'
 
 const Navbar = () => {
   return (
-    <nav className="bg-white shadow-sm fixed top-0 left-0 right-0 z-10">
+    <nav className="bg-white shadow-sm fixed top-0 left-0 right-0 z-10 md:hidden">
         <div className="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
             <div className="flex items-center gap-4">
                 <div className="text-yellow-500 font-bold text-2xl flex items-center">

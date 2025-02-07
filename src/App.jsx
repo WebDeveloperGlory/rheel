@@ -1,24 +1,22 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
 import './App.css'
-import Routes from './router/routes'
+import AppRoutes from './router/routes';
 import Navbar from './components/Navbar'
+import Sidebar from './components/Sidebar'
 
 function App() {
-  const [count, setCount] = useState(0)
-
   return (
-    <>
-      <div className="bg-gray-50 text-black">
+    <div className="flex min-h-screen">
+      <Sidebar />
+      <div className="md:ml-[260px] flex flex-col w-full">
         <Navbar />
-
-        <div className="mt-16 w-full">
-          <Routes />
+        <div className='py-[80px] md:py-[30px]'>
+          <AppRoutes />
         </div>
       </div>
-    </>
-  )
+    </div>
+  );
 }
+
+
 
 export default App

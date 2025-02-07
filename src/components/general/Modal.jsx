@@ -5,14 +5,14 @@ const Modal = ({ show, onClose, isEditing, children }) => {
     if ( !show ) return null;
   
     return (
-        <div className="fixed inset-0 bg-black/10 z-50 flex items-center justify-center p-4">
-            <div className="bg-white rounded-xl w-full max-w-2xl h-[90vh] flex flex-col">
-                <div className="p-6 border-b flex justify-between items-center">
-                    <h2 className="text-2xl font-bold">
+        <div className="fixed inset-0 bg-black/40 z-50 flex items-center justify-center p-4">
+            <div className="bg-white rounded-xl w-[400px] max-w-2xl h-[90vh] flex flex-col">
+                <div className="p-5 pb-0 flex justify-between items-center">
+                    <h2 className="text-xl font-bold">
                         {
                             isEditing 
                                 ? 'Edit Property' 
-                                : 'Add New Property'
+                                : 'New Property'
                         }
                     </h2>
                     <button 
