@@ -209,24 +209,19 @@ const PropertiesPage = () => {
     const propertyMetrics = [
         {
             name: 'Active Properties',
-            value: 5460,
+            value:  properties.length,
             image: house
         },
         {
             name: 'Properties for Sale',
-            value: 1230,
+            value: properties.filter(property => property.type === 'Sell').length,
             image: house
         },
         {
             name: 'Properties for Lease',
-            value: 1211,
+            value: properties.filter(property => property.type === 'Lease').length,
             image: house
         },
-        {
-            name: 'Properties for Lease',
-            value: 1211,
-            image: house
-        }
     ]
 
   return (
@@ -240,11 +235,11 @@ const PropertiesPage = () => {
         </div>
 
         {/* Property Metrics */}
-        <div className='md:flex hidden gap-5 flex-wrap mb-8 '>
+        <div className='flex  gap-5 flex-wrap mb-8 '>
             {propertyMetrics.map((data, index) => (
                 <div
                  key={index}
-                 className='bg-white flex  items-center rounded-xl w-[245px] gap-3 p-5 text-[#23272E]'
+                 className='bg-white flex  items-center rounded-xl w-full md:w-[337px] justify-between p-5 text-[#23272E]'
                 >
                     <article>
                         <h3 className='font-bold text-[13px] mb-2'>{data.name}</h3>
