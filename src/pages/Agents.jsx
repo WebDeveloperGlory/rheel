@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import house from '../assets/images/house.png'
 import agent from '../assets/images/agent.png'
-import { getAgents } from '../api/agents/requests'
+import { getAgents, createAgent } from '../api/agents/requests'
 import { getProperties } from '../api/properties/requests'
 import TopSection from '../components/agents/TopSection'
 import AgentMetrics from '../components/agents/AgentMetrics'
@@ -30,6 +30,10 @@ const Agents = () => {
 
     if (loading) fetchData();
   }, [loading]);
+
+  const handleSubmit = async (e) => {
+    
+  }
 
   const agentMetrics = [
     { name: 'No. of Properties', value: properties.length, image: house },

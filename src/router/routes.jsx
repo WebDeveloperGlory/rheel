@@ -5,6 +5,7 @@ import Properties from "../pages/Properties";
 import Banners from "../pages/Banners";
 import Announcements from "../pages/Announcements";
 import Agents from "../pages/Agents";
+import Affiliates from "../pages/Affiliates";
 
 const AppRoutes = () => {
     return useRoutes([
@@ -27,6 +28,10 @@ const AppRoutes = () => {
         {
             path: "/agents",
             element: <Agents />,
+        },
+        {
+            path: '/affiliates',
+            element: <Affiliates />
         }
     ]);
 };
