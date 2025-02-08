@@ -20,6 +20,26 @@ export const getProperties = async () => {
     }
 }
 
+export const getPropertyById = async ( propertyId ) => {
+    try {
+        const response = await axiosInstance.get(
+            `/data/properties/${ propertyId }`,
+            // {
+            //     withCredentials: true
+            // }
+        );
+        const { data, status } = response;
+
+        if( !status ) {
+            throw response;
+        }
+        return data; 
+    } catch( err ) {
+        console.error('Error fetching property: ', err );
+        return null;
+    }
+}
+
 export const createProperty = async ( formData ) => {
     try {
         const response = await axiosInstance.post( 
