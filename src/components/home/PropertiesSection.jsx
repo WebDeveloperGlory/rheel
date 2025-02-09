@@ -6,7 +6,7 @@ const PropertiesSection = ({ loading, properties }) => {
     <div className='bg-white rounded-lg p-5'>
       <h1 className='font-bold mb-5'>Properties</h1>
       <ul className='flex text-[#181818] md:text-[14px] items-center gap-5 mb-7 cursor-pointer'>
-        <li>Recommended</li>
+        <li className='text-[#FF5B19]'>Recommended</li>
         <li>Popular</li>
         <li>Nearest</li>
       </ul>

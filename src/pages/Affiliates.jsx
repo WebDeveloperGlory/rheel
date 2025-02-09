@@ -3,6 +3,7 @@ import TopSection from '../components/affiliates/TopSection'
 import { getAgents } from '../api/agents/requests'
 import { getAffiliates } from '../api/affiliates/requests'
 import AffiliateMetrics from '../components/affiliates/AffiliateMetrics'
+import AffiliatesTable from '../components/affiliates/AffiliatesTable'
 
 const Affiliates = () => {
   const [agents, setAgents] = useState([]);
@@ -42,12 +43,29 @@ const Affiliates = () => {
     { name: 'Registered Affiliates', value: affiliates?.length ?? 0 },
   ];
   
-    
+  const handleEdit = (affiliate) => {
+    // TODO: Implement edit functionality
+    console.log('Edit affiliate:', affiliate);
+  };
+
+  const handleDelete = (affiliate) => {
+    // TODO: Implement delete functionality
+    console.log('Delete affiliate:', affiliate);
+  };
+
   return (
     <div className='p-4'> 
-        <TopSection />
-        <AffiliateMetrics metrics={affilateMetrics} />
-
+      <TopSection />
+      <AffiliateMetrics metrics={affilateMetrics} />
+      <button className='bg-[#348875] text-white py-3 px-5 text-[13px] cursor-pointer mb-8'>
+        Create New Affiliate
+      </button>
+      <AffiliatesTable 
+        affiliates={affiliates}
+        loading={loading}
+        onEdit={handleEdit}
+        onDelete={handleDelete}
+      />
     </div>
   )
 }

@@ -56,7 +56,7 @@ const AnnouncementsPage = () => {
       } catch (error) {
         console.error('Error deleting announcement:', error);
       }
-    }
+    } 
   };
 
   const handleSubmit = async (e) => {

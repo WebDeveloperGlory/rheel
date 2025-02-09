@@ -1,12 +1,12 @@
 import { Mail } from 'lucide-react'
 import AgentSkeleton from '../skeletons/AgentSkeleton'
 
-const AgentsList = ({ agents, loading }) => {
+const AgentsList = ({ agents, loading, show }) => {
   return (
     <div className='bg-white rounded-lg p-5'>
       <h3 className='font-bold mb-2 text-2xl'>Agents</h3>
       <ul className='flex text-[#181818] font-medium gap-5 items-center md:text-[14px] mb-8'>
-        <li>By Latest</li>
+        <li className='text-[#FF5B19]'>By Latest</li>
         <li>By Properties</li>
       </ul>
 
@@ -35,7 +35,9 @@ const AgentsList = ({ agents, loading }) => {
         )}
       </div>
 
-      <button className='bg-[#348875] text-white py-3 px-5 text-[13px] cursor-pointer'>
+      <button 
+      onClick={show}
+      className='bg-[#348875] text-white py-3 px-5 text-[13px] cursor-pointer'>
         Create New Agent
       </button>
     </div>

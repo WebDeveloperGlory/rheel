@@ -32,7 +32,7 @@ const AnnouncementsTable = ({ announcements, onEdit, onDelete, loading }) => {
 
   if (loading) {
     return <AnnouncementTableSkeleton />;
-  }
+  } 
 
   return (
     <div className="w-full" onClick={() => setOpenDropdownId(null)}>

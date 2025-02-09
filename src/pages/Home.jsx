@@ -4,6 +4,7 @@ import agent from '../assets/images/agent.png'
 import users from '../assets/images/users.png'
 import vector from '../assets/images/Vector.png'
 import { getProperties } from '../api/properties/requests'
+import { getAgents } from '../api/agents/requests'
 import TopSection from '../components/home/TopSection'
 import UserMetrics from '../components/home/UserMetrics'
 import PropertyOutline from '../components/home/PropertyOutline'
@@ -12,15 +13,20 @@ import PropertiesSection from '../components/home/PropertiesSection'
 
 const HomePage = () => {
   const [properties, setProperties] = useState([]);
+  const [agents, setAgents] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const data = await getProperties();
-        setProperties(data.data);
+        const [agentsData, propertiesData] = await Promise.all([
+          getAgents(),
+          getProperties()
+        ]);
+        setAgents(agentsData.data);
+        setProperties(propertiesData.data);
       } catch (error) {
-        console.error("Error fetching properties:", error);
+        console.error('Error fetching data: ', error);
       } finally {
         setLoading(false);
       }
@@ -31,7 +37,7 @@ const HomePage = () => {
 
   const userMetrics = [
     { name: 'Active Properties', value: properties.length, image: house },
-    { name: 'Registered Agents', value: 12, image: agent },
+    { name: 'Registered Agents', value: agents.length, image: agent },
     { name: 'Registered Users', value: 210, image: users },
   ];
 

@@ -3,7 +3,7 @@ import { X } from 'lucide-react'
 const AnnouncementModal = ({ show, onClose, onSubmit, formData, onChange, selectedAnnouncement }) => {
   if (!show) return null
 
-  return (
+  return ( 
     <div className="fixed inset-0 bg-black/20 bg-opacity-50 flex items-center justify-center p-4">
       <div className="bg-white rounded-lg w-full md:w-[400px] max-w-lg">
         <div className="p-6 flex justify-between items-center">
