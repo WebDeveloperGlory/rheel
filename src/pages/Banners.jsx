@@ -20,7 +20,7 @@ const initialFormState = {
 }
 
 const BannerManagement = () => {
-    const [ banners, setBanners ] = useState([ ...initialBannerState ]);
+    const [ banners, setBanners ] = useState([]);
     const [ error, setError ] = useState( "" );
     const [ showModal, setShowModal ] = useState( false );
     const [ loading, setLoading ] = useState( true );
@@ -111,7 +111,7 @@ if (data && data.status) {
     };
 
     const handleDelete = async ( id ) => {
-        if (window.confirm('Are you sure you want to delete this property?')) {
+        if (window.confirm('Are you sure you want to delete this banner?')) {
             const data = await deleteBanner( id );
             if( data.status ) {
                 console.log('Banner deleted successfully: ', data.message );
