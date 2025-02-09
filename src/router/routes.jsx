@@ -6,6 +6,8 @@ import Banners from "../pages/Banners";
 import Announcements from "../pages/Announcements";
 import Agents from "../pages/Agents";
 import Affiliates from "../pages/Affiliates";
+import PropertyDetail from "../pages/PropertyDetail";
+import AgentsDetail from "../pages/AgentsDetail";
 
 const AppRoutes = () => {
     return useRoutes([
@@ -32,6 +34,14 @@ const AppRoutes = () => {
         {
             path: '/affiliates',
             element: <Affiliates />
+        },
+        {
+            path: "/properties/:id",
+            element: <PropertyDetail />,
+        },
+        {
+            path: "/agents/:id",
+            element: <AgentsDetail />,
         }
     ]);
 };

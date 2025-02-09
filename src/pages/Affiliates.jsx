@@ -9,6 +9,8 @@ const Affiliates = () => {
   const [agents, setAgents] = useState([]);
   const [affiliates, setAffiliates] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [showModal, setShowModal] = useState(false);
+  const [formData, setFormData] = useState('');
 
   useEffect(() => {
     const fetchData = async () => {
@@ -51,6 +53,11 @@ const Affiliates = () => {
   const handleDelete = (affiliate) => {
     // TODO: Implement delete functionality
     console.log('Delete affiliate:', affiliate);
+  };
+
+  const handleCloseModal = () => {
+    setShowModal(false);
+    setFormData(initialFormState);
   };
 
   return (

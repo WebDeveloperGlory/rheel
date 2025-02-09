@@ -2,23 +2,61 @@ import React, { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import { Bath, Bed, MapPin } from 'lucide-react'
 import { getPropertyById } from '../api/properties/requests'
+import PropertySkeleton from '../components/skeletons/PropertySkeleton'
+import ImageSlider from '../components/product detail/ImageSlider'
+import bed from '../assets/images/bed.png'
+import bath from '../assets/images/bath.png'
+import type from '../assets/images/type.png'
 
 const PropertyDetail = () => {
   const { id } = useParams()
   const [property, setProperty] = useState(null)
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(null)
 
   useEffect(() => {
-     const fetchProperty = async () => {
-       const data = await getPropertyById(id);
-       setProperty(data);
-       setLoading(false);
-     };
-     fetchProperty();
-  }, [id])
+    const fetchProperty = async () => {
+      try {
+        const response = await getPropertyById(id);
+        if (response?.data) {
+          setProperty(response.data);
+        } else {
+          setError('Property not found');
+        }
+      } catch (err) {
+        setError(err.message || 'Failed to fetch property');
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchProperty();
+  }, [id]);
+
+  const formatPrice = (price) => {
+    return new Intl.NumberFormat('en-NG', {
+      maximumFractionDigits: 0
+    }).format(price);
+  };
 
   if (loading) {
-    return <div>Loading...</div>
+    return (
+      <div className="p-4">
+        <div className="bg-white rounded-lg p-6">
+          <PropertySkeleton />
+        </div>
+      </div>
+    );
+  }
+
+  if (error || !property) {
+    return (
+      <div className="p-4">
+        <div className="bg-white rounded-lg p-6 text-center">
+          <h2 className="text-xl text-red-600 mb-2">Error</h2>
+          <p className="text-gray-600">{error || 'Property not found'}</p>
+        </div>
+      </div>
+    );
   }
 
   return (
@@ -26,33 +64,53 @@ const PropertyDetail = () => {
       <div className="bg-white rounded-lg p-6">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
-            <img 
-              src={property?.property_images[0]} 
-              alt="Property" 
-              className="w-full h-[400px] object-cover rounded-lg"
-            />
+           <ImageSlider images={property.property_images} />
           </div>
           <div>
-            <h1 className="text-2xl font-bold mb-4">Property Details</h1>
-            <p className="text-2xl text-[#FF5B19] mb-4">₦ {property?.price}</p>
+            <p className="text-2xl text-[#181818] font-bold mb-2">
+              ₦ {formatPrice(property.price)}
+            </p>
             <div className="flex items-center gap-2 mb-4">
               <MapPin className="w-5 h-5 text-[#7F7F7F]" />
-              <span className="text-[#7F7F7F]">{property?.location}</span>
+              <span className="text-[#7F7F7F]">{property.location}</span>
             </div>
-            <p className="text-gray-600 mb-6">{property?.property_description}</p>
+            <div className="h-0.5 w-12 mb-8 bg-[#EE7953]"></div>
+            <h2 className='text-xl text-[#181818] mb-2 font-medium '>Overview</h2>
+            <p className="text-gray-600 mb-6">{property.property_description}</p>
             
             <div className="grid grid-cols-2 gap-4 mb-6">
-              <div className="flex items-center gap-2">
-                <Bed className="w-5 h-5 text-gray-600" />
-                <span>{property?.bedroom} Bedrooms</span>
+              <div className="flex items-center gap-5">
+                <img src={bed} alt="" />
+                <article>
+                <h3 className='text-[#181818]'>Bedrooms</h3>
+                <span className='text-[#7F7F7F]'>{property.bedroom}</span>
+                </article>
               </div>
-              <div className="flex items-center gap-2">
-                <Bath className="w-5 h-5 text-gray-600" />
-                <span>{property?.bathroom} Bathrooms</span>
+              <div className="flex items-center gap-5">
+                <img src={bath} alt="" />
+                 <article>
+                 <h3 className='text-[#181818]'>Bathrooms</h3>
+                 <span className='text-[#7F7F7F]'>{property.bathroom}</span>
+                 </article>
               </div>
+              <div className="flex items-center gap-5">
+                <img src={type} alt="" />
+                 <article>
+                 <h3 className='text-[#181818]'>Type</h3>
+                 <span className='text-[#7F7F7F]'>{property.type}</span>
+                 </article>
+              </div>
+              <div className="flex items-center gap-5">
+                <img src={type} alt="" />
+                 <article>
+                 <h3 className='text-[#181818]'>Living Room</h3>
+                 <span className='text-[#7F7F7F]'>{property.living_room}</span>
+                 </article>
+              </div>
+              
             </div>
 
-            {property?.amenities?.length > 0 && (
+            {property.amenities?.length > 0 && (
               <div>
                 <h2 className="text-xl font-semibold mb-3">Amenities</h2>
                 <div className="grid grid-cols-2 gap-2">

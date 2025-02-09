@@ -20,10 +20,10 @@ export const getProperties = async () => {
     }
 }
 
-export const getPropertyById = async ( propertyId ) => {
+export const getPropertyById = async ( id ) => {
     try {
         const response = await axiosInstance.get(
-            `/data/properties/${ propertyId }`,
+            `/data/properties/${id}`,
             // {
             //     withCredentials: true
             // }

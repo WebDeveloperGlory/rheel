@@ -15,7 +15,7 @@ const PropertyCard = ({ property, onEdit, onDelete }) => {
   const handleImageClick = (e) => {
     e.stopPropagation();
     navigate(`/properties/${property.id}`);
-  };
+  }; 
 
   return (
     <div className="bg-white rounded-2xl overflow-hidden pt-3 md:w-[230px] cursor-pointer border border-[#F4F4F4] relative">

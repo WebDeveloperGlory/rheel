@@ -1,7 +1,16 @@
 import { Mail } from 'lucide-react'
+import { useNavigate } from 'react-router-dom'
 import AgentSkeleton from '../skeletons/AgentSkeleton'
 
 const AgentsList = ({ agents, loading, show }) => {
+  const navigate = useNavigate();
+  
+  const handleImageClick = (e) => {
+    e.stopPropagation();
+    navigate(`/agents/${agents.id}`);
+  }
+
+
   return (
     <div className='bg-white rounded-lg p-5'>
       <h3 className='font-bold mb-2 text-2xl'>Agents</h3>
@@ -21,7 +30,9 @@ const AgentsList = ({ agents, loading, show }) => {
               key={index}
               className='bg-white p-5 rounded-lg w-full md:w-[300px] shadow-md cursor-pointer'
             >
-              <img src={agent.logo} alt="" className='w-full mx-auto h-44 object-cover mb-5 rounded-xl' />
+              <img src={agent.logo}
+                onClick={handleImageClick}
+               alt="" className='w-full mx-auto h-44 object-cover mb-5 rounded-xl' />
               <h2 className='text-[#181A1B] text-xl font-medium mb-6'>{agent.company_name}</h2>
               <div className='h-2 rounded-lg w-17 bg-[#2D68A2] mb-5'></div>
               <div className='flex items-center text-[#9EA3A9]'>
