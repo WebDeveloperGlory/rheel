@@ -95,7 +95,7 @@ const AgentsDetail = () => {
                 <img src={mail} alt="" className='w-7 h-7' />
                 <article>
                 <h3 className='text-[#181818] md:text-sm'>Mail Address</h3>
-                <span className='text-[#7F7F7F]'>{agent.email}</span>
+                <span className='text-[#7F7F7F] w-full truncate'>{agent.email}</span>
                 </article>
               </div>
               <div className="flex items-center gap-3">
@@ -108,7 +108,7 @@ const AgentsDetail = () => {
               <div className="flex items-center gap-3">
                 <img src={location} alt="" className='w-7 h-7' />
                 <article>
-                <h3 className='text-[#181818] md:text-sm'>Mail Address</h3>
+                <h3 className='text-[#181818] md:text-sm'>Location</h3>
                 <span className='text-[#7F7F7F]'>{agent.city}</span>
                 </article>
               </div>
