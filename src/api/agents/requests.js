@@ -79,3 +79,17 @@ export const createAgent = async (formData) => {
     }
 };
 
+export const getAgentById = async (id) => {
+    try {
+        const response = await axiosInstance.get(`/admin/agents/${id}`);
+        const { data, status } = response;
+        if (!status) {
+            throw response;
+        }
+        return data;
+    } catch (error) {
+        console.error('Error fetching agent: ', error);
+        return null;
+    }
+}
+

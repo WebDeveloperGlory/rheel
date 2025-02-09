@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
-import { Bath, Bed, MapPin } from 'lucide-react'
+import { MapPin } from 'lucide-react'
 import { getPropertyById } from '../api/properties/requests'
 import PropertySkeleton from '../components/skeletons/PropertySkeleton'
 import ImageSlider from '../components/product detail/ImageSlider'

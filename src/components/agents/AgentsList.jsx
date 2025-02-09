@@ -1,54 +1,54 @@
-import { Mail } from 'lucide-react'
-import { useNavigate } from 'react-router-dom'
+import { Mail, Warehouse } from 'lucide-react'
+import { useNavigate } from 'react-router-dom';
 import AgentSkeleton from '../skeletons/AgentSkeleton'
 
 const AgentsList = ({ agents, loading, show }) => {
   const navigate = useNavigate();
-  
-  const handleImageClick = (e) => {
-    e.stopPropagation();
-    navigate(`/agents/${agents.id}`);
-  }
 
+  const handleAgentClick = (id) => {
+    navigate(`/agents/${id}`);
+  };
+
+  if (loading) {
+    return <AgentSkeleton />;
+  }
 
   return (
     <div className='bg-white rounded-lg p-5'>
       <h3 className='font-bold mb-2 text-2xl'>Agents</h3>
       <ul className='flex text-[#181818] font-medium gap-5 items-center md:text-[14px] mb-8'>
-        <li className='text-[#FF5B19]'>By Latest</li>
+        <li>By Latest</li>
         <li>By Properties</li>
       </ul>
 
       <div className="flex flex-wrap mb-8 gap-[20px] md:gap-8">
-        {loading ? (
-          Array(6).fill(0).map((_, index) => (
-            <AgentSkeleton key={index} />
-          ))
-        ) : (
-          agents.map((agent, index) => (
-            <div
-              key={index}
-              className='bg-white p-5 rounded-lg w-full md:w-[300px] shadow-md cursor-pointer'
-            >
-              <img src={agent.logo}
-                onClick={handleImageClick}
-               alt="" className='w-full mx-auto h-44 object-cover mb-5 rounded-xl' />
-              <h2 className='text-[#181A1B] text-xl font-medium mb-6'>{agent.company_name}</h2>
-              <div className='h-2 rounded-lg w-17 bg-[#2D68A2] mb-5'></div>
-              <div className='flex items-center text-[#9EA3A9]'>
-                <div className='flex gap-2 items-center'>
-                  <Mail className='w-5 h-5' />
-                  <span className='text-[18px] md:text-[14px]'>{agent.email}</span>
-                </div>
+        {agents.map((agent) => (
+          <div
+            key={agent.id}
+            onClick={() => handleAgentClick(agent.id)}
+            className='bg-white p-5 rounded-lg w-full md:w-[300px] shadow-md border border-[#9EA3A9] cursor-pointer hover:shadow-lg transition-shadow'
+          >
+            <img 
+              src={agent.logo} 
+              alt={agent.company_name} 
+              className='w-full mx-auto h-44 object-cover mb-5 rounded-xl'
+            />
+            <h2 className='text-[#181A1B] text-xl font-medium mb-6'>{agent.company_name}</h2>
+            <div className='h-2 rounded-lg w-17 bg-[#2D68A2] mb-5'></div>
+            <div className='flex items-center text-[#9EA3A9]'>
+              <div className='flex gap-2 items-center'>
+                <Mail className='w-5 h-5' />
+                <span className='text-[18px] md:text-[14px]'>{agent.email}</span>
               </div>
             </div>
-          ))
-        )}
+          </div>
+        ))}
       </div>
 
       <button 
-      onClick={show}
-      className='bg-[#348875] text-white py-3 px-5 text-[13px] cursor-pointer'>
+        onClick={show}
+        className='bg-[#348875] text-white py-3 px-5 text-[13px] cursor-pointer'
+      >
         Create New Agent
       </button>
     </div>
