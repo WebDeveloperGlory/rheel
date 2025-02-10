@@ -21,7 +21,7 @@ const AgentsList = ({ agents, loading, show }) => {
         <li>By Properties</li>
       </ul>
 
-      <div className="grid grid-cols-4 mb-8 gap-[20px] md:gap-5">
+      <div className="grid md:grid-cols-4 mb-8 gap-[20px] md:gap-5">
         {agents.map((agent) => (
           <div
             key={agent.id}
