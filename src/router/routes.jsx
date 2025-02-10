@@ -8,6 +8,7 @@ import Agents from "../pages/Agents";
 import Affiliates from "../pages/Affiliates";
 import PropertyDetail from "../pages/PropertyDetail";
 import AgentsDetail from "../pages/AgentsDetail";
+import Inquiries from "../pages/Inquiries";
 
 const AppRoutes = () => {
     return useRoutes([
@@ -42,6 +43,10 @@ const AppRoutes = () => {
         {
             path: "/agents/:id",
             element: <AgentsDetail />,
+        },
+        {
+            path: "/inquiries",
+            element: <Inquiries />,
         }
     ]);
 };

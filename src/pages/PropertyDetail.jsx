@@ -40,11 +40,54 @@ const PropertyDetail = () => {
 
   if (loading) {
     return (
+      <div className="bg-white rounded-lg p-5 md:mx-auto md:flex overflow-hidden animate-pulse">
+      {/* Main image */}
+      <div className="h-64 md:h-96 bg-gray-200 w-full md:w-[50%]"></div>
+      
+      <div>
+        {/* Thumbnail */}
       <div className="p-4">
-        <div className="bg-white rounded-lg p-6">
-          <PropertySkeleton />
+        <div className="h-16 w-16 bg-gray-200 rounded-lg"></div>
+      </div>
+
+      {/* Price and location */}
+      <div className="p-4 space-y-4">
+        <div className="h-6 bg-gray-200 rounded w-1/3"></div>
+        <div className="h-4 bg-gray-200 rounded w-1/4"></div>
+        
+        {/* Overview section */}
+        <div className="space-y-2">
+          <div className="h-5 bg-gray-200 rounded w-1/4"></div>
+          <div className="h-4 bg-gray-200 rounded w-full"></div>
+          <div className="h-4 bg-gray-200 rounded w-full"></div>
+          <div className="h-4 bg-gray-200 rounded w-3/4"></div>
+        </div>
+
+        {/* Property details grid */}
+        <div className="grid grid-cols-2 gap-4 mt-6">
+          {[...Array(4)].map((_, i) => (
+            <div key={i} className="flex items-center space-x-2">
+              <div className="h-8 w-8 bg-gray-200 rounded-full"></div>
+              <div className="space-y-1">
+                <div className="h-3 bg-gray-200 rounded w-20"></div>
+                <div className="h-3 bg-gray-200 rounded w-8"></div>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* Amenities */}
+        <div className="space-y-2 mt-6">
+          <div className="h-5 bg-gray-200 rounded w-1/4"></div>
+          <div className="flex space-x-2">
+            {[...Array(2)].map((_, i) => (
+              <div key={i} className="h-4 bg-gray-200 rounded w-24"></div>
+            ))}
+          </div>
         </div>
       </div>
+      </div>
+    </div>
     );
   }
 

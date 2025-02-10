@@ -186,6 +186,31 @@ const PropertiesPage = () => {
         setFormData({ ...initialFormData });
     };
 
+    const renderPreview = (file, type) => {
+        if (!file) return null;
+        
+        if (type === 'image') {
+            return (
+                <img 
+                    src={URL.createObjectURL(file)} 
+                    alt="Preview" 
+                    className="absolute inset-0 w-full h-full object-cover rounded-lg"
+                    onLoad={(e) => URL.revokeObjectURL(e.target.src)}
+                />
+            );
+        }
+        
+        if (type === 'video') {
+            return (
+                <video 
+                    src={URL.createObjectURL(file)} 
+                    className="absolute inset-0 w-full h-full object-cover rounded-lg"
+                    onLoad={(e) => URL.revokeObjectURL(e.target.src)}
+                />
+            );
+        }
+    };
+
   return (
     <div className="p-4">
       <TopSection />
@@ -204,40 +229,37 @@ const PropertiesPage = () => {
         <form onSubmit={ handleSubmit } className="p-6 space-y-6">
 
         <div className="space-y-4">
-                <label className="block text-[14px] font-medium text-[#383E49]">Property Image</label>
-                <div className="flex justify-center items-start gap-5">
-                <div
-                    className="border border-dashed border-[#9D9D9D] w-[100px] h-[100px] rounded-lg p-8 text-center hover:bg-gray-50 transition-colors cursor-pointer relative"
-                    onClick={() => document.getElementById("fileInput").click()} // Trigger file input on click
-                >
-                    
-                    <input
-                        id="fileInput"
-                        type="file"
-                        accept="image/*"
-                        className="absolute inset-0 w-[full] h-full opacity-0 cursor-pointer"
-                        onChange={ handleFileChange }
-                        multiple
-                    />
-                </div>
-                <div className='w-[100px]'>
-                <p className="text-[12px] text-[#858D9D]">Drop files here or click to upload</p>
-                <p className="text-xs text-[#80D3A1] mt-1">Maximum file size: 10MB</p>
-                </div>
-                </div>
-
-                {formData.property_images.length > 0 && (
-                    <div className="space-y-2">
-                        <h4 className="text-[14px] font-medium text-[#383E49]">Uploaded Files</h4>
-                        <ul className="list-disc pl-5 space-y-1 text-sm text-gray-600">
-                            {formData.property_images.map((file, index) => (
-                                <li key={index}>
-                                    {file.name} ({(file.size / 1024 / 1024).toFixed(2)} MB)
-                                </li>
-                            ))}
-                        </ul>
+                <label className="block text-[14px] font-medium text-[#383E49]">Property Images</label>
+                <div className="flex justify-center items-start gap-5 flex-wrap">
+                    <div className="border border-dashed border-[#9D9D9D] w-[100px] h-[100px] rounded-lg relative hover:bg-gray-50 transition-colors cursor-pointer">
+                        {formData.property_images.length > 0 && (
+                            <div className="grid grid-cols-2 gap-1 absolute inset-0 p-2">
+                                {formData.property_images.slice(0, 4).map((file, index) => (
+                                    <div key={index} className="relative w-full h-full">
+                                        <img
+                                            src={URL.createObjectURL(file)}
+                                            alt={`Preview ${index + 1}`}
+                                            className="w-full h-full object-cover rounded"
+                                            onLoad={(e) => URL.revokeObjectURL(e.target.src)}
+                                        />
+                                    </div>
+                                ))}
+                            </div>
+                        )}
+                        <input
+                            id="fileInput"
+                            type="file"
+                            accept="image/*"
+                            className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                            onChange={handleFileChange}
+                            multiple
+                        />
                     </div>
-                )}
+                    <div className='w-[100px]'>
+                        <p className="text-[12px] text-[#858D9D]">Drop files here or click to upload</p>
+                        <p className="text-xs text-[#80D3A1] mt-1">Maximum file size: 10MB</p>
+                    </div>
+                </div>
             </div>
 
             <div className="flex justify-between items-center gap-5">
@@ -389,53 +411,55 @@ const PropertiesPage = () => {
             <div className="space-y-2 bg-[#F1F1F1] p-2">
                 <label className="block text-[14px] font-medium text-[#383E49]">Virtual Tour</label>
                 <div className="flex justify-center items-start gap-5">
-                <div className="border border-dashed border-[#9D9D9D] bg-white w-[100px] h-[100px] rounded-lg p-8 text-center hover:bg-gray-50 transition-colors cursor-pointer relative">
-                    <input
-                        type="file"
-                        name="video_upload"
-                        accept="video/*"
-                        className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-                        onChange={ handleVideoAndFloorPlanChange }
-                        multiple
-                    />
+                    <div className="border border-dashed border-[#9D9D9D] bg-white w-[100px] h-[100px] rounded-lg relative hover:bg-gray-50 transition-colors cursor-pointer">
+                        {formData.video_upload.length > 0 && (
+                            <video
+                                src={URL.createObjectURL(formData.video_upload[0])}
+                                className="absolute inset-0 w-full h-full object-cover rounded-lg"
+                                onLoad={(e) => URL.revokeObjectURL(e.target.src)}
+                            />
+                        )}
+                        <input
+                            type="file"
+                            name="video_upload"
+                            accept="video/*"
+                            className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                            onChange={handleVideoAndFloorPlanChange}
+                        />
+                    </div>
+                    <div className='w-[100px]'>
+                        <p className="text-[12px] text-[#858D9D]">Drop videos here or click to upload</p>
+                        <p className="text-xs text-[#80D3A1] mt-1">Supported formats: mp4, avi</p>
+                    </div>
                 </div>
-                <div className='w-[100px]'>
-                <p className="text-[12px] text-[#858D9D]">Drop videos here or click to upload</p>
-                <p className="text-xs text-[#80D3A1] mt-1">Supported formats: mp4, avi</p>
-                </div>
-                </div>
-                {formData.video_upload.length > 0 && (
-                    <ul className="space-y-1 mt-2 text-sm text-[#383E49]">
-                        {formData.video_upload.map((video, index) => (
-                            <li key={index}>{video.name}</li>
-                        ))}
-                    </ul>
-                )}
             </div>
 
             {/* Image Upload */}
             <div className="space-y-2 bg-[#F1F1F1] p-2">
                 <label className="block text-[14px] font-medium text-[#383E49]">Floor Plan</label>
                 <div className="flex justify-center items-start gap-5">
-                <div className="border border-dashed border-[#9D9D9D] bg-white w-[100px] h-[100px] rounded-lg p-8 text-center hover:bg-gray-50 transition-colors cursor-pointer relative">
-                    <input
-                        type="file"
-                        name="floor_plan"
-                        accept="image/*"
-                        className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-                        onChange={ handleVideoAndFloorPlanChange }
-                    />
-                </div>
-                <div className='w-[100px]'>
-                <p className="text-[12px] text-[#858D9D]">Drop an image here or click to upload</p>
-                <p className="text-xs text-[#80D3A1] mt-1">Supported formats: jpg, png</p>
-                </div>
-                </div>
-                {formData.floor_plan && (
-                    <div className="mt-2 text-sm text-[#383E49]">
-                        Uploaded Image: { formData.floor_plan.name }
+                    <div className="border border-dashed border-[#9D9D9D] bg-white w-[100px] h-[100px] rounded-lg relative hover:bg-gray-50 transition-colors cursor-pointer">
+                        {formData.floor_plan && (
+                            <img
+                                src={URL.createObjectURL(formData.floor_plan)}
+                                alt="Floor Plan Preview"
+                                className="absolute inset-0 w-full h-full object-cover rounded-lg"
+                                onLoad={(e) => URL.revokeObjectURL(e.target.src)}
+                            />
+                        )}
+                        <input
+                            type="file"
+                            name="floor_plan"
+                            accept="image/*"
+                            className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                            onChange={handleVideoAndFloorPlanChange}
+                        />
                     </div>
-                )}
+                    <div className='w-[100px]'>
+                        <p className="text-[12px] text-[#858D9D]">Drop an image here or click to upload</p>
+                        <p className="text-xs text-[#80D3A1] mt-1">Supported formats: jpg, png</p>
+                    </div>
+                </div>
             </div>
 
             <div className="flex items-center justify-end gap-4 pt-4">

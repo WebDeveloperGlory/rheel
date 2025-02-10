@@ -7,7 +7,7 @@ const menuItems = [
   { icon: House, name: 'Dashboard', path: '/' },
   { icon: Users, name: 'Agents', path: '/agents' },
   { icon: Blend, name: 'Properties', path: '/properties' },
-  { icon: Ticket, name: 'Inquiries', path: '/inquiries' },
+  //{ icon: Ticket, name: 'Inquiries', path: '/inquiries' },
   { icon: Star, name: 'Affiliates', path: '/affiliates' },
   { icon: Columns2, name: 'Announcements', path: '/announcements' },
   { icon: LayoutGrid, name: 'App Banners', path: '/app-banners' }

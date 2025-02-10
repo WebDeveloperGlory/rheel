@@ -40,8 +40,8 @@ const AgentsDetail = () => {
 
   if (loading) {
     return (
-      <div className="p-4">
-        <div className="animate-pulse bg-white rounded-lg p-6">
+      <div className="p-4 md:py-[100px]">
+        <div className="animate-pulse md:w-[75%] md:mx-auto bg-white rounded-lg p-6">
           <div className="h-48 bg-gray-200 rounded-lg mb-4"></div>
           <div className="h-6 bg-gray-200 rounded w-1/2 mb-4"></div>
           <div className="h-4 bg-gray-200 rounded w-1/4 mb-2"></div>
