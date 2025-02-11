@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import { MapPin } from 'lucide-react'
 import { getPropertyById } from '../api/properties/requests'
-import PropertySkeleton from '../components/skeletons/PropertySkeleton'
 import ImageSlider from '../components/product detail/ImageSlider'
 import bed from '../assets/images/bed.png'
 import bath from '../assets/images/bath.png'
@@ -40,7 +39,7 @@ const PropertyDetail = () => {
 
   if (loading) {
     return (
-      <div className="bg-white rounded-lg p-5 md:mx-auto md:flex overflow-hidden animate-pulse">
+      <div className="bg-white rounded-lg p-5 md:mx-auto md:w-[90%] md:flex overflow-hidden animate-pulse">
       {/* Main image */}
       <div className="h-64 md:h-96 bg-gray-200 w-full md:w-[50%]"></div>
       

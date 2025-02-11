@@ -6,6 +6,7 @@ import PropertyMetrics from '../components/properties/PropertyMetrics'
 import PropertyHeader from '../components/properties/PropertyHeader'
 import PropertyCategories from '../components/properties/PropertyCategories'
 import PropertyList from '../components/properties/PropertyList'
+import { Loader2 } from 'lucide-react';
 
 const initialFormData = {
     type: "Sell",
@@ -33,6 +34,7 @@ const PropertiesPage = () => {
     const [ editingId, setEditingId ] = useState( null );
     const [ properties, setProperties ] = useState([]);
     const [ formData, setFormData ] = useState({ ...initialFormData });
+    const [isSubmitting, setIsSubmitting] = useState(false);
 
     const [ newAmenity, setNewAmenity ] = useState("");
 
@@ -49,29 +51,37 @@ const PropertiesPage = () => {
 
     
 
-    const handleEdit = ( property ) => {
-        setIsEditing( true );
-        setEditingId( property.id );
+    const handleEdit = (property) => {
+        if (!property) return;
+        
+        setIsEditing(true);
+        setEditingId(property.id);
         setFormData({
-          ...formData,
+            ...formData,
             ...property,
-            property_images: [],
+            property_images: [], // Reset images since we can't edit them
             floor_plan: null,
             video_upload: [],
-            property_availability: property.property_availability.slice(0, 16)
+            property_availability: property.property_availability?.slice(0, 16) || ''
         });
-        setShowModal( true );
+        setShowModal(true);
     };
     
-    const handleDelete = async ( id ) => {
+    const handleDelete = async (propertyId) => {
+        if (!propertyId) return;
+
         if (window.confirm('Are you sure you want to delete this property?')) {
-            const data = await deleteProperty( id );
-            if( data.status ) {
-                console.log('Property deleted successfully: ', data.message );
-                window.alert('Property deleted successfully');
-                setLoading( true );
-            } else {
-                window.alert('An Error Occurred');
+            try {
+                const response = await deleteProperty(propertyId);
+                if (response && response.status) {
+                    window.alert('Property deleted successfully');
+                    setLoading(true); // Refresh the list
+                } else {
+                    window.alert('Failed to delete property');
+                }
+            } catch (error) {
+                console.error('Error deleting property:', error);
+                window.alert('Error deleting property');
             }
         }
     };
@@ -122,61 +132,62 @@ const PropertiesPage = () => {
     
     const handleSubmit = async ( e ) => {
         e.preventDefault();
+        setIsSubmitting(true);
 
-        // Create a new FormData object
-        const updatedFormData = new FormData();
+        try {
+            const updatedFormData = new FormData();
 
-        // Append all key-value pairs from the object
-        updatedFormData.append("type", formData.type);
-        updatedFormData.append("location", formData.location);
-        updatedFormData.append("agent_id", formData.agent_id);
-        updatedFormData.append("property_availability", formData.property_availability);
-        updatedFormData.append("price", formData.price);
-        updatedFormData.append("living_room", formData.living_room);
-        updatedFormData.append("bedroom", formData.bedroom);
-        updatedFormData.append("bathroom", formData.bathroom);
-        updatedFormData.append("finance", formData.finance);
-        updatedFormData.append("property_description", formData.property_description);
-        updatedFormData.append("property_type_id", formData.property_type_id);
+            updatedFormData.append("type", formData.type);
+            updatedFormData.append("location", formData.location);
+            updatedFormData.append("agent_id", formData.agent_id);
+            updatedFormData.append("property_availability", formData.property_availability);
+            updatedFormData.append("price", formData.price);
+            updatedFormData.append("living_room", formData.living_room);
+            updatedFormData.append("bedroom", formData.bedroom);
+            updatedFormData.append("bathroom", formData.bathroom);
+            updatedFormData.append("finance", formData.finance);
+            updatedFormData.append("property_description", formData.property_description);
+            updatedFormData.append("property_type_id", formData.property_type_id);
 
-        // Handle amenities (Array of strings)
-        updatedFormData.append("amenities", JSON.stringify(formData.amenities));
+            updatedFormData.append("amenities", JSON.stringify(formData.amenities));
 
-        // Handle property images (Array of files)
-        formData.property_images.forEach((file, index) => {
-            updatedFormData.append(`property_images`, file);
-        });
+            formData.property_images.forEach((file, index) => {
+                updatedFormData.append(`property_images`, file);
+            });
 
-        // Handle floor plans (Array of files)
-        updatedFormData.append(`floor_plan`, formData.floor_plan);
+            updatedFormData.append(`floor_plan`, formData.floor_plan);
 
-        // Handle video uploads (Array of files)
-        formData.video_upload.forEach((file, index) => {
-            updatedFormData.append(`video_upload`, file);
-        });
+            formData.video_upload.forEach((file, index) => {
+                updatedFormData.append(`video_upload`, file);
+            });
 
-        if ( isEditing ) {
-            const data = await updateProperty( editingId, updatedFormData );
-            if( data.status ) {
-                console.log('Property edited successfully: ', data );
-                window.alert('Property edited successfully');
-                setLoading( true );
-            } else {
-                window.alert('An Error Occurred');
-            }  
-        } else { 
-            setProperties([ ...properties, { ...formData, id: Date.now() } ]);
-            // Check if its an edit or create request
-            const data = await createProperty( updatedFormData );
-            if( data.status ) {
-                console.log('Property created successfully: ', data );
-                window.alert('Property created successfully');
-                setLoading( true );
-            } else {
-                window.alert('An Error Occurred');
-            }    
+            if ( isEditing ) {
+                const data = await updateProperty( editingId, updatedFormData );
+                if( data.status ) {
+                    console.log('Property edited successfully: ', data );
+                    window.alert('Property edited successfully');
+                    setLoading( true );
+                } else {
+                    window.alert('An Error Occurred');
+                }  
+            } else { 
+                setProperties([ ...properties, { ...formData, id: Date.now() } ]);
+                const data = await createProperty( updatedFormData );
+                if( data.status ) {
+                    console.log('Property created successfully: ', data );
+                    window.alert('Property created successfully');
+                    setLoading( true );
+                } else {
+                    window.alert('An Error Occurred');
+                }    
+            }
+            closeModal();
+        } catch (error) {
+            console.error('Error:', error);
+            window.alert('An error occurred');
+        } finally {
+            setIsSubmitting(false);
         }
-        closeModal();
     };
     
     const closeModal = () => {
@@ -466,16 +477,24 @@ const PropertiesPage = () => {
                 <button
                     type="button"
                     onClick={ closeModal }
-                    className="px-5 py-2  cursor-pointer text-[14px] text-[#858D9D]"
+                    disabled={isSubmitting}
+                    className="px-5 py-2  cursor-pointer text-[14px] text-[#858D9D] disabled:opacity-50"
                 >
                     Discard
                 </button>
                 <button
                     type="submit"
-                    className="px-5 py-2 bg-[#4DA981] text-white rounded-lg  cursor-pointer disabled:opacity-60 text-[14px]"
-                    disabled={ !formData.location || !formData.price || !formData.property_description || !formData.property_images.length || !formData.amenities.length || !formData.property_availability }
+                    className="px-5 py-2 bg-[#4DA981] text-white rounded-lg  cursor-pointer disabled:opacity-60 text-[14px] flex items-center gap-2"
+                    disabled={isSubmitting || !formData.location || !formData.price || !formData.property_description || !formData.property_images.length || !formData.amenities.length || !formData.property_availability }
                 >
-                    { isEditing ? 'Save Changes' : 'Add Property' }
+                    {isSubmitting ? (
+                        <>
+                            <Loader2 className="w-4 h-4 animate-spin" />
+                            {isEditing ? 'Saving...' : 'Creating...'}
+                        </>
+                    ) : (
+                        isEditing ? 'Save Changes' : 'Add Property'
+                    )}
                 </button>
             </div>
         </form>

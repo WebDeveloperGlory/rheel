@@ -18,6 +18,7 @@ const AnnouncementsPage = () => {
   const [showModal, setShowModal] = useState(false);
   const [selectedAnnouncement, setSelectedAnnouncement] = useState(null);
   const [formData, setFormData] = useState(initialFormState);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -61,6 +62,7 @@ const AnnouncementsPage = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setIsSubmitting(true);
     try {
       if (selectedAnnouncement) {
         await updateAnnouncement(selectedAnnouncement.id, formData);
@@ -71,6 +73,8 @@ const AnnouncementsPage = () => {
       handleCloseModal();
     } catch (error) {
       console.error('Error saving announcement:', error);
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -116,6 +120,7 @@ const AnnouncementsPage = () => {
         formData={formData}
         onChange={handleInputChange}
         selectedAnnouncement={selectedAnnouncement}
+        isSubmitting={isSubmitting}
       />
     </div>
   );

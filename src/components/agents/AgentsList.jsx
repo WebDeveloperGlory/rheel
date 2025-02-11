@@ -1,4 +1,4 @@
-import { Mail, Warehouse } from 'lucide-react'
+import { Mail, Warehouse } from 'lucide-react' 
 import { useNavigate } from 'react-router-dom';
 import AgentSkeleton from '../skeletons/AgentSkeleton'
 

@@ -1,7 +1,7 @@
 import React from 'react'
-import { X, Upload } from 'lucide-react'
+import { X, Upload, Loader2 } from 'lucide-react'
 
-const AgentsModal = ({ show, onClose, onSubmit, formData, onChange }) => {
+const AgentsModal = ({ show, onClose, onSubmit, formData, onChange, isSubmitting }) => {
     if (!show) return null
 
     const handleFileChange = (e) => {
@@ -157,16 +157,24 @@ const AgentsModal = ({ show, onClose, onSubmit, formData, onChange }) => {
                         <button
                             type="button"
                             onClick={onClose}
-                            className="px-6 py-2 border rounded-lg text-sm hover:bg-gray-50 transition-colors cursor-pointer"
+                            disabled={isSubmitting}
+                            className="px-6 py-2 border rounded-lg text-sm hover:bg-gray-50 transition-colors cursor-pointer disabled:opacity-50"
                         >
                             Discard
                         </button>
                         <button
                             type="submit"
-                            disabled={!formData.first_name || !formData.last_name || !formData.company_name || !formData.email || !formData.phone_number || !formData.city || !formData.postcode}
-                            className="px-6 py-2 bg-[#4DA981] text-sm text-white rounded-lg cursor-pointer disabled:opacity-80"
+                            disabled={isSubmitting || !formData.first_name || !formData.last_name || !formData.company_name || !formData.email || !formData.phone_number || !formData.city || !formData.postcode}
+                            className="px-6 py-2 bg-[#4DA981] text-sm text-white rounded-lg cursor-pointer disabled:opacity-80 flex items-center gap-2"
                         >
-                            Create Agent
+                            {isSubmitting ? (
+                                <>
+                                    <Loader2 className="w-4 h-4 animate-spin" />
+                                    Creating...
+                                </>
+                            ) : (
+                                'Create Agent'
+                            )}
                         </button>
                     </div>
                 </form>

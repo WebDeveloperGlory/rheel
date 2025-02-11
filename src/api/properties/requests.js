@@ -87,19 +87,18 @@ export const updateProperty = async ( propertyId, formData ) => {
     }
 }
 
-export const deleteProperty = async ( propertyId ) => {
+export const deleteProperty = async (propertyId) => {
     try {
-        const response = await axiosInstance.delete( 
-            `/admin/properties/delete/${ propertyId }`
-        );
-        const { data, status } = response;
-
-        if( !status ) {
-            throw response;
-        }
-        return data;
-    } catch( err ) {
-        console.error('Error deleting property: ', err );
-        return null;
+        const response = await axiosInstance.delete(`/admin/properties/delete/${propertyId}`);
+        return {
+            status: response.status === 200,
+            message: response.data?.message || 'Property deleted successfully'
+        };
+    } catch (error) {
+        console.error('Error deleting property: ', error);
+        return {
+            status: false,
+            message: error.response?.data?.message || 'Failed to delete property'
+        };
     }
-}
+};

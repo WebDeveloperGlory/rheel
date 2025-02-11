@@ -1,6 +1,6 @@
-import { X } from 'lucide-react'
+import { Loader2, X } from 'lucide-react'
 
-const AnnouncementModal = ({ show, onClose, onSubmit, formData, onChange, selectedAnnouncement }) => {
+const AnnouncementModal = ({ show, onClose, onSubmit, formData, onChange, selectedAnnouncement, isSubmitting }) => {
   if (!show) return null
 
   return ( 
@@ -47,16 +47,24 @@ const AnnouncementModal = ({ show, onClose, onSubmit, formData, onChange, select
             <button
               type="button"
               onClick={onClose}
-              className="px-6 py-2 border rounded-lg text-sm hover:bg-gray-50 transition-colors cursor-pointer"
+              disabled={isSubmitting}
+              className="px-6 py-2 border rounded-lg text-sm hover:bg-gray-50 transition-colors cursor-pointer disabled:opacity-50"
             >
               Discard
             </button>
             <button
               type="submit"
-              className="px-6 py-2 bg-[#4DA981] text-sm text-white rounded-lg cursor-pointer"
-              disabled={!formData.announcement_text || !formData.redirect_link}
+              disabled={isSubmitting || !formData.announcement_text || !formData.redirect_link}
+              className="px-6 py-2 bg-[#4DA981] text-sm text-white rounded-lg cursor-pointer disabled:opacity-60 flex items-center gap-2"
             >
-              {selectedAnnouncement ? 'Save Changes' : 'Post Announcement'}
+              {isSubmitting ? (
+                <>
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                  {selectedAnnouncement ? 'Saving...' : 'Posting...'}
+                </>
+              ) : (
+                selectedAnnouncement ? 'Save Changes' : 'Post Announcement'
+              )}
             </button>
           </div>
         </form>

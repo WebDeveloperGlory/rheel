@@ -25,6 +25,7 @@ const Agents = () => {
   const [properties, setProperties] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const [formData, setFormData] = useState(initialFormState);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -52,6 +53,8 @@ const Agents = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setIsSubmitting(true);
+    
     try {
       const response = await createAgent(formData);
       if (response && response.status) {
@@ -64,6 +67,8 @@ const Agents = () => {
     } catch (error) {
       console.error('Error creating agent:', error);
       window.alert('Error creating agent');
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -88,6 +93,7 @@ const Agents = () => {
        onSubmit={handleSubmit}
        formData={formData}
        onChange={handleInputChange}
+       isSubmitting={isSubmitting}
       />
     </div>
   );
