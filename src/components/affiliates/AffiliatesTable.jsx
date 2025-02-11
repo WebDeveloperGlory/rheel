@@ -73,7 +73,7 @@ const AffiliatesTable = ({ affiliates, onEdit, onDelete, loading }) => {
                         onClick={(e) => handleDropdownClick(e, affiliate.id)}
                         className="p-2 hover:bg-gray-100 rounded-full transition-colors"
                       >
-                        <MoreVertical className="h-4 w-4 text-gray-500" />
+                        <MoreVertical className="h-4 w-4 text-gray-500 cursor-pointer" />
                       </button>
                       
                       {openDropdownId === affiliate.id && (
@@ -83,14 +83,14 @@ const AffiliatesTable = ({ affiliates, onEdit, onDelete, loading }) => {
                               className="w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center gap-2"
                               onClick={(e) => handleActionClick(e, 'edit', affiliate)}
                             >
-                              <Edit2 className="h-4 w-4" />
+                              <Edit2 className="h-4 w-4 cursor-pointer" />
                               <span>Edit</span>
                             </button>
                             <button
                               className="w-full px-4 py-2 text-sm text-red-600 hover:bg-gray-100 flex items-center gap-2"
                               onClick={(e) => handleActionClick(e, 'delete', affiliate)}
                             >
-                              <Trash2 className="h-4 w-4" />
+                              <Trash2 className="h-4 w-4 cursor-pointer" />
                               <span>Delete</span>
                             </button>
                           </div>

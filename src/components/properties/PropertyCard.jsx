@@ -38,7 +38,7 @@ const PropertyCard = ({ property, onEdit, onDelete }) => {
         <img
           src={property.property_images[0]}
           alt="Property"
-          className="w-full h-44 object-cover"
+          className="w-full h-44 object-cover cursor-pointer"
           onClick={handleImageClick}
         />
         <div className="absolute bottom-4 left-2 flex gap-2">
@@ -78,7 +78,7 @@ const PropertyCard = ({ property, onEdit, onDelete }) => {
               onClick={() => setIsDropdownOpen(!isDropdownOpen)}
               className="p-2 hover:bg-gray-100 rounded-full transition-colors"
             >
-              <MoreVertical className="w-5 h-5 text-gray-500" />
+              <MoreVertical className="w-5 h-5 text-gray-500 cursor-pointer" />
             </button>
             
             {isDropdownOpen && (

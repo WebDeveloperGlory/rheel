@@ -26,19 +26,19 @@ const AgentsList = ({ agents, loading, show }) => {
           <div
             key={agent.id}
             onClick={() => handleAgentClick(agent.id)}
-            className='bg-white p-3  rounded-lg w-full md:w-[230px] shadow-md  cursor-pointer hover:shadow-lg transition-shadow'
+            className='bg-white p-3  rounded-lg w-full md:w-[230px] shadow-md   hover:shadow-lg transition-shadow'
           >
             <img 
               src={agent.logo} 
               alt={agent.company_name} 
-              className='w-full mx-auto pt-1 h-44 object-cover mb-5 rounded-xl'
+              className='w-full mx-auto pt-1 h-44 object-cover mb-5 rounded-xl cursor-pointer'
             />
             <h2 className='text-[#181A1B]  font-medium mb-4'>{agent.company_name}</h2>
             <div className='h-1 rounded-lg w-10 bg-[#2D68A2] mb-5'></div>
             <div className='flex items-center text-[#9EA3A9]'>
               <div className='flex gap-2 items-center'>
                 <Mail className='w-4 h-4' />
-                <span className='text-[18px] md:text-[12px]'>{agent.email}</span>
+                <span className='text-[18px] md:text-[12px] break-words'>{agent.email}</span>
               </div>
             </div>
           </div>

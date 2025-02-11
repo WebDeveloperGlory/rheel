@@ -3,7 +3,7 @@ const RecentSignups = ({ data }) => {
     <div className="w-full max-w-6xl mx-auto p-4 bg-white rounded-lg mb-8">
       <div className="flex justify-between items-center mb-4">
         <h2 className="text-xl md:text-[14px] font-semibold">Recent Sign Up</h2>
-        <button className="text-blue-500 md:text-[14px] hover:text-blue-700">View All</button>
+        <button className="text-blue-500 md:text-[14px] hover:text-blue-700 cursor-pointer">View All</button>
       </div>
 
       <div className="overflow-x-auto rounded-lg">

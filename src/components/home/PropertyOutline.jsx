@@ -5,7 +5,7 @@ const PropertyOutline = ({ data }) => {
     <div className='bg-white p-5 rounded-lg mb-8 md:w-[480px]'>
       <div className='flex justify-between items-center mb-5'>
         <h2 className='text-xl md:text-[14px] font-semibold text-[#23272E]'>Properties Outline</h2>
-        <EllipsisVertical className='w-6 h-6 text-[#4B465C]' />
+        <EllipsisVertical className='w-6 h-6 text-[#4B465C] cursor-pointer' />
       </div>
       <div className="flex flex-col gap-5">
         {data.map((item, index) => (

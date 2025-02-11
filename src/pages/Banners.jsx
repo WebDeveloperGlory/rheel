@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { Upload } from 'lucide-react';
 import { createBanner, deleteBanner, getBanners } from '../api/banners/requests';
+import TopSection from '../components/banners/TopSection';
 import BannerModal from '../components/banners/BannerModal';
 import BannerList from '../components/banners/BannerList';
+import BannerMetrics from '../components/banners/BannerMetrics';
 
 const initialFormState = {
   banner_image: null,
@@ -87,17 +89,24 @@ const BannerManagement = () => {
     }
   };
 
+  const BannerMetricsData = [
+    {name: 'Total Banners', value: banners.length},
+    {name: 'Total Links', value: banners.filter(banner => banner.redirect_link).length},
+  ]
+
   return (
     <div className="p-4">
-      <div className='flex justify-between items-center mb-8'>
-        <h1 className="text-2xl font-bold">Banner Management</h1>
-        <button
-          onClick={() => setShowModal(true)}
-          className="bg-[#348875] text-white px-6 py-3 rounded-lg flex items-center gap-2 hover:opacity-90 transition-opacity"
-        >
-          <Upload className="w-5 h-5" /> Add Banner
-        </button>
-      </div>
+      <TopSection />
+      <BannerMetrics metrics={BannerMetricsData} />
+      <div className='flex flex-col gap-3 items-start mb-5'>
+      <h1 className='font-bold'>Banners</h1>
+      <button
+        onClick={() => setShowModal(true)}
+        className='bg-[#348875] text-white py-3 px-5 text-[13px] cursor-pointer'
+      >
+        Add Banner
+      </button>
+    </div>
 
       <BannerList 
         banners={banners} 
