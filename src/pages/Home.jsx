@@ -76,11 +76,11 @@ const HomePage = () => {
   ]; */}
 
   return (
-    <div className='p-5'>
+    <div className='p-4'>
       <TopSection />
       <UserMetrics metrics={userMetrics} />
       
-      <div className="md:flex gap-5">
+      <div className="md:flex gap-4">
         <PropertyOutline data={propertyOutlineData} />
         <RecentSignups data={signups} loading={loading} />
       </div>
