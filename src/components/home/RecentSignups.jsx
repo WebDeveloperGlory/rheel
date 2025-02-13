@@ -25,10 +25,10 @@ const RecentSignups = ({ data = [], loading = false }) => {
   return (
     <div className="w-full max-w-6xl mx-auto p-7 bg-white md:w-[700px] rounded-lg mb-8">
       <div className="flex justify-between items-center mb-4">
-        <h2 className="text-xl md:text-[14px] font-semibold">Recent Sign Up</h2>
+        <h2 className="text-[16px] font-semibold">Recent Sign Up</h2>
         <button 
           onClick={toggleView} 
-          className="text-[#0F60FF] md:text-[14px] hover:text-blue-700 font-semibold cursor-pointer"
+          className="text-[#0F60FF] text-sm hover:text-blue-700 font-semibold cursor-pointer"
         >
           {showAll ? 'Show Less' : 'View All'}
         </button>

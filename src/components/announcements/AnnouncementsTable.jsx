@@ -48,13 +48,13 @@ const AnnouncementsTable = ({ announcements, onEdit, onDelete, loading }) => {
     <div className="w-full" onClick={() => setOpenDropdownId(null)}>
       <div className="bg-white md:p-8 p-5 rounded-lg">
         <div className="flex justify-between items-center mb-4">
-          <h2 className="text-xl font-semibold text-[#23272E]">Announcements</h2>
+          <h2 className="text-[16px] font-semibold text-[#23272E]">Announcements</h2>
           <button 
             onClick={() => {
               setShowAll(!showAll);
               setCurrentPage(1);
             }}
-            className="text-[#0F60FF] text-[14px]"
+            className="text-[#0F60FF] text-sm"
           >
             {showAll ? 'Show Less' : 'View All'}
           </button>
