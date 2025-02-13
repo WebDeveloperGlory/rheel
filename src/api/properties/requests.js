@@ -153,4 +153,4 @@ export const getArchivedProperties = async () => {
         console.error('Error fetching archived properties: ', err );
         return null;
     }
-}
+} 

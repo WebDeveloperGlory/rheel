@@ -5,6 +5,7 @@ import users from '../assets/images/users.png'
 import vector from '../assets/images/Vector.png'
 import { getProperties, getArchivedProperties } from '../api/properties/requests'
 import { getAgents } from '../api/agents/requests'
+import { getUsers } from '../api/users/requests'
 import TopSection from '../components/home/TopSection'
 import UserMetrics from '../components/home/UserMetrics'
 import PropertyOutline from '../components/home/PropertyOutline'
@@ -17,28 +18,33 @@ const HomePage = () => {
   const [archivedProperties, setArchivedProperties] = useState([]);
   const [agents, setAgents] = useState([]);
   const [signups, setSignups] = useState([]);
+  const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [agentsData, propertiesData, archivedPropertiesData, signupsData] = await Promise.all([
+        const [agentsData, propertiesData, archivedPropertiesData, signupsData, usersData] = await Promise.all([
           getAgents(),
           getProperties(),
           getArchivedProperties(),
-          getSignups()
+          getSignups(),
+          getUsers()
         ]);
 
         setAgents(agentsData?.data || []);
         setProperties(propertiesData?.data || []);
         setArchivedProperties(archivedPropertiesData?.data || []);
         setSignups(signupsData?.data || []);
+        setUsers(usersData?.data || []);
+        console.log("Data:", agentsData, propertiesData, archivedPropertiesData, signupsData, usersData);
       } catch (error) {
         console.error('Error fetching data:', error);
         setAgents([]);
         setProperties([]);
         setArchivedProperties([]);
         setSignups([]);
+        setUsers([]);
       } finally {
         setLoading(false);
       }
@@ -50,7 +56,7 @@ const HomePage = () => {
   const userMetrics = [
     { name: 'Active Properties', value: properties.length, image: house },
     { name: 'Registered Agents', value: agents.length, image: agent },
-    { name: 'Registered Users', value: 210, image: users },
+    { name: 'Registered Users', value: users.length, image: users },
   ];
 
   const propertyOutlineData = [

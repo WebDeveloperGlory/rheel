@@ -64,7 +64,7 @@ const AffiliatesTable = ({ affiliates, onEdit, onDelete, loading }) => {
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Properties</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Value</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                {/*<th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>*/}
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Payment Status</th>
               </tr>
             </thead>
             <tbody>
@@ -86,8 +86,9 @@ const AffiliatesTable = ({ affiliates, onEdit, onDelete, loading }) => {
                       {affiliate.status}
                     </span>
                   </td>
-                  <td className="px-6 py-4">
-                    {/*<div className="relative" onClick={e => e.stopPropagation()}>
+                  <td className="px-6 py-4 text-sm text-gray-500">{affiliate.payment_status}</td>
+                  {/*<td className="px-6 py-4">
+                    <div className="relative" onClick={e => e.stopPropagation()}>
                       <button
                         onClick={(e) => handleDropdownClick(e, affiliate.id)}
                         className="p-2 hover:bg-gray-100 rounded-full transition-colors"
@@ -115,8 +116,8 @@ const AffiliatesTable = ({ affiliates, onEdit, onDelete, loading }) => {
                           </div>
                         </div>
                       )}
-                    </div>*/}
-                  </td>
+                    </div>
+                  </td>*/}
                 </tr>
               ))}
             </tbody>

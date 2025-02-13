@@ -27,7 +27,7 @@ const PropertyCard = ({ property, onEdit, onDelete, onArchive, onUnarchive }) =>
       maximumFractionDigits: 0
     }).format(price).replace('NGN', '₦');
   };
-
+ 
   const handleImageClick = (e) => {
     e.stopPropagation();
     navigate(`/properties/${property.id}`);

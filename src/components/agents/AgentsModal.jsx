@@ -153,7 +153,7 @@ const AgentsModal = ({ show, onClose, onSubmit, formData, onChange, isSubmitting
                         />
                     </div>
 
-                    <div className="flex justify-end gap-4 py-8">
+                    <div className="flex justify-end gap-4 py-8 px-5">
                         <button
                             type="button"
                             onClick={onClose}

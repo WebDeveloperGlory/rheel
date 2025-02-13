@@ -1,9 +1,18 @@
-const PropertyCategories = () => {
+const PropertyCategories = ({ activeCategory, onCategoryChange }) => {
   return (
-    <ul className='flex text-[#181818] md:text-[14px] items-center gap-5 mb-7 cursor-pointer'>
-      <li className="text-[#FF5B19]">Recommended</li>
-      <li>Popular</li>
-      <li>Nearest</li>
+    <ul className='flex text-[#181818] md:text-[14px] items-center gap-5 mb-7'>
+      <li
+        className={`cursor-pointer ${activeCategory === 'active' ? 'text-[#FF5B19]' : ''}`}
+        onClick={() => onCategoryChange('active')}
+      >
+        Active
+      </li>
+      <li
+        className={`cursor-pointer ${activeCategory === 'archived' ? 'text-[#FF5B19]' : ''}`}
+        onClick={() => onCategoryChange('archived')}
+      >
+        Archived
+      </li>
     </ul>
   )
 }

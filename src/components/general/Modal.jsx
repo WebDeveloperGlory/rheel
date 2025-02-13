@@ -6,7 +6,7 @@ const Modal = ({ show, onClose, isEditing, children }) => {
   
     return (
         <div className="fixed inset-0 bg-black/40 z-50 flex items-center justify-center p-4">
-            <div className="bg-white rounded-xl w-[400px] max-w-2xl h-[90vh] flex flex-col">
+            <div className="bg-white rounded-xl w-full md:w-[450px] max-w-2xl h-[90vh] flex flex-col">
                 <div className="p-5 pb-0 flex justify-between items-center">
                     <h2 className="text-xl font-bold">
                         {

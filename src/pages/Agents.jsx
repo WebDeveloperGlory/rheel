@@ -70,7 +70,7 @@ const Agents = () => {
     } finally {
       setIsSubmitting(false);
     }
-  };
+  }; 
 
   const handleCloseModal = () => {
     setShowModal(false);

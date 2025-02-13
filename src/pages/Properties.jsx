@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { createProperty, deleteProperty, getProperties, updateProperty, archiveProperty, unarchiveProperty } from '../api/properties/requests'
+import { createProperty, deleteProperty, getProperties, updateProperty, archiveProperty, unarchiveProperty, getArchivedProperties } from '../api/properties/requests'
 import Modal from '../components/general/Modal'
 import TopSection from '../components/properties/TopSection'
 import PropertyMetrics from '../components/properties/PropertyMetrics'
@@ -7,7 +7,7 @@ import PropertyHeader from '../components/properties/PropertyHeader'
 import PropertyCategories from '../components/properties/PropertyCategories'
 import PropertyList from '../components/properties/PropertyList'
 import { Loader2 } from 'lucide-react';
-
+ 
 const initialFormData = {
     type: "Sell",
     location: "",
@@ -30,25 +30,59 @@ const initialFormData = {
 const PropertiesPage = () => {
     const [ loading, setLoading ] = useState( true );
     const [ showModal, setShowModal ] = useState( false );
+    const [error, setError] = useState(null);
     const [ isEditing, setIsEditing ] = useState( false );
     const [ editingId, setEditingId ] = useState( null );
     const [ properties, setProperties ] = useState([]);
+    const [activeCategory, setActiveCategory] = useState('active');
     const [ formData, setFormData ] = useState({ ...initialFormData });
     const [isSubmitting, setIsSubmitting] = useState(false);
 
     const [ newAmenity, setNewAmenity ] = useState("");
 
     useEffect(() => {
+        let isMounted = true;
+    
         const fetchData = async () => {
-            const data = await getProperties();
-            setProperties( data.data );
-            console.log( data )
-            setLoading( false );
-        }
+          try {
+            setLoading(true);
+            setError(null);
+            
+            const response = activeCategory === 'active' 
+              ? await getProperties()
+              : await getArchivedProperties();
+    
+            if (isMounted && response?.data) {
+              setProperties(response.data);
+            } else if (isMounted) {
+              setProperties([]);
+              setError('No properties found');
+            }
+          } catch (error) {
+            if (isMounted) {
+              console.error('Error fetching properties:', error);
+              setError('Failed to fetch properties. Please try again later.');
+              setProperties([]);
+            }
+          } finally {
+            if (isMounted) {
+              setLoading(false);
+            }
+          }
+        };
+    
+        fetchData();
+    
+        return () => {
+          isMounted = false;
+        };
+      }, [activeCategory]);
 
-        if( loading ) fetchData();
-    }, [ loading ])
-
+      const handleCategoryChange = (category) => {
+        setActiveCategory(category);
+        setLoading(true);
+        setError(null);
+      };
     
 
     const handleEdit = (property) => {
@@ -265,7 +299,10 @@ const PropertiesPage = () => {
       <TopSection />
       <PropertyMetrics properties={properties} />
       <PropertyHeader onCreateProperty={() => setShowModal(true)} />
-      <PropertyCategories />
+      <PropertyCategories
+       activeCategory={activeCategory}
+       onCategoryChange={handleCategoryChange}
+      />
       <PropertyList 
         loading={loading}
         properties={properties}
@@ -273,6 +310,7 @@ const PropertiesPage = () => {
         onDelete={handleDelete}
         onArchive={handleArchive}
         onUnarchive={handleUnarchive}
+        error={error}
       />
 
       {/* Modal */}
