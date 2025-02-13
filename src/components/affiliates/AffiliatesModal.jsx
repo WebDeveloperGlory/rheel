@@ -5,7 +5,7 @@ const AffiliatesModal = ({ show, onClose, onSubmit, formData, onChange, isSubmit
   if (!show) return null
 
   return (
-    <div className="fixed inset-0 bg-black/20 bg-opacity-50 flex items-center justify-center p-4"> 
+    <div className="fixed inset-0 top-5 bg-black/20 bg-opacity-50 flex items-center justify-center p-4"> 
         <div className='bg-white rounded-lg w-full md:w-[400px] max-w-lg max-h-[570px] overflow-y-auto'>
           <div className="p-6 flex justify-between items-center">
             <h2 className="text-xl font-bold text-[#48505E]">
