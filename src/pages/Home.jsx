@@ -3,30 +3,42 @@ import house from '../assets/images/house.png'
 import agent from '../assets/images/agent.png'
 import users from '../assets/images/users.png'
 import vector from '../assets/images/Vector.png'
-import { getProperties } from '../api/properties/requests'
+import { getProperties, getArchivedProperties } from '../api/properties/requests'
 import { getAgents } from '../api/agents/requests'
 import TopSection from '../components/home/TopSection'
 import UserMetrics from '../components/home/UserMetrics'
 import PropertyOutline from '../components/home/PropertyOutline'
 import RecentSignups from '../components/home/RecentSignups'
 import PropertiesSection from '../components/home/PropertiesSection'
+import { getSignups } from '../api/signups/requests'
 
 const HomePage = () => {
   const [properties, setProperties] = useState([]);
+  const [archivedProperties, setArchivedProperties] = useState([]);
   const [agents, setAgents] = useState([]);
+  const [signups, setSignups] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [agentsData, propertiesData] = await Promise.all([
+        const [agentsData, propertiesData, archivedPropertiesData, signupsData] = await Promise.all([
           getAgents(),
-          getProperties()
+          getProperties(),
+          getArchivedProperties(),
+          getSignups()
         ]);
-        setAgents(agentsData.data);
-        setProperties(propertiesData.data);
+
+        setAgents(agentsData?.data || []);
+        setProperties(propertiesData?.data || []);
+        setArchivedProperties(archivedPropertiesData?.data || []);
+        setSignups(signupsData?.data || []);
       } catch (error) {
-        console.error('Error fetching data: ', error);
+        console.error('Error fetching data:', error);
+        setAgents([]);
+        setProperties([]);
+        setArchivedProperties([]);
+        setSignups([]);
       } finally {
         setLoading(false);
       }
@@ -45,17 +57,17 @@ const HomePage = () => {
     { value: properties.length, name: 'Registered', icon: vector, backgroundColor: '#3579F6' },
     { value: properties.filter(property => property.type === 'Sell').length, name: 'For Sale', icon: vector, backgroundColor: '#719BA3' },
     { value: properties.filter(property => property.type === 'Lease').length, name: 'For Lease', icon: vector, backgroundColor: '#53A551' },
-    { value: 278, name: 'Archived', icon: vector, backgroundColor: '#CB444A' }
+    { value: archivedProperties.length, name: 'Archived', icon: vector, backgroundColor: '#CB444A' }
   ];
 
-  const signupData = [
+  {/*const signupData = [
     { date: '15-08-2024', name: 'KANIKA', phone: '123456789', email: '22@GMAIL.COM' },
     { date: '15-08-2024', name: 'KANIKA', phone: '123456789', email: '22@GMAIL.COM' },
     { date: '15-08-2024', name: 'KANIKA', phone: '123456789', email: '22@GMAIL.COM' },
     { date: '15-08-2024', name: 'KANIKA', phone: '123456789', email: '22@GMAIL.COM' },
     { date: '15-08-2024', name: 'KANIKA', phone: '123456789', email: '22@GMAIL.COM' },
     { date: '15-08-2024', name: 'KANIKA', phone: '123456789', email: '22@GMAIL.COM' },
-  ];
+  ]; */}
 
   return (
     <div className='p-5'>
@@ -64,12 +76,12 @@ const HomePage = () => {
       
       <div className="md:flex gap-5">
         <PropertyOutline data={propertyOutlineData} />
-        <RecentSignups data={signupData} />
+        <RecentSignups data={signups} loading={loading} />
       </div>
 
       <PropertiesSection loading={loading} properties={properties} />
     </div>
   );
-}
+};
 
 export default HomePage;

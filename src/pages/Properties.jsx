@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { createProperty, deleteProperty, getProperties, updateProperty } from '../api/properties/requests'
+import { createProperty, deleteProperty, getProperties, updateProperty, archiveProperty, unarchiveProperty } from '../api/properties/requests'
 import Modal from '../components/general/Modal'
 import TopSection from '../components/properties/TopSection'
 import PropertyMetrics from '../components/properties/PropertyMetrics'
@@ -82,6 +82,44 @@ const PropertiesPage = () => {
             } catch (error) {
                 console.error('Error deleting property:', error);
                 window.alert('Error deleting property');
+            }
+        }
+    };
+
+    const handleArchive = async (propertyId) => {
+        if (!propertyId) return;
+
+        if (window.confirm('Are you sure you want to archive this property?')) {
+            try {
+                const response = await archiveProperty(propertyId);
+                if (response && response.status) {
+                    window.alert('Property archived successfully');
+                    setLoading(true); // Refresh the list
+                } else {
+                    window.alert('Failed to archive property');
+                }
+            } catch (error) {
+                console.error('Error archiving property:', error);
+                window.alert('Error archiving property');
+            }
+        }
+    };
+
+    const handleUnarchive = async (propertyId) => {
+        if (!propertyId) return;
+
+        if (window.confirm('Are you sure you want to unarchive this property?')) {
+            try {
+                const response = await unarchiveProperty(propertyId);
+                if (response && response.status) {
+                    window.alert('Property unarchived successfully');
+                    setLoading(true); // Refresh the list
+                } else {
+                    window.alert('Failed to unarchive property');
+                }
+            } catch (error) {
+                console.error('Error unarchiving property:', error);
+                window.alert('Error unarchiving property');
             }
         }
     };
@@ -233,6 +271,8 @@ const PropertiesPage = () => {
         properties={properties}
         onEdit={handleEdit}
         onDelete={handleDelete}
+        onArchive={handleArchive}
+        onUnarchive={handleUnarchive}
       />
 
       {/* Modal */}

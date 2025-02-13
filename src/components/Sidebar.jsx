@@ -41,7 +41,7 @@ const Sidebar = () => {
       <div className="admin">
         <label className='text-[11px] uppercase text-[#8B909A] pl-5'>Admin</label>
         <ul className='flex flex-col my-5'>
-          <li>
+          {/*<li>
             <Link 
               to="/settings" 
               className={`menu-item flex py-2 px-5 items-center gap-3 text-[14px] 
@@ -50,9 +50,9 @@ const Sidebar = () => {
               <Settings size={20} />
               <span>Settings</span>
             </Link>
-          </li>
+          </li>*/}
           <li>
-            <button className="menu-item flex text-[#8B909A] py-2 px-5 cursor-pointer hover:bg-[#F3F4F8] hover:text-[#23272E] items-center gap-3 text-[14px]">
+            <button className="menu-item flex text-[#8B909A] py-2 px-5 cursor-pointer w-full hover:bg-[#F3F4F8] hover:text-[#23272E] items-center gap-3 text-[14px]">
               <Power size={20} />
               <span>Log Out</span>
             </button>

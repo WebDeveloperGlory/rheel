@@ -102,3 +102,55 @@ export const deleteProperty = async (propertyId) => {
         };
     }
 };
+
+export const archiveProperty = async (propertyId) => {
+    try {
+        const response = await axiosInstance.post(`/admin/property-archive/add/${propertyId}`);
+        return {
+            status: response.status === 200,
+            message: response.data?.message || 'Property archived successfully'
+        };
+    } catch (error) {
+        console.error('Error archiving property: ', error);
+        return {
+            status: false,
+            message: error.response?.data?.message || 'Failed to archive property'
+        };
+    }
+}
+
+export const unarchiveProperty = async (propertyId) => {
+    try {
+        const response = await axiosInstance.post(`/admin/property-archive/remove/${propertyId}`);
+        return {
+            status: response.status === 200,
+            message: response.data?.message || 'Property unarchived successfully'
+        };
+    } catch (error) {
+        console.error('Error unarchiving property: ', error);
+        return {
+            status: false,
+            message: error.response?.data?.message || 'Failed to unarchive property'
+        };
+    }
+}
+
+export const getArchivedProperties = async () => {
+    try {
+        const response = await axiosInstance.get(
+            `/admin/property-archive`,
+            // {
+            //     withCredentials: true
+            // }
+        );
+        const { data, status } = response;
+
+        if( !status ) {
+            throw response;
+        }
+        return data; 
+    } catch( err ) {
+        console.error('Error fetching archived properties: ', err );
+        return null;
+    }
+}

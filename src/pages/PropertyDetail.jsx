@@ -103,7 +103,7 @@ const PropertyDetail = () => {
 
   return (
     <div className="p-4">
-      <div className="bg-white rounded-lg p-6">
+      <div className="bg-white rounded-lg p-6 md:mx-auto md:w-[90%]">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
            <ImageSlider images={property.property_images} />

@@ -1,11 +1,12 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { Bath, Bed, Sofa, MapPin, MoreVertical, Edit2, Trash2 } from 'lucide-react';
+import { useNavigate, useLocation } from 'react-router-dom';
+import { Bath, Bed, Sofa, MapPin, MoreVertical, Edit2, Trash2, Archive, ArchiveRestore } from 'lucide-react';
 
-const PropertyCard = ({ property, onEdit, onDelete }) => {
+const PropertyCard = ({ property, onEdit, onDelete, onArchive, onUnarchive }) => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const dropdownRef = useRef(null);
   const navigate = useNavigate();
+  const location = useLocation();
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -32,7 +33,10 @@ const PropertyCard = ({ property, onEdit, onDelete }) => {
     navigate(`/properties/${property.id}`);
   };
 
-  return (
+  const isArchived = property.archived || false;
+  const isDashboard = location.pathname === '/';
+
+  return ( 
     <div className="bg-white rounded-3xl overflow-hidden w-full max-w-sm border border-gray-100 shadow-sm">
       <div className="relative">
         <img
@@ -72,40 +76,65 @@ const PropertyCard = ({ property, onEdit, onDelete }) => {
             </div>
           </div>
           
-          {/* Custom Dropdown Menu */}
-          <div className="relative" ref={dropdownRef}>
-            <button 
-              onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-              className="p-2 hover:bg-gray-100 rounded-full transition-colors"
-            >
-              <MoreVertical className="w-5 h-5 text-gray-500 cursor-pointer" />
-            </button>
-            
-            {isDropdownOpen && (
-              <div className="absolute right-0 top-3 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-100 py-1 z-10">
-                <button
-                  onClick={() => {
-                    onEdit(property);  // Pass the entire property object
-                    setIsDropdownOpen(false);
-                  }}
-                  className="w-full px-4 py-2 text-left flex items-center gap-2 hover:bg-gray-50 transition-colors"
-                >
-                  <Edit2 className="w-4 h-4" />
-                  <span>Edit</span>
-                </button>
-                <button
-                  onClick={() => {
-                    onDelete(property.id);  // Pass the property ID
-                    setIsDropdownOpen(false);
-                  }}
-                  className="w-full px-4 py-2 text-left flex items-center gap-2 hover:bg-gray-50 transition-colors text-red-600"
-                >
-                  <Trash2 className="w-4 h-4" />
-                  <span>Delete</span>
-                </button>
-              </div>
-            )}
-          </div>
+          {/* Custom Dropdown Menu - Only show if not on dashboard */}
+          {!isDashboard && (
+            <div className="relative" ref={dropdownRef}>
+              <button 
+                onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+                className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+              >
+                <MoreVertical className="w-5 h-5 text-gray-500 cursor-pointer" />
+              </button>
+              
+              {isDropdownOpen && (
+                <div className="absolute right-0 bottom-16 mt-2 w-48 bg-white rounded-lg shadow-lg border cursor-pointer border-gray-100 py-1 z-10">
+                  <button
+                    onClick={() => {
+                      onEdit(property);
+                      setIsDropdownOpen(false);
+                    }}
+                    className="w-full px-4 py-2 text-left flex items-center gap-2 hover:bg-gray-50 transition-colors"
+                  >
+                    <Edit2 className="w-4 h-4" />
+                    <span>Edit</span>
+                  </button>
+                  {isArchived ? (
+                    <button
+                      onClick={() => {
+                        onUnarchive(property.id);
+                        setIsDropdownOpen(false);
+                      }}
+                      className="w-full px-4 py-2 text-left flex items-center gap-2 hover:bg-gray-50 transition-colors text-blue-600"
+                    >
+                      <ArchiveRestore className="w-4 h-4" />
+                      <span>Unarchive</span>
+                    </button>
+                  ) : (
+                    <button
+                      onClick={() => {
+                        onArchive(property.id);
+                        setIsDropdownOpen(false);
+                      }}
+                      className="w-full px-4 py-2 text-left flex items-center gap-2 hover:bg-gray-50 transition-colors text-yellow-600"
+                    >
+                      <Archive className="w-4 h-4" />
+                      <span>Archive</span>
+                    </button>
+                  )}
+                  <button
+                    onClick={() => {
+                      onDelete(property.id);
+                      setIsDropdownOpen(false);
+                    }}
+                    className="w-full px-4 py-2 text-left flex items-center gap-2 hover:bg-gray-50 transition-colors text-red-600"
+                  >
+                    <Trash2 className="w-4 h-4" />
+                    <span>Delete</span>
+                  </button>
+                </div>
+              )}
+            </div>
+          )}
         </div>
       </div>
     </div>

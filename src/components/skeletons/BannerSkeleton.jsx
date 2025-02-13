@@ -1,6 +1,6 @@
 const BannerSkeleton = () => {
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+    <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
       {[1, 2, 3, 4].map((index) => (
         <div key={index} className="bg-white rounded-lg overflow-hidden shadow-lg animate-pulse">
           <div className="h-48 bg-gray-200 w-full"></div>

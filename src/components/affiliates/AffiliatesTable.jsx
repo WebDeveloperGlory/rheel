@@ -1,10 +1,23 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { MoreVertical, Edit2, Trash2 } from 'lucide-react';
 import AffiliateTableSkeleton from '../skeletons/AffiliateTableSkeleton';
 
 const AffiliatesTable = ({ affiliates, onEdit, onDelete, loading }) => {
   const [currentPage, setCurrentPage] = useState(1);
   const [openDropdownId, setOpenDropdownId] = useState(null);
+  const [showAll, setShowAll] = useState(false);
+  const itemsPerPage = 6;
+
+  const paginatedData = useMemo(() => {
+    if (showAll) {
+      return affiliates;
+    }
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    const endIndex = startIndex + itemsPerPage;
+    return affiliates.slice(startIndex, endIndex);
+  }, [affiliates, currentPage, showAll]);
+
+  const totalPages = Math.ceil(affiliates.length / itemsPerPage);
 
   const handleDropdownClick = (e, id) => {
     e.stopPropagation();
@@ -30,9 +43,15 @@ const AffiliatesTable = ({ affiliates, onEdit, onDelete, loading }) => {
       <div className="bg-white p-5 rounded-lg">
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-xl font-semibold">Affiliates</h2>
-          <a href="#" className="text-blue-600 hover:text-blue-800">
-            View All
-          </a>
+          <button
+            onClick={() => {
+              setShowAll(!showAll);
+              setCurrentPage(1);
+            }}
+            className="text-blue-600 hover:text-blue-800"
+          >
+            {showAll ? 'Show Less' : 'View All'}
+          </button>
         </div>
 
         <div className="overflow-x-auto bg-white rounded-lg">
@@ -45,11 +64,11 @@ const AffiliatesTable = ({ affiliates, onEdit, onDelete, loading }) => {
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Properties</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Value</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                {/*<th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>*/}
               </tr>
             </thead>
             <tbody>
-              {affiliates.map((affiliate) => (
+              {paginatedData.map((affiliate) => (
                 <tr key={affiliate.id} className="hover:bg-gray-50">
                   <td className="px-6 py-4 text-sm text-gray-500">
                     {`${affiliate.first_name} ${affiliate.last_name}`}
@@ -68,7 +87,7 @@ const AffiliatesTable = ({ affiliates, onEdit, onDelete, loading }) => {
                     </span>
                   </td>
                   <td className="px-6 py-4">
-                    <div className="relative" onClick={e => e.stopPropagation()}>
+                    {/*<div className="relative" onClick={e => e.stopPropagation()}>
                       <button
                         onClick={(e) => handleDropdownClick(e, affiliate.id)}
                         className="p-2 hover:bg-gray-100 rounded-full transition-colors"
@@ -96,7 +115,7 @@ const AffiliatesTable = ({ affiliates, onEdit, onDelete, loading }) => {
                           </div>
                         </div>
                       )}
-                    </div>
+                    </div>*/}
                   </td>
                 </tr>
               ))}
@@ -105,26 +124,34 @@ const AffiliatesTable = ({ affiliates, onEdit, onDelete, loading }) => {
         </div>
       </div>
 
-      <div className="flex items-center justify-between mt-4">
-        <div className="text-sm text-gray-700">
-          Showing 1 to {Math.min(10, affiliates.length)} of {affiliates.length} rows
+      {!showAll && affiliates.length > itemsPerPage && (
+        <div className="flex items-center justify-between mt-4">
+          <div className="text-sm text-gray-700">
+            Showing {((currentPage - 1) * itemsPerPage) + 1} to {Math.min(currentPage * itemsPerPage, affiliates.length)} of {affiliates.length} rows
+          </div>
+          <div className="flex gap-1">
+            {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+              <button
+                key={page}
+                onClick={() => setCurrentPage(page)}
+                className={`px-3 py-1 text-sm rounded cursor-pointer ${
+                  currentPage === page
+                    ? 'bg-blue-600 text-white'
+                    : 'bg-[#A5C2F9] text-gray-600 hover:bg-gray-300'
+                }`}
+              >
+                {page}
+              </button>
+            ))}
+          </div>
         </div>
-        <div className="flex gap-1">
-          {[1, 2, 3, 4, 5, 6].map((page) => (
-            <button
-              key={page}
-              onClick={() => setCurrentPage(page)}
-              className={`px-3 py-1 text-sm rounded cursor-pointer ${
-                currentPage === page
-                  ? 'bg-blue-600 text-white'
-                  : 'bg-[#A5C2F9] text-gray-600 hover:bg-gray-300'
-              }`}
-            >
-              {page}
-            </button>
-          ))}
+      )}
+
+      {showAll && (
+        <div className="text-sm text-gray-700 mt-4">
+          Showing all {affiliates.length} rows
         </div>
-      </div>
+      )}
     </div>
   );
 };

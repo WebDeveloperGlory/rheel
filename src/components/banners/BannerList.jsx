@@ -26,7 +26,7 @@ const BannerList = ({ banners, onDelete, loading }) => {
                 className='underline underline-offset-2 hover:underline-offset-4 text-blue-600 break-words'
               >
                 {banner.redirect_link || 'None'}
-              </a>
+              </a> 
             </p>
             <div className="flex justify-end">
               <button
