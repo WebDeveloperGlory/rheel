@@ -16,6 +16,7 @@ const menuItems = [
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const location = useLocation();
+  const navbarClass = location.pathname === '/login' ? 'hidden' : '';
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
@@ -23,7 +24,13 @@ const Navbar = () => {
 
   return (
     <>
-      <nav className="bg-white shadow-sm fixed top-0 left-0 right-0 z-20 md:hidden">
+      <nav 
+        className={`
+          bg-white shadow-sm fixed top-0 left-0 right-0 z-20 md:hidden ${
+            navbarClass
+          }
+        `}
+      >
         <div className="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
           <div className="flex items-center gap-4">
             <button onClick={toggleMenu} className="focus:outline-none">

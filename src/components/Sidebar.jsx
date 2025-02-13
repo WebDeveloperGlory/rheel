@@ -15,9 +15,10 @@ const menuItems = [
 
 const Sidebar = () => {
   const location = useLocation();
+  const sidebarClass = location.pathname === '/login' ? 'md:hidden' : '';
 
   return (
-    <div className="sidebar  bg-white p-6 w-[250px] h-full hidden md:block fixed top-0 left-0">
+    <div className={`sidebar  bg-white p-6 w-[250px] h-full hidden md:block fixed top-0 left-0 ${ sidebarClass }`}>
       <img src={logo} alt="Rheel Estate Logo" className="logo mb-5" />
 
       <div className="menu">
