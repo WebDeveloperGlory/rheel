@@ -46,15 +46,15 @@ const PropertyCard = ({ property, onEdit, onDelete, onArchive, onUnarchive }) =>
           onClick={handleImageClick}
         />
         <div className="absolute bottom-4 left-2 flex gap-2">
-          <div className="flex items-center gap-2 bg-white px-1 py-1 rounded-full">
+          <div className="flex items-center gap-2 bg-white md:px-1 px-4 py-2  md:py-1 rounded-full">
             <Sofa className="w-4 h-4" />
             <span className="text-[11px]">{property.living_room} Living</span>
           </div>
-          <div className="flex items-center gap-1 bg-white px-1 py-1 rounded-full">
+          <div className="flex items-center gap-1 bg-white md:px-1 py-2 px-4 md:py-1 rounded-full">
             <Bath className="w-4 h-4" />
             <span className="text-[11px]">{property.bathroom} Baths</span>
           </div>
-          <div className="flex items-center gap-1 bg-white px-1 py-1 rounded-full">
+          <div className="flex items-center gap-1 bg-white md:px-1 py-2 px-4 md:py-1 rounded-full">
             <Bed className="w-4 h-4" />
             <span className="text-[11px]">{property.bedroom} Beds</span>
           </div>
@@ -87,7 +87,7 @@ const PropertyCard = ({ property, onEdit, onDelete, onArchive, onUnarchive }) =>
               </button>
               
               {isDropdownOpen && (
-                <div className="absolute right-0 bottom-16 mt-2 w-48 bg-white rounded-lg shadow-lg border cursor-pointer border-gray-100 py-1 z-10">
+                <div className="absolute right-0 bottom-16 mt-2 w-48 bg-white rounded-lg shadow-lg border cursor-pointer border-gray-100 md:py-1 z-10">
                   <button
                     onClick={() => {
                       onEdit(property);
