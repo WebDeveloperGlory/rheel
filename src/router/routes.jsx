@@ -9,6 +9,7 @@ import Affiliates from "../pages/Affiliates";
 import PropertyDetail from "../pages/PropertyDetail";
 import AgentsDetail from "../pages/AgentsDetail";
 import Inquiries from "../pages/Inquiries";
+import SignInPage from "../pages/SignIn";
 
 const AppRoutes = () => {
     const location = useLocation();
@@ -54,6 +55,10 @@ const AppRoutes = () => {
         {
             path: "/inquiries",
             element: <Inquiries />,
+        },
+        {
+            path: "/login",
+            element: <SignInPage />
         }
     ]);
 };
