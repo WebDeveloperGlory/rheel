@@ -40,12 +40,9 @@ const AgentsDetail = () => {
 
   if (loading) {
     return (
-      <div className="p-4 md:py-[100px]">
-        <div className="animate-pulse md:w-[75%] md:mx-auto bg-white rounded-lg p-6">
-          <div className="h-48 bg-gray-200 rounded-lg mb-4"></div>
-          <div className="h-6 bg-gray-200 rounded w-1/2 mb-4"></div>
-          <div className="h-4 bg-gray-200 rounded w-1/4 mb-2"></div>
-          <div className="h-4 bg-gray-200 rounded w-3/4"></div>
+      <div className="loader-container">
+        <div className="flex items-center justify-center w-full h-[700px]">
+          <div className="spinner-border animate-spin inline-block w-10 h-10 border-4 rounded-full text-[#EE7953]"></div>
         </div>
       </div>
     );
@@ -54,7 +51,7 @@ const AgentsDetail = () => {
   if (error || !agent) {
     return (
       <div className="p-4">
-        <div className="bg-white rounded-lg p-6">
+        <div className="bg-white rounded-lg p-2">
           <div className="text-center">
             <h2 className="text-xl text-red-600 mb-2">Error</h2>
             <p className="text-gray-600 mb-4">{error || 'Agent not found'}</p>
@@ -72,7 +69,7 @@ const AgentsDetail = () => {
 
   return (
     <div className="p-4 md:py-[100px]">
-      <div className="bg-white rounded-lg p-5 md:w-[75%] md:mx-auto">
+      <div className="bg-white rounded-lg p-3.5 md:w-[75%] md:mx-auto">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
             <img 
@@ -82,41 +79,41 @@ const AgentsDetail = () => {
             />
           </div>
           <div>
-            <h1 className='text-3xl font-bold mb-2'>{agent.first_name} {agent.last_name}</h1>
-            <h1 className="text-2xl font-bold mb-4">{agent.company_name}</h1>
-            <div className="flex items-center gap-2 mb-4">
-              <MapPin className="w-5 h-5 text-[#7F7F7F]" />
-              <span className="text-[#7F7F7F]">{agent.city}</span>
+            {/*<h1 className='text-3xl font-bold mb-2'>{agent.first_name} {agent.last_name}</h1>*/}
+            <h1 className="text-2xl font-semibold mb-2">{agent.company_name}</h1>
+            <div className="flex items-center gap-2 mb-3">
+              <MapPin className="w-4 h-4 text-[#7F7F7F]" />
+              <span className="text-[#7F7F7F] text-[13px]">{agent.city}</span>
             </div>
-            <div className="h-0.5 w-12 mb-8 bg-[#EE7953]"></div>
-            <h2 className=' text-[#181818] mb-2 font-medium '>Overview</h2>
+            <div className="h-0.5 w-10 mb-5 bg-[#EE7953]"></div>
+            <h2 className=' text-[#181818] mb-2 font-light text-[16px] '>Overview</h2>
             <div className="grid grid-cols-2 gap-4 mb-6 md:mb-0">
               <div className="flex items-center gap-3">
                 <img src={mail} alt="" className='w-7 h-7' />
                 <article>
-                <h3 className='text-[#181818] md:text-sm'>Mail Address</h3>
-                <span className='text-[#7F7F7F] w-full truncate'>{agent.email}</span>
+                <h3 className='text-[#181818] text-sm font-light'>Mail Address</h3>
+                <span className='text-[#7F7F7F] text-sm w-full truncate'>{agent.email}</span>
                 </article>
               </div>
               <div className="flex items-center gap-3">
                 <img src={phone} alt="" className='w-7 h-7' />
                 <article>
-                <h3 className='text-[#181818] md:text-sm'>Phone Number</h3>
-                <span className='text-[#7F7F7F]'>{agent.phone_number}</span>
+                <h3 className='text-[#181818] text-sm font-light'>Phone Number</h3>
+                <span className='text-[#7F7F7F] text-sm'>{agent.phone_number}</span>
                 </article>
               </div>
               <div className="flex items-center gap-3">
                 <img src={location} alt="" className='w-7 h-7' />
                 <article>
-                <h3 className='text-[#181818] md:text-sm'>Location</h3>
-                <span className='text-[#7F7F7F]'>{agent.city}</span>
+                <h3 className='text-[#181818] text-sm font-light'>Location</h3>
+                <span className='text-[#7F7F7F] text-sm'>{agent.city}</span>
                 </article>
               </div>
               <div className="flex items-center gap-3">
                 <img src={type} alt="" className='w-7 h-7' />
                 <article>
-                <h3 className='text-[#181818] md:text-sm'>Postcode</h3>
-                <span className='text-[#7F7F7F]'>{agent.postcode}</span>
+                <h3 className='text-[#181818] text-sm font-light'>Postcode</h3>
+                <span className='text-[#7F7F7F] text-sm'>{agent.postcode}</span>
                 </article>
               </div>
 

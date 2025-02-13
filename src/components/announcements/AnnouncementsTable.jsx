@@ -46,15 +46,15 @@ const AnnouncementsTable = ({ announcements, onEdit, onDelete, loading }) => {
 
   return (
     <div className="w-full" onClick={() => setOpenDropdownId(null)}>
-      <div className="bg-white p-5 rounded-lg">
+      <div className="bg-white md:p-8 p-5 rounded-lg">
         <div className="flex justify-between items-center mb-4">
-          <h2 className="text-xl font-semibold">Announcements</h2>
+          <h2 className="text-xl font-semibold text-[#23272E]">Announcements</h2>
           <button 
             onClick={() => {
               setShowAll(!showAll);
               setCurrentPage(1);
             }}
-            className="text-blue-600 hover:text-blue-800"
+            className="text-[#0F60FF] text-[14px]"
           >
             {showAll ? 'Show Less' : 'View All'}
           </button>
@@ -62,7 +62,7 @@ const AnnouncementsTable = ({ announcements, onEdit, onDelete, loading }) => {
 
         <div className="overflow-x-auto bg-white rounded-lg">
           <table className="w-full">
-            <thead className="bg-gray-50 text-[14px]">
+            <thead className="bg-gray-50 border-b border-[#DBDADE] text-[14px]">
               <tr>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">DATE</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ADMIN</th>
@@ -78,7 +78,7 @@ const AnnouncementsTable = ({ announcements, onEdit, onDelete, loading }) => {
                   <td className="px-6 py-4 text-sm text-gray-500">{announcement.date}</td>
                   <td className="px-6 py-4 text-sm text-gray-500">{announcement.admin}</td>
                   <td className="px-6 py-4 text-sm text-gray-500">
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center uppercase gap-2">
                       {announcement.announcement_text}
                       {announcement.redirect_link && (
                         <a
@@ -94,10 +94,10 @@ const AnnouncementsTable = ({ announcements, onEdit, onDelete, loading }) => {
                   </td>
                   <td className="px-6 py-4 text-sm text-gray-500">{announcement.type}</td>
                   <td className="px-6 py-4">
-                    <span className={`px-2 py-1 rounded-full text-xs ${
+                    <span className={`px-8 py-5  text-xs text-white ${
                       announcement.status === 'ACTIVE' 
-                        ? 'bg-green-100 text-green-800' 
-                        : 'bg-gray-100 text-gray-800'
+                        ? 'bg-[#0E3B8D] ' 
+                        : 'bg-[#008000] '
                     }`}>
                       {announcement.status}
                     </span>

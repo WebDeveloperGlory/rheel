@@ -63,7 +63,7 @@ const ImageSlider = ({ images }) => {
   return (
     <div className="relative max-w-4xl mx-auto">
       {/* Main Image Container */}
-      <div className="relative rounded-lg overflow-hidden shadow-lg mb-4">
+      <div className="relative rounded-lg overflow-hidden md:w-[300px] mb-4">
         {activeIndex > 0 && (
           <button
             className="absolute left-4 top-1/2 transform -translate-y-1/2 p-3 bg-white/90 rounded-full shadow-lg hover:bg-white transition-colors duration-200 z-10 focus:outline-none focus:ring-2 focus:ring-[#FF5B19]"
@@ -86,12 +86,12 @@ const ImageSlider = ({ images }) => {
           {images.map((image, index) => (
             <div
               key={index}
-              className="w-full flex-shrink-0 snap-center"
+              className="w-full  flex-shrink-0 snap-center"
             >
               <img
                 src={image}
                 alt={`Product ${index + 1}`}
-                className="w-full h-[400px] object-cover"
+                className="w-full md:w-[300px] h-[250px] object-cover"
                 draggable="false"
               />
             </div>
@@ -111,7 +111,7 @@ const ImageSlider = ({ images }) => {
 
       {/* Thumbnails */}
       <div className="px-4 mb-5">
-        <div className="flex gap-2 justify-center flex-wrap max-w-2xl mx-auto">
+        <div className="flex gap-2 flex-wrap max-w-2xl mx-auto">
           {images.map((image, index) => (
             <button
               key={index}

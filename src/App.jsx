@@ -2,15 +2,15 @@ import './App.css'
 import AppRoutes from './router/routes';
 import Navbar from './components/Navbar'
 import Sidebar from './components/Sidebar'
-import AgentsDetail from './pages/AgentsDetail'
+
 
 function App() {
   return (
-    <div className="flex min-h-screen">
+    <div className="flex ">
       <Sidebar />
-      <div className="md:ml-[260px] flex flex-col w-full">
+      <div className="md:ml-[260px] md:py-4 pt-14 py-2 flex flex-col w-full">
         <Navbar />
-        <div className='py-[80px] md:py-[30px]'>
+        <div className=''>
           <AppRoutes />
         </div>
       </div>

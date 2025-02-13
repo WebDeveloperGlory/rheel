@@ -24,7 +24,7 @@ export const createAffliate = async (formData) => {
             property_count: parseInt(formData.property_count) || 0,
             value: String(formData.value || 0),
             status: formData.status || 'Activated',
-            payment_status: formData.payment_status || 'Pending' // Send as-is, no uppercase conversion
+            payment_status: formData.payment_status // Send as-is, no uppercase conversion
         };
 
         console.log('Sending payload:', payload); // Add this for debugging

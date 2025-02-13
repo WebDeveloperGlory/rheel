@@ -1,5 +1,5 @@
-import React from "react";
-import { useRoutes } from "react-router-dom";
+import React, {useEffect} from "react";
+import { useRoutes, useLocation } from "react-router-dom";
 import Home from "../pages/Home";
 import Properties from "../pages/Properties";
 import Banners from "../pages/Banners";
@@ -11,6 +11,13 @@ import AgentsDetail from "../pages/AgentsDetail";
 import Inquiries from "../pages/Inquiries";
 
 const AppRoutes = () => {
+    const location = useLocation();
+
+    useEffect(() => {
+        // Scroll to top when the path changes
+        window.scrollTo(0, 0);
+      }, [location.pathname]);
+
     return useRoutes([
         {
             path: "/",

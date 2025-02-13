@@ -1,6 +1,6 @@
-import { Mail, Warehouse } from 'lucide-react' 
+import { Mail, Warehouse } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import AgentSkeleton from '../skeletons/AgentSkeleton'
+import AgentSkeleton from '../skeletons/AgentSkeleton';
 
 const AgentsList = ({ agents, loading, show }) => {
   const navigate = useNavigate();
@@ -14,45 +14,54 @@ const AgentsList = ({ agents, loading, show }) => {
   }
 
   return (
-    <div className='bg-white rounded-lg p-5'>
-      <h3 className='font-bold mb-2 text-2xl'>Agents</h3>
-      <ul className='flex text-[#181818] font-medium gap-5 items-center md:text-[14px] mb-8'>
-        <li className='text-[#FF5B19]'>By Latest</li>
-        <li>By Properties</li>
-      </ul>
+    <div className="bg-white rounded-lg p-5">
+      <h3 className="font-bold text-2xl mb-4">Agents</h3>
+      <div className="flex gap-5 text-sm mb-8">
+        <button className="text-[#FF5B19] font-medium">By Latest</button>
+        <button className="text-gray-600 font-medium">By Properties</button>
+      </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-4 mb-8 gap-[20px] md:gap-5">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4  gap-6 mb-8">
         {agents.map((agent) => (
           <div
             key={agent.id}
-            className='bg-white p-3 mx-auto rounded-lg w-[90%] md:w-[230px] shadow-md  hover:shadow-lg transition-shadow'
+            className="bg-white rounded-xl shadow-md " 
           >
-            <img 
-              src={agent.logo} 
-              alt={agent.company_name}
-              onClick={() => handleAgentClick(agent.id)} 
-              className='w-full mx-auto pt-1 h-44 object-cover mb-5 rounded-xl cursor-pointer'
-            />
-            <h2 className='text-[#181A1B]  font-medium mb-4'>{agent.company_name}</h2>
-            <div className='h-1 rounded-lg w-10 bg-[#2D68A2] mb-5'></div>
-            <div className='flex items-center text-[#9EA3A9]'>
-              <div className='flex gap-2 items-center'>
-                <Mail className='w-4 h-4' />
-                <span className='text-[14px] truncate md:text-[12px] w-full break-words'>{agent.email}</span>
+            <div className="p-3">
+              <img
+                src={agent.logo}
+                alt={agent.company_name}
+                onClick={() => handleAgentClick(agent.id)}
+                className="w-full h-48 object-cover rounded-xl mb-4 cursor-pointer"
+              />
+              
+              <h2 className="text-[#181A1B] font-medium">{agent.company_name}</h2>
+              <div className="h-1 w-10 bg-[#2D68A2] my-3 rounded-full"></div>
+              
+              <div className="flex md:flex-col items-center md:items-start justify-between">
+              <div className="flex items-center gap-2 text-gray-500 mb-2">
+                <Warehouse className="w-4 h-4" />
+                <span className="text-xs">{agent.properties} Properties</span>
+              </div>
+              
+              <div className="flex items-center gap-2 text-gray-500">
+                <Mail className="w-4 h-4" />
+                <span className="text-xs truncate">{agent.email}</span>
+              </div>
               </div>
             </div>
           </div>
         ))}
       </div>
 
-      <button 
+      <button
         onClick={show}
-        className='bg-[#348875] text-white py-3 px-5 text-[13px] cursor-pointer'
+        className="bg-[#348875] text-white py-3 px-6 text-sm hover:bg-[#2d7362] transition-colors duration-300"
       >
         Create New Agent
       </button>
     </div>
-  )
-}
+  );
+};
 
-export default AgentsList
+export default AgentsList;

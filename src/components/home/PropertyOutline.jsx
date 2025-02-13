@@ -2,10 +2,10 @@ import { EllipsisVertical } from 'lucide-react'
 
 const PropertyOutline = ({ data }) => {
   return (
-    <div className='bg-white p-5 rounded-lg mb-8 md:w-[480px]'>
-      <div className='flex justify-between items-center mb-5'>
-        <h2 className='text-xl md:text-[14px] font-semibold text-[#23272E]'>Properties Outline</h2>
-        {/*<EllipsisVertical className='w-6 h-6 text-[#4B465C] cursor-pointer' />*/}
+    <div className='bg-white p-5 py-7 rounded-lg mb-8 md:w-[300px] '>
+      <div className='flex justify-between items-center mb-2'>
+        <h2 className='text-xl md:text-[14px] font-bold text-[#23272E]'>Properties Outline</h2>
+        <EllipsisVertical className='w-4 h-4 text-[#4B465C] cursor-pointer' />
       </div>
       <div className="flex flex-col gap-5">
         {data.map((item, index) => (

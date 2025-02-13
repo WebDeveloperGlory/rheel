@@ -23,12 +23,12 @@ const RecentSignups = ({ data = [], loading = false }) => {
   };
 
   return (
-    <div className="w-full max-w-6xl mx-auto p-4 bg-white rounded-lg mb-8">
+    <div className="w-full max-w-6xl mx-auto p-7 bg-white md:w-[700px] rounded-lg mb-8">
       <div className="flex justify-between items-center mb-4">
         <h2 className="text-xl md:text-[14px] font-semibold">Recent Sign Up</h2>
         <button 
           onClick={toggleView} 
-          className="text-blue-500 md:text-[14px] hover:text-blue-700 cursor-pointer"
+          className="text-[#0F60FF] md:text-[14px] hover:text-blue-700 font-semibold cursor-pointer"
         >
           {showAll ? 'Show Less' : 'View All'}
         </button>
@@ -39,31 +39,31 @@ const RecentSignups = ({ data = [], loading = false }) => {
           <SignupTableSkeleton />
         ) : (
           <table className="w-full table-auto">
-            <thead className="bg-gray-50 text-[14px]">
+            <thead className="bg-gray-50 text-[14px] border-b border-[#DBDADE]">
               <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Full Name</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Mail Address</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-[#8B909A] uppercase tracking-wider">Date</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-[#8B909A] uppercase tracking-wider">Full Name</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-[#8B909A] uppercase tracking-wider">Mail Address</th>
               </tr>
             </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
+            <tbody className="bg-white">
               {paginatedData.length > 0 ? (
                 paginatedData.map((signup) => (
                   <tr key={signup.id} className="hover:bg-gray-50">
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-[#8B909A]">
                       {signup.date}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-[#8B909A] uppercase">
                       {signup.name}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-[#8B909A] uppercase">
                       {signup.email}
                     </td>
                   </tr>
                 ))
               ) : (
                 <tr>
-                  <td colSpan="3" className="px-6 py-4 text-center text-gray-500">
+                  <td colSpan="3" className="px-6 py-4 text-center text-[#8B909A]">
                     No signups found
                   </td>
                 </tr>

@@ -8,6 +8,16 @@ const AffiliatesTable = ({ affiliates, onEdit, onDelete, loading }) => {
   const [showAll, setShowAll] = useState(false);
   const itemsPerPage = 6;
 
+  const getStatusColor = (status) => {
+    const statusColors = {
+      'Activated': '#0E3B8D',
+      'Terminated': '#FF0000',
+      'Completed': '#3579F6',
+      'Processing': '#008000'
+    };
+    return statusColors[status] || 'bg-gray-100';
+  };
+
   const paginatedData = useMemo(() => {
     if (showAll) {
       return affiliates;
@@ -41,18 +51,24 @@ const AffiliatesTable = ({ affiliates, onEdit, onDelete, loading }) => {
   return (
     <div className="w-full" onClick={() => setOpenDropdownId(null)}>
       <div className="bg-white p-5 rounded-lg">
-        <div className="flex justify-between items-center mb-4">
-          <h2 className="text-xl font-semibold">Affiliates</h2>
+        <div className="flex justify-between items-center mb-3">
+          <h2 className="text-[16px] font-semibold">Affiliate Activities</h2>
+          
           <button
             onClick={() => {
               setShowAll(!showAll);
               setCurrentPage(1);
             }}
-            className="text-blue-600 hover:text-blue-800"
+            className="text-[#0F60FF] text-sm cursor-pointer hover:text-blue-800"
           >
             {showAll ? 'Show Less' : 'View All'}
           </button>
         </div>
+        <ul className='flex gap-3 items-center text-[12px] mb-4 font-light text-[#181818] cursor-pointer'>
+            <li className='text-[#FF5B19] font-bold'>By Highest Referrals</li>
+            <li>By Commisions</li>
+            <li>Nearest</li>
+          </ul>
 
         <div className="overflow-x-auto bg-white rounded-lg">
           <table className="w-full">
@@ -77,15 +93,14 @@ const AffiliatesTable = ({ affiliates, onEdit, onDelete, loading }) => {
                   <td className="px-6 py-4 text-sm text-gray-500">{affiliate.affiliate_code}</td>
                   <td className="px-6 py-4 text-sm text-gray-500">{affiliate.property_count}</td>
                   <td className="px-6 py-4 text-sm text-gray-500">{affiliate.value}</td>
-                  <td className="px-6 py-4">
-                    <span className={`px-2 py-1 rounded-full text-xs ${
-                      affiliate.status === 'ACTIVE' 
-                        ? 'bg-green-100 text-green-800' 
-                        : 'bg-gray-100 text-gray-800'
-                    }`}>
-                      {affiliate.status}
-                    </span>
+                  <td className="px-6 py-4 w-40">
+                    <div className="flex justify-center">
+                      <span className="px-3 py-2 text-xs text-white uppercase w-24 text-center" style={{ backgroundColor: getStatusColor(affiliate.status) }}>
+                        {affiliate.status}
+                      </span>
+                    </div>
                   </td>
+
                   <td className="px-6 py-4 text-sm text-gray-500">{affiliate.payment_status}</td>
                   {/*<td className="px-6 py-4">
                     <div className="relative" onClick={e => e.stopPropagation()}>
