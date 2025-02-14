@@ -84,7 +84,7 @@ const HomePage = () => {
         <RecentSignups data={signups} loading={loading} />
       </div>
 
-      <PropertiesSection loading={loading} properties={properties} />
+      <PropertiesSection loading={loading} properties={properties} archivedProperties={archivedProperties} />
     </div>
   );
 };

@@ -2,7 +2,6 @@ import './App.css'
 import AppRoutes from './router/routes';
 import Navbar from './components/Navbar'
 import Sidebar from './components/Sidebar'
-import SignInPage from './pages/SignIn';
 import { useLocation } from 'react-router-dom';
 
 

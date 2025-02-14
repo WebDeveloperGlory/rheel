@@ -48,6 +48,14 @@ const AffiliatesTable = ({ affiliates, onEdit, onDelete, loading }) => {
     return <AffiliateTableSkeleton />;
   }
 
+  if (!affiliates || affiliates.length === 0) {
+    return (
+      <div className="w-full flex justify-center items-center h-40 text-gray-500 text-lg">
+        No affiliates available
+      </div>
+    );
+  }
+
   return (
     <div className="w-full" onClick={() => setOpenDropdownId(null)}>
       <div className="bg-white p-5 rounded-lg">

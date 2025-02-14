@@ -21,40 +21,41 @@ const AgentsList = ({ agents, loading, show }) => {
         <button className="text-gray-600 font-medium">By Properties</button>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 mb-8">
-        {agents.map((agent) => (
-          <div
-            key={agent.id}
-            className="bg-white rounded-xl shadow-md"
-          >
-            <div className="p-3">
-              <img
-                src={agent.logo}
-                alt={agent.company_name}
-                onClick={() => handleAgentClick(agent.id)}
-                className="w-full h-48 object-cover rounded-xl mb-4 cursor-pointer"
-              />
+      {agents.length > 0 ? (
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 mb-8">
+          {agents.map((agent) => (
+            <div key={agent.id} className="bg-white rounded-xl shadow-md">
+              <div className="p-3">
+                <img
+                  src={agent.logo}
+                  alt={agent.company_name}
+                  onClick={() => handleAgentClick(agent.id)}
+                  className="w-full h-48 object-cover rounded-xl mb-4 cursor-pointer"
+                />
 
-              <h2 className="text-[#181A1B] font-medium">{agent.company_name}</h2>
-              <div className="h-1 w-10 bg-[#2D68A2] my-3 rounded-full"></div>
+                <h2 className="text-[#181A1B] font-medium">{agent.company_name}</h2>
+                <div className="h-1 w-10 bg-[#2D68A2] my-3 rounded-full"></div>
 
-              <div className="flex flex-col items-start md:items-start justify-between w-full">
-                <div className="flex items-center gap-2 text-gray-500 mb-2">
-                  <Warehouse className="w-4 h-4" />
-                  <span className="text-xs">{agent.properties} Properties</span>
-                </div>
+                <div className="flex flex-col items-start md:items-start justify-between w-full">
+                  <div className="flex items-center gap-2 text-gray-500 mb-2">
+                    <Warehouse className="w-4 h-4" />
+                    <span className="text-xs">{agent.properties} Properties</span>
+                  </div>
 
-                <div className="flex items-center gap-2 text-gray-500 max-w-full">
-                  <Mail className="w-4 h-4 flex-shrink-0" />
-                  <span className="text-xs truncate max-w-[150px]" title={agent.email}>
-                    {agent.email}
-                  </span>
+                  <div className="flex items-center gap-2 text-gray-500 max-w-full">
+                    <Mail className="w-4 h-4 flex-shrink-0" />
+                    <span className="text-xs truncate max-w-[150px]" title={agent.email}>
+                      {agent.email}
+                    </span>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
-        ))}
-      </div>
+          ))}
+        </div>
+      ) : (
+        <p className="text-center text-gray-500">No agents available</p>
+      )}
 
       <button
         onClick={show}
