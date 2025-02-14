@@ -27,7 +27,6 @@ export const createAffliate = async (formData) => {
             payment_status: formData.payment_status // Send as-is, no uppercase conversion
         };
 
-        console.log('Sending payload:', payload); // Add this for debugging
 
         const response = await axiosInstance.post('/admin/affiliate-register', payload);
 

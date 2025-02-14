@@ -45,7 +45,6 @@ export const createAgent = async (formData) => {
         }
 
         // Debug log
-        console.log('Sending form data with correct field names:');
         for (let pair of form.entries()) {
             console.log(`${pair[0]}: ${pair[1]}`);
         }
@@ -57,7 +56,6 @@ export const createAgent = async (formData) => {
             }
         });
         
-        console.log('Server response:', response);
 
         return {
             data: response.data,

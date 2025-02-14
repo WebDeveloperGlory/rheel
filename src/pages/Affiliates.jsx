@@ -27,13 +27,8 @@ const Affiliates = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        console.log("Fetching agents...");
         const agentsData = await getAgents();
-        console.log("Agents Data:", agentsData);
-    
-        console.log("Fetching affiliates...");
         const affiliatesData = await getAffiliates();
-        console.log("Affiliates Data:", affiliatesData);
     
         setAgents(agentsData?.data || []);
         setAffiliates(Array.isArray(affiliatesData) ? affiliatesData : []);

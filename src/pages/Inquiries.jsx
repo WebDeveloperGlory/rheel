@@ -13,7 +13,6 @@ const Inquiries = () => {
         const fetchData = async () => {
             try {
                 const response = await getInquiries();
-                console.log('Fetched inquiries:', response); // Debug log
 
                 if (response.status && Array.isArray(response.data)) {
                     setInquiries(response.data);

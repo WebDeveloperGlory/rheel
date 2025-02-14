@@ -44,7 +44,6 @@ export const updateAnnouncement = async ( announcementId, formData ) => {
             `/admin/announcements/edit/${ announcementId }`,
             formData
         );
-        console.log('response: ', response);
         const { data, status } = response;
 
         if( !status ) {

@@ -37,7 +37,6 @@ const HomePage = () => {
         setArchivedProperties(archivedPropertiesData?.data || []);
         setSignups(signupsData?.data || []);
         setUsers(usersData?.data || []);
-        console.log("Data:", agentsData, propertiesData, archivedPropertiesData, signupsData, usersData);
       } catch (error) {
         console.error('Error fetching data:', error);
         setAgents([]);

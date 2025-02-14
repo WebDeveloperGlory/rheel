@@ -74,7 +74,6 @@ export const updateProperty = async ( propertyId, formData ) => {
                 },
             }
         );
-        console.log('response: ', response);
         const { data, status } = response;
 
         if( !status ) {

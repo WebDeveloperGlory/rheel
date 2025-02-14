@@ -79,44 +79,47 @@ const AgentsDetail = () => {
             />
           </div>
           <div>
-            {/*<h1 className='text-3xl font-bold mb-2'>{agent.first_name} {agent.last_name}</h1>*/}
             <h1 className="text-2xl font-semibold mb-2">{agent.company_name}</h1>
             <div className="flex items-center gap-2 mb-3">
               <MapPin className="w-4 h-4 text-[#7F7F7F]" />
               <span className="text-[#7F7F7F] text-[13px]">{agent.city}</span>
             </div>
             <div className="h-0.5 w-10 mb-5 bg-[#EE7953]"></div>
-            <h2 className=' text-[#181818] mb-2 font-light text-[16px] '>Overview</h2>
+            <h2 className="text-[#181818] mb-2 font-light text-[16px]">Overview</h2>
             <div className="grid grid-cols-2 gap-4 mb-6 md:mb-0">
-              <div className="flex items-center gap-3">
-                <img src={mail} alt="" className='w-7 h-7' />
-                <article>
-                <h3 className='text-[#181818] text-sm font-light'>Mail Address</h3>
-                <span className='text-[#7F7F7F] text-sm w-full truncate'>{agent.email}</span>
+              <div className="flex items-center gap-3 max-w-full">
+                <img src={mail} alt="" className="w-7 h-7 flex-shrink-0" />
+                <article className="min-w-0">
+                  <h3 className="text-[#181818] text-sm font-light">Mail Address</h3>
+                  <span 
+                    className="text-[#7F7F7F] text-sm block truncate" 
+                    title={agent.email}
+                  >
+                    {agent.email}
+                  </span>
                 </article>
               </div>
               <div className="flex items-center gap-3">
-                <img src={phone} alt="" className='w-7 h-7' />
+                <img src={phone} alt="" className="w-7 h-7 flex-shrink-0" />
                 <article>
-                <h3 className='text-[#181818] text-sm font-light'>Phone Number</h3>
-                <span className='text-[#7F7F7F] text-sm'>{agent.phone_number}</span>
+                  <h3 className="text-[#181818] text-sm font-light">Phone Number</h3>
+                  <span className="text-[#7F7F7F] text-sm">{agent.phone_number}</span>
                 </article>
               </div>
               <div className="flex items-center gap-3">
-                <img src={location} alt="" className='w-7 h-7' />
+                <img src={location} alt="" className="w-7 h-7 flex-shrink-0" />
                 <article>
-                <h3 className='text-[#181818] text-sm font-light'>Location</h3>
-                <span className='text-[#7F7F7F] text-sm'>{agent.city}</span>
+                  <h3 className="text-[#181818] text-sm font-light">Location</h3>
+                  <span className="text-[#7F7F7F] text-sm">{agent.city}</span>
                 </article>
               </div>
               <div className="flex items-center gap-3">
-                <img src={type} alt="" className='w-7 h-7' />
+                <img src={type} alt="" className="w-7 h-7 flex-shrink-0" />
                 <article>
-                <h3 className='text-[#181818] text-sm font-light'>Postcode</h3>
-                <span className='text-[#7F7F7F] text-sm'>{agent.postcode}</span>
+                  <h3 className="text-[#181818] text-sm font-light">Postcode</h3>
+                  <span className="text-[#7F7F7F] text-sm">{agent.postcode}</span>
                 </article>
               </div>
-
             </div>
           </div>
         </div>
