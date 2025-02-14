@@ -1,7 +1,7 @@
 import PropertyCard from './PropertyCard'
 import PropertySkeleton from '../skeletons/PropertySkeleton'
 
-const PropertyList = ({ loading, error, properties, onArchive, onUnarchive, onEdit, onDelete }) => {
+const PropertyList = ({ loading, error, properties, onArchive, onUnarchive, onEdit, onDelete, activeCategory }) => {
   if (loading) {
     return (
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6">

@@ -1,4 +1,4 @@
-import React, {useEffect} from "react";
+import React, { useEffect } from "react";
 import { useRoutes, useLocation } from "react-router-dom";
 import Home from "../pages/Home";
 import Properties from "../pages/Properties";
@@ -10,6 +10,7 @@ import PropertyDetail from "../pages/PropertyDetail";
 import AgentsDetail from "../pages/AgentsDetail";
 import Inquiries from "../pages/Inquiries";
 import SignInPage from "../pages/SignIn";
+import ProtectedRoute from "../components/ProtectedRoute"; // Import ProtectedRoute
 
 const AppRoutes = () => {
     const location = useLocation();
@@ -17,49 +18,49 @@ const AppRoutes = () => {
     useEffect(() => {
         // Scroll to top when the path changes
         window.scrollTo(0, 0);
-      }, [location.pathname]);
+    }, [location.pathname]);
 
     return useRoutes([
         {
             path: "/",
-            element: <Home />,
+            element: <ProtectedRoute element={<Home />} />,
         },
         {
             path: "/properties",
-            element: <Properties />,
+            element: <ProtectedRoute element={<Properties />} />,
         },
         {
             path: "/app-banners",
-            element: <Banners />,
+            element: <ProtectedRoute element={<Banners />} />,
         },
         {
             path: "/announcements",
-            element: <Announcements />,
+            element: <ProtectedRoute element={<Announcements />} />,
         },
         {
             path: "/agents",
-            element: <Agents />,
+            element: <ProtectedRoute element={<Agents />} />,
         },
         {
-            path: '/affiliates',
-            element: <Affiliates />
+            path: "/affiliates",
+            element: <ProtectedRoute element={<Affiliates />} />,
         },
         {
             path: "/properties/:id",
-            element: <PropertyDetail />,
+            element: <ProtectedRoute element={<PropertyDetail />} />,
         },
         {
             path: "/agents/:id",
-            element: <AgentsDetail />,
+            element: <ProtectedRoute element={<AgentsDetail />} />,
         },
         {
             path: "/inquiries",
-            element: <Inquiries />,
+            element: <ProtectedRoute element={<Inquiries />} />,
         },
         {
             path: "/login",
-            element: <SignInPage />
-        }
+            element: <SignInPage />,
+        },
     ]);
 };
 

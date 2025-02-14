@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import logo from '../assets/images/logo.png';
 import { Bell, Menu, X, House, Users, Ticket, Star, Blend, Settings, Power, LayoutGrid, Columns2 } from 'lucide-react';
+import { logout } from '../api/sign in/requests';
 
 const menuItems = [
   { icon: House, name: 'Dashboard', path: '/' },
@@ -103,7 +104,10 @@ const Navbar = () => {
                 </Link>
               </li>*/}
               <li>
-                <button className="menu-item flex w-full text-[#8B909A] py-2 px-5 cursor-pointer hover:bg-[#F3F4F8] hover:text-[#23272E] items-center gap-3 text-[14px]">
+                <button 
+                 className="menu-item flex w-full text-[#8B909A] py-2 px-5 cursor-pointer hover:bg-[#F3F4F8] hover:text-[#23272E] items-center gap-3 text-[14px]"
+                 onClick={logout}
+                 >
                   <Power size={20} />
                   <span>Log Out</span>
                 </button>

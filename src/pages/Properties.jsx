@@ -311,6 +311,7 @@ const PropertiesPage = () => {
         onArchive={handleArchive}
         onUnarchive={handleUnarchive}
         error={error}
+        activeCategory={activeCategory}
       />
 
       {/* Modal */}
