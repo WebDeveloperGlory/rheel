@@ -20,9 +20,14 @@ const AgentsList = ({ agents, loading, show }) => {
         <button className="text-[#FF5B19] font-medium">By Latest</button>
         <button className="text-gray-600 font-medium">By Properties</button>
       </div>
-
+      <button
+        onClick={show}
+        className="bg-[#348875] mb-8 text-white py-3 px-6 cursor-pointer text-sm hover:bg-[#2d7362] transition-colors duration-300"
+      >
+        Create New Agent
+      </button>
       {agents.length > 0 ? (
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 mb-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 ">
           {agents.map((agent) => (
             <div key={agent.id} className="bg-white rounded-xl shadow-md">
               <div className="p-3">
@@ -56,13 +61,6 @@ const AgentsList = ({ agents, loading, show }) => {
       ) : (
         <p className="text-center text-gray-500">No agents available</p>
       )}
-
-      <button
-        onClick={show}
-        className="bg-[#348875] text-white py-3 px-6 cursor-pointer text-sm hover:bg-[#2d7362] transition-colors duration-300"
-      >
-        Create New Agent
-      </button>
     </div>
   );
 };

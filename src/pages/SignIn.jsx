@@ -118,9 +118,9 @@ const SignInPage = () => {
       </div>
 
       {/* Right Section */}
-      <div className="w-1/2 relative overflow-hidden hidden md:block">
+      <div className="w-1/2 relative overflow-hidden hidden md:block bg-white">
         <div className="absolute inset-0">
-          <img src={bg} alt="Background" className="w-full h-full object-cover" />
+          <img src={bg} alt="Background" className="w-full h-full object-cover rounded-bl-[120px]" />
         </div>
         <div className="absolute inset-0 flex flex-col items-center justify-center text-white">
           <div className="bg-white rounded-full p-8 mb-8">
