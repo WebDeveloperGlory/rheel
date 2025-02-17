@@ -7,7 +7,7 @@ const RecentSignups = ({ data = [], loading = false }) => {
   const itemsPerPage = 6;
 
   const paginatedData = useMemo(() => {
-    if (showAll) {
+    if (showAll) { 
       return data;
     }
     const startIndex = (currentPage - 1) * itemsPerPage;

@@ -5,7 +5,7 @@ const AffiliatesModal = ({ show, onClose, onSubmit, formData, onChange, isSubmit
   if (!show) return null
 
   return (
-    <div className="fixed inset-0 top-5 bg-black/20 bg-opacity-50 flex items-center justify-center p-4"> 
+    <div className="fixed inset-0 bg-black/20 bg-opacity-50 flex items-center justify-center p-4"> 
         <div className='bg-white rounded-lg w-full md:w-[400px] max-w-lg max-h-[570px] overflow-y-auto'>
           <div className="p-6 flex justify-between items-center">
             <h2 className="text-xl font-bold text-[#48505E]">
@@ -119,28 +119,28 @@ const AffiliatesModal = ({ show, onClose, onSubmit, formData, onChange, isSubmit
             </div>
 
             <div className="flex justify-end gap-4 py-8 px-5">
-                        <button
-                            type="button"
-                            onClick={onClose}
-                            disabled={isSubmitting}
-                            className="px-6 py-2 border rounded-lg text-sm hover:bg-gray-50 transition-colors cursor-pointer disabled:opacity-50"
-                        >
-                            Discard
-                        </button>
-                        <button
-                            type="submit"
-                            disabled={isSubmitting || !formData.first_name || !formData.last_name || !formData.phone_number || !formData.property_count || !formData.value || !formData.status || !formData.payment_status}
-                            className="px-6 py-2 bg-[#4DA981] text-sm text-white rounded-lg cursor-pointer disabled:opacity-80 flex items-center gap-2"
-                        >
-                            {isSubmitting ? (
-                                <>
-                                    <Loader2 className="w-4 h-4 animate-spin" />
-                                    Creating...
-                                </>
-                            ) : (
-                                'Create Affiliate'
-                            )}
-                        </button>
+              <button
+                type="button"
+                onClick={onClose}
+                disabled={isSubmitting}
+                className="px-6 py-2 border rounded-lg text-sm hover:bg-gray-50 transition-colors cursor-pointer disabled:opacity-50"
+              >
+                Discard
+              </button>
+              <button
+                type="submit"
+                disabled={isSubmitting || !formData.first_name || !formData.last_name || !formData.phone_number || !formData.property_count || !formData.value || !formData.status || !formData.payment_status}
+                className="px-6 py-2 bg-[#4DA981] text-sm text-white rounded-lg cursor-pointer disabled:opacity-80 flex items-center gap-2"
+              >
+                {isSubmitting ? (
+                  <>
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                     Creating...
+                  </>
+                  ) : (
+                    'Create Affiliate'
+                  )}
+              </button>
             </div>
           </form>
         </div>

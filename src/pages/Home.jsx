@@ -65,15 +65,6 @@ const HomePage = () => {
     { value: archivedProperties.length, name: 'Archived', icon: vector, backgroundColor: '#CB444A' }
   ];
 
-  {/*const signupData = [
-    { date: '15-08-2024', name: 'KANIKA', phone: '123456789', email: '22@GMAIL.COM' },
-    { date: '15-08-2024', name: 'KANIKA', phone: '123456789', email: '22@GMAIL.COM' },
-    { date: '15-08-2024', name: 'KANIKA', phone: '123456789', email: '22@GMAIL.COM' },
-    { date: '15-08-2024', name: 'KANIKA', phone: '123456789', email: '22@GMAIL.COM' },
-    { date: '15-08-2024', name: 'KANIKA', phone: '123456789', email: '22@GMAIL.COM' },
-    { date: '15-08-2024', name: 'KANIKA', phone: '123456789', email: '22@GMAIL.COM' },
-  ]; */}
-
   return (
     <div className='p-4'>
       <TopSection />

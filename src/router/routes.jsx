@@ -10,6 +10,7 @@ import PropertyDetail from "../pages/PropertyDetail";
 import AgentsDetail from "../pages/AgentsDetail";
 import Inquiries from "../pages/Inquiries";
 import SignInPage from "../pages/SignIn";
+import Admins from "../pages/Admins";
 import ProtectedRoute from "../components/ProtectedRoute"; // Import ProtectedRoute
 
 const AppRoutes = () => {
@@ -61,6 +62,10 @@ const AppRoutes = () => {
             path: "/login",
             element: <SignInPage />,
         },
+        {
+            path: "/admins",
+            element: <ProtectedRoute element={<Admins />} />
+        }
     ]);
 };
 
