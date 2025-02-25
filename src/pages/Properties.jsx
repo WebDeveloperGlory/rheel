@@ -86,23 +86,41 @@ const PropertiesPage = () => {
         setError(null);
       };
     
+    const fetchAndConvertToFile = async (url, fileName) => {
+        try {
+            const response = await fetch(url);
+            const blob = await response.blob();
+            return new File([blob], fileName, { type: blob.type });
+        } catch (error) {
+            console.error('Error converting URL to File:', error);
+            return null;
+        }
+    };
 
     const handleEdit = (property) => {
         if (!property) return;
         
         setIsEditing(true);
         setEditingId(property.id);
+
+        // Store existing media URLs directly
         setFormData({
             ...formData,
             ...property,
-            property_images: [], // Reset images since we can't edit them
+            // Store URLs in a separate field to distinguish between new files and existing URLs
+            existingImages: property.property_images || [],
+            existingFloorPlans: Array.isArray(property.floor_plan) ? property.floor_plan : [property.floor_plan],
+            existingVideo: property.video_upload,
+            // Reset file inputs
+            property_images: [],
             floor_plan: [],
             video_upload: [],
             property_availability: property.property_availability?.slice(0, 16) || ''
         });
+
         setShowModal(true);
     };
-    
+
     const handleDelete = async (propertyId) => {
         if (!propertyId) return;
 
@@ -237,17 +255,24 @@ const PropertiesPage = () => {
 
             updatedFormData.append("amenities", JSON.stringify(formData.amenities));
 
-            formData.property_images.forEach((file, index) => {
-                updatedFormData.append(`property_images`, file);
-            });
+            // Only append new files if they exist
+            if (formData.property_images.length > 0) {
+                formData.property_images.forEach(file => {
+                    updatedFormData.append('property_images', file);
+                });
+            }
 
-            formData.floor_plan.forEach((file) => {
-                updatedFormData.append('floor_plan', file);
-            });
+            if (formData.floor_plan.length > 0) {
+                formData.floor_plan.forEach(file => {
+                    updatedFormData.append('floor_plan', file);
+                });
+            }
 
-            formData.video_upload.forEach((file, index) => {
-                updatedFormData.append(`video_upload`, file);
-            });
+            if (formData.video_upload.length > 0) {
+                formData.video_upload.forEach(file => {
+                    updatedFormData.append('video_upload', file);
+                });
+            }
 
             if ( isEditing ) {
                 const data = await updateProperty( editingId, updatedFormData );
@@ -286,26 +311,28 @@ const PropertiesPage = () => {
         setFormData({ ...initialFormData });
     };
 
-    const renderPreview = (file, type) => {
-        if (!file) return null;
-        
+    const renderMediaPreview = (item, type = 'image') => {
+        if (!item) return null;
+
+        // Handle both File objects and URLs
+        const isFile = item instanceof File;
+        const url = isFile ? URL.createObjectURL(item) : item;
+
         if (type === 'image') {
             return (
-                <img 
-                    src={URL.createObjectURL(file)} 
-                    alt="Preview" 
-                    className="absolute inset-0 w-full h-full object-cover rounded-lg"
-                    onLoad={(e) => URL.revokeObjectURL(e.target.src)}
+                <img
+                    src={url}
+                    alt="Preview"
+                    className="w-full h-full object-cover rounded"
+                    onLoad={() => isFile && URL.revokeObjectURL(url)}
                 />
             );
-        }
-        
-        if (type === 'video') {
+        } else {
             return (
-                <video 
-                    src={URL.createObjectURL(file)} 
-                    className="absolute inset-0 w-full h-full object-cover rounded-lg"
-                    onLoad={(e) => URL.revokeObjectURL(e.target.src)}
+                <video
+                    src={url}
+                    className="w-full h-full object-cover rounded"
+                    onLoad={() => isFile && URL.revokeObjectURL(url)}
                 />
             );
         }
@@ -339,20 +366,20 @@ const PropertiesPage = () => {
                 <label className="block text-[14px] font-medium text-[#383E49]">Property Images</label>
                 <div className="flex justify-center items-start gap-5 flex-wrap">
                     <div className="border border-dashed border-[#9D9D9D] w-[100px] h-[100px] rounded-lg relative hover:bg-gray-50 transition-colors cursor-pointer">
-                        {formData.property_images.length > 0 && (
-                            <div className="grid grid-cols-2 gap-1 absolute inset-0 p-2">
-                                {formData.property_images.slice(0, 4).map((file, index) => (
-                                    <div key={index} className="relative w-full h-full">
-                                        <img
-                                            src={URL.createObjectURL(file)}
-                                            alt={`Preview ${index + 1}`}
-                                            className="w-full h-full object-cover rounded"
-                                            onLoad={(e) => URL.revokeObjectURL(e.target.src)}
-                                        />
-                                    </div>
-                                ))}
-                            </div>
-                        )}
+                        <div className="grid grid-cols-2 gap-1 absolute inset-0 p-2">
+                            {/* Show existing images */}
+                            {formData.existingImages?.slice(0, 4).map((url, index) => (
+                                <div key={`existing-${index}`} className="relative w-full h-full">
+                                    {renderMediaPreview(url, 'image')}
+                                </div>
+                            ))}
+                            {/* Show new uploads */}
+                            {formData.property_images.slice(0, 4).map((file, index) => (
+                                <div key={`new-${index}`} className="relative w-full h-full">
+                                    {renderMediaPreview(file, 'image')}
+                                </div>
+                            ))}
+                        </div>
                         <input
                             id="fileInput"
                             type="file"
@@ -510,12 +537,17 @@ const PropertiesPage = () => {
                 <label className="block text-[14px] font-medium text-[#383E49]">Virtual Tour</label>
                 <div className="flex justify-center items-start gap-5">
                     <div className="border border-dashed border-[#9D9D9D] bg-white w-[100px] h-[100px] rounded-lg relative hover:bg-gray-50 transition-colors cursor-pointer">
+                        {/* Show existing video */}
+                        {formData.existingVideo && (
+                            <div className="absolute inset-0">
+                                {renderMediaPreview(formData.existingVideo, 'video')}
+                            </div>
+                        )}
+                        {/* Show new video upload */}
                         {formData.video_upload.length > 0 && (
-                            <video
-                                src={URL.createObjectURL(formData.video_upload[0])}
-                                className="absolute inset-0 w-full h-full object-cover rounded-lg"
-                                onLoad={(e) => URL.revokeObjectURL(e.target.src)}
-                            />
+                            <div className="absolute inset-0">
+                                {renderMediaPreview(formData.video_upload[0], 'video')}
+                            </div>
                         )}
                         <input
                             type="file"
@@ -537,20 +569,20 @@ const PropertiesPage = () => {
                 <label className="block text-[14px] font-medium text-[#383E49]">Floor Plan</label>
                 <div className="flex justify-center items-start gap-5">
                     <div className="border border-dashed border-[#9D9D9D] bg-white w-[100px] h-[100px] rounded-lg relative hover:bg-gray-50 transition-colors cursor-pointer">
-                        {formData.floor_plan.length > 0 && (
-                            <div className="grid grid-cols-2 gap-1 absolute inset-0 p-2">
-                                {formData.floor_plan.slice(0, 4).map((file, index) => (
-                                    <div key={index} className="relative w-full h-full">
-                                        <img
-                                            src={URL.createObjectURL(file)}
-                                            alt={`Floor Plan ${index + 1}`}
-                                            className="w-full h-full object-cover rounded"
-                                            onLoad={(e) => URL.revokeObjectURL(e.target.src)}
-                                        />
-                                    </div>
-                                ))}
-                            </div>
-                        )}
+                        <div className="grid grid-cols-2 gap-1 absolute inset-0 p-2">
+                            {/* Show existing floor plans */}
+                            {formData.existingFloorPlans?.slice(0, 4).map((url, index) => (
+                                <div key={`existing-${index}`} className="relative w-full h-full">
+                                    {renderMediaPreview(url, 'image')}
+                                </div>
+                            ))}
+                            {/* Show new floor plan uploads */}
+                            {formData.floor_plan.slice(0, 4).map((file, index) => (
+                                <div key={`new-${index}`} className="relative w-full h-full">
+                                    {renderMediaPreview(file, 'image')}
+                                </div>
+                            ))}
+                        </div>
                         <input
                             type="file"
                             name="floor_plan"
