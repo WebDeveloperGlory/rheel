@@ -111,7 +111,7 @@ const ImageSlider = ({ images }) => {
 
       {/* Thumbnails */}
       <div className="px-4 mb-5">
-        <div className="flex gap-2 flex-wrap max-w-2xl mx-auto">
+        <div className=" grid md:grid-cols-3 gap-2  max-w-2xl mx-auto">
           {images.map((image, index) => (
             <button
               key={index}

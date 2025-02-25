@@ -234,75 +234,68 @@ const PropertiesPage = () => {
         });
     };
     
-    const handleSubmit = async ( e ) => {
-        e.preventDefault();
-        setIsSubmitting(true);
+    const handleSubmit = async (e) => {
+    e.preventDefault();
+    setIsSubmitting(true);
 
-        try {
-            const updatedFormData = new FormData();
+    try {
+        const updatedFormData = new FormData();
 
-            updatedFormData.append("type", formData.type);
-            updatedFormData.append("location", formData.location);
-            updatedFormData.append("agent_id", formData.agent_id);
-            updatedFormData.append("property_availability", formData.property_availability);
-            updatedFormData.append("price", formData.price);
-            updatedFormData.append("living_room", formData.living_room);
-            updatedFormData.append("bedroom", formData.bedroom);
-            updatedFormData.append("bathroom", formData.bathroom);
-            updatedFormData.append("finance", formData.finance);
-            updatedFormData.append("property_description", formData.property_description);
-            updatedFormData.append("property_type_id", formData.property_type_id);
+        updatedFormData.append("type", formData.type);
+        updatedFormData.append("location", formData.location);
+        updatedFormData.append("agent_id", formData.agent_id);
+        updatedFormData.append("property_availability", formData.property_availability);
+        updatedFormData.append("price", formData.price);
+        updatedFormData.append("living_room", formData.living_room);
+        updatedFormData.append("bedroom", formData.bedroom);
+        updatedFormData.append("bathroom", formData.bathroom);
+        updatedFormData.append("finance", formData.finance);
+        updatedFormData.append("property_description", formData.property_description);
+        updatedFormData.append("property_type_id", formData.property_type_id);
 
-            updatedFormData.append("amenities", JSON.stringify(formData.amenities));
+        updatedFormData.append("amenities", JSON.stringify(formData.amenities));
 
-            // Only append new files if they exist
-            if (formData.property_images.length > 0) {
-                formData.property_images.forEach(file => {
-                    updatedFormData.append('property_images', file);
-                });
-            }
-
-            if (formData.floor_plan.length > 0) {
-                formData.floor_plan.forEach(file => {
-                    updatedFormData.append('floor_plan', file);
-                });
-            }
-
-            if (formData.video_upload.length > 0) {
-                formData.video_upload.forEach(file => {
-                    updatedFormData.append('video_upload', file);
-                });
-            }
-
-            if ( isEditing ) {
-                const data = await updateProperty( editingId, updatedFormData );
-                if( data.status ) {
-                    console.log('Property edited successfully: ', data );
-                    window.alert('Property edited successfully');
-                    // Trigger refresh instead of just setting loading
-                    setRefreshData(prev => prev + 1);
-                } else {
-                    window.alert('An Error Occurred');
-                }  
-            } else { 
-                const data = await createProperty( updatedFormData );
-                if( data.status ) {
-                    console.log('Property created successfully: ', data );
-                    window.alert('Property created successfully');
-                    // Trigger refresh instead of just setting loading
-                    setRefreshData(prev => prev + 1);
-                } else {
-                    window.alert('An Error Occurred');
-                }    
-            }
-            closeModal();
-        } catch (error) {
-            console.error('Error:', error);
-            window.alert('An error occurred');
-        } finally {
-            setIsSubmitting(false);
+        // Only append new files if they exist
+        if (formData.property_images.length > 0) {
+            formData.property_images.forEach(file => {
+                updatedFormData.append('property_images', file);
+            });
         }
-    };
+
+        if (formData.floor_plan.length > 0) {
+            formData.floor_plan.forEach(file => {
+                updatedFormData.append('floor_plan', file);
+            });
+        }
+
+        if (formData.video_upload.length > 0) {
+            formData.video_upload.forEach(file => {
+                updatedFormData.append('video_upload', file);
+            });
+        }
+
+        let response;
+        if (isEditing) {
+            response = await updateProperty(editingId, updatedFormData);
+        } else {
+            response = await createProperty(updatedFormData);
+        }
+
+        if (response && response.status) {
+            console.log('Property saved successfully:', response);
+            window.alert('Property saved successfully');
+            setRefreshData(prev => prev + 1);
+        } else {
+            window.alert(response?.error || 'An error occurred');
+        }
+    } catch (error) {
+        console.error('Error saving property:', error);
+        window.alert('An error occurred while saving the property. Please try again.');
+    } finally {
+        setIsSubmitting(false);
+        closeModal();
+    }
+};
     
     const closeModal = () => {
         setShowModal( false );
@@ -334,6 +327,31 @@ const PropertiesPage = () => {
                     className="w-full h-full object-cover rounded"
                     onLoad={() => isFile && URL.revokeObjectURL(url)}
                 />
+            );
+        }
+    };
+
+    const isFormValid = () => {
+        if (isEditing) {
+            // When editing, just ensure required fields have values
+            // Include existing media in the validation
+            return (
+                formData.location && 
+                formData.price && 
+                formData.property_description && 
+                formData.amenities.length > 0 && 
+                formData.property_availability &&
+                (formData.property_images.length > 0 || formData.existingImages?.length > 0)
+            );
+        } else {
+            // For new properties, require all fields including new uploads
+            return (
+                formData.location && 
+                formData.price && 
+                formData.property_description && 
+                formData.property_images.length > 0 && 
+                formData.amenities.length > 0 && 
+                formData.property_availability
             );
         }
     };
@@ -611,7 +629,7 @@ const PropertiesPage = () => {
                 <button
                     type="submit"
                     className="px-5 py-2 bg-[#4DA981] text-white rounded-lg  cursor-pointer disabled:opacity-60 text-[14px] flex items-center gap-2"
-                    disabled={isSubmitting || !formData.location || !formData.price || !formData.property_description || !formData.property_images.length || !formData.amenities.length || !formData.property_availability }
+                    disabled={isSubmitting || !isFormValid()}
                 >
                     {isSubmitting ? (
                         <>

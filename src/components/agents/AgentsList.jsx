@@ -42,10 +42,10 @@ const AgentsList = ({ agents, loading, show }) => {
                 <div className="h-1 w-10 bg-[#2D68A2] my-3 rounded-full"></div>
 
                 <div className="flex flex-col items-start md:items-start justify-between w-full">
-                  <div className="flex items-center gap-2 text-gray-500 mb-2">
+                  {/*<div className="flex items-center gap-2 text-gray-500 mb-2">
                     <Warehouse className="w-4 h-4" />
                     <span className="text-xs">{agent.properties} Properties</span>
-                  </div>
+                  </div>*/}
 
                   <div className="flex items-center gap-2 text-gray-500 max-w-full">
                     <Mail className="w-4 h-4 flex-shrink-0" />
