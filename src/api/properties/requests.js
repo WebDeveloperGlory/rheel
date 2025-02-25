@@ -46,7 +46,7 @@ export const createProperty = async ( formData ) => {
             `/admin/properties/add`,
             formData,
             {   
-                timeout: 100000,
+                timeout: 1000000,
                 headers: {
                     "Content-Type": "multipart/form-data",
                 },
