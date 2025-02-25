@@ -21,7 +21,7 @@ const initialFormData = {
     property_description: "",
     amenities: [],
     property_images: [],
-    floor_plan: null,
+    floor_plan: [], // Changed to array
     video_upload: [],
 
     property_type_id: 4
@@ -37,6 +37,8 @@ const PropertiesPage = () => {
     const [activeCategory, setActiveCategory] = useState('active');
     const [ formData, setFormData ] = useState({ ...initialFormData });
     const [isSubmitting, setIsSubmitting] = useState(false);
+    // Add this state to trigger refetching
+    const [refreshData, setRefreshData] = useState(0);
 
     const [ newAmenity, setNewAmenity ] = useState("");
 
@@ -76,7 +78,7 @@ const PropertiesPage = () => {
         return () => {
           isMounted = false;
         };
-      }, [activeCategory]);
+      }, [activeCategory, refreshData]); // Added refreshData as a dependency
 
       const handleCategoryChange = (category) => {
         setActiveCategory(category);
@@ -94,7 +96,7 @@ const PropertiesPage = () => {
             ...formData,
             ...property,
             property_images: [], // Reset images since we can't edit them
-            floor_plan: null,
+            floor_plan: [],
             video_upload: [],
             property_availability: property.property_availability?.slice(0, 16) || ''
         });
@@ -106,16 +108,22 @@ const PropertiesPage = () => {
 
         if (window.confirm('Are you sure you want to delete this property?')) {
             try {
+                setLoading(true);
                 const response = await deleteProperty(propertyId);
                 if (response && response.status) {
+                    // Update local state immediately after successful deletion
+                    setProperties(currentProperties => 
+                        currentProperties.filter(property => property.id !== propertyId)
+                    );
                     window.alert('Property deleted successfully');
-                    setLoading(true); // Refresh the list
                 } else {
                     window.alert('Failed to delete property');
                 }
             } catch (error) {
                 console.error('Error deleting property:', error);
                 window.alert('Error deleting property');
+            } finally {
+                setLoading(false);
             }
         }
     };
@@ -125,16 +133,20 @@ const PropertiesPage = () => {
 
         if (window.confirm('Are you sure you want to archive this property?')) {
             try {
+                setLoading(true);
                 const response = await archiveProperty(propertyId);
                 if (response && response.status) {
                     window.alert('Property archived successfully');
-                    setLoading(true); // Refresh the list
+                    // Trigger a refresh instead of just setting loading
+                    setRefreshData(prev => prev + 1);
                 } else {
                     window.alert('Failed to archive property');
+                    setLoading(false);
                 }
             } catch (error) {
                 console.error('Error archiving property:', error);
                 window.alert('Error archiving property');
+                setLoading(false);
             }
         }
     };
@@ -144,16 +156,20 @@ const PropertiesPage = () => {
 
         if (window.confirm('Are you sure you want to unarchive this property?')) {
             try {
+                setLoading(true);
                 const response = await unarchiveProperty(propertyId);
                 if (response && response.status) {
                     window.alert('Property unarchived successfully');
-                    setLoading(true); // Refresh the list
+                    // Trigger a refresh instead of just setting loading
+                    setRefreshData(prev => prev + 1);
                 } else {
                     window.alert('Failed to unarchive property');
+                    setLoading(false);
                 }
             } catch (error) {
                 console.error('Error unarchiving property:', error);
                 window.alert('Error unarchiving property');
+                setLoading(false);
             }
         }
     };
@@ -177,9 +193,7 @@ const PropertiesPage = () => {
         setFormData(prev => (
             { 
                 ...prev, 
-                [name]: name === "video_upload" 
-                    ? Array.from( files ) 
-                    : files[ 0 ] 
+                [name]: Array.from( files ) 
             }
         ));
     };
@@ -227,7 +241,9 @@ const PropertiesPage = () => {
                 updatedFormData.append(`property_images`, file);
             });
 
-            updatedFormData.append(`floor_plan`, formData.floor_plan);
+            formData.floor_plan.forEach((file) => {
+                updatedFormData.append('floor_plan', file);
+            });
 
             formData.video_upload.forEach((file, index) => {
                 updatedFormData.append(`video_upload`, file);
@@ -238,17 +254,18 @@ const PropertiesPage = () => {
                 if( data.status ) {
                     console.log('Property edited successfully: ', data );
                     window.alert('Property edited successfully');
-                    setLoading( true );
+                    // Trigger refresh instead of just setting loading
+                    setRefreshData(prev => prev + 1);
                 } else {
                     window.alert('An Error Occurred');
                 }  
             } else { 
-                setProperties([ ...properties, { ...formData, id: Date.now() } ]);
                 const data = await createProperty( updatedFormData );
                 if( data.status ) {
                     console.log('Property created successfully: ', data );
                     window.alert('Property created successfully');
-                    setLoading( true );
+                    // Trigger refresh instead of just setting loading
+                    setRefreshData(prev => prev + 1);
                 } else {
                     window.alert('An Error Occurred');
                 }    
@@ -392,15 +409,6 @@ const PropertiesPage = () => {
 
             <div className="flex justify-between items-center gap-5">
                 <label className="block text-[14px] font-medium text-[#383E49]">Available From</label>
-                {/* <input
-                    type="number"
-                    name="price"
-                    value={ formData.price }
-                    onChange={ handleInputChange }
-                    className="w-[60%] border border-[#858D9D] text-[#858D9D] text-[14px] rounded-lg p-2 outline-none"
-                    placeholder="Enter property price"
-                    min="0"
-                /> */}
                 <input 
                     type="datetime-local" 
                     className="w-[60%] border border-[#858D9D] text-[#858D9D] text-[14px] rounded-lg p-2 outline-none"
@@ -529,24 +537,31 @@ const PropertiesPage = () => {
                 <label className="block text-[14px] font-medium text-[#383E49]">Floor Plan</label>
                 <div className="flex justify-center items-start gap-5">
                     <div className="border border-dashed border-[#9D9D9D] bg-white w-[100px] h-[100px] rounded-lg relative hover:bg-gray-50 transition-colors cursor-pointer">
-                        {formData.floor_plan && (
-                            <img
-                                src={URL.createObjectURL(formData.floor_plan)}
-                                alt="Floor Plan Preview"
-                                className="absolute inset-0 w-full h-full object-cover rounded-lg"
-                                onLoad={(e) => URL.revokeObjectURL(e.target.src)}
-                            />
+                        {formData.floor_plan.length > 0 && (
+                            <div className="grid grid-cols-2 gap-1 absolute inset-0 p-2">
+                                {formData.floor_plan.slice(0, 4).map((file, index) => (
+                                    <div key={index} className="relative w-full h-full">
+                                        <img
+                                            src={URL.createObjectURL(file)}
+                                            alt={`Floor Plan ${index + 1}`}
+                                            className="w-full h-full object-cover rounded"
+                                            onLoad={(e) => URL.revokeObjectURL(e.target.src)}
+                                        />
+                                    </div>
+                                ))}
+                            </div>
                         )}
                         <input
                             type="file"
                             name="floor_plan"
                             accept="image/*"
+                            multiple
                             className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
                             onChange={handleVideoAndFloorPlanChange}
                         />
                     </div>
                     <div className='w-[100px]'>
-                        <p className="text-[12px] text-[#858D9D]">Drop an image here or click to upload</p>
+                        <p className="text-[12px] text-[#858D9D]">Drop images here or click to upload</p>
                         <p className="text-xs text-[#80D3A1] mt-1">Supported formats: jpg, png</p>
                     </div>
                 </div>
