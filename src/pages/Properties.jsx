@@ -6,8 +6,8 @@ import PropertyMetrics from '../components/properties/PropertyMetrics'
 import PropertyHeader from '../components/properties/PropertyHeader'
 import PropertyCategories from '../components/properties/PropertyCategories'
 import PropertyList from '../components/properties/PropertyList'
-import { Loader2 } from 'lucide-react';
- 
+import { Loader2, AlertCircle } from 'lucide-react';
+
 const initialFormData = {
     type: "Sell",
     location: "",
@@ -28,78 +28,68 @@ const initialFormData = {
 }
 
 const PropertiesPage = () => {
-    const [ loading, setLoading ] = useState( true );
-    const [ showModal, setShowModal ] = useState( false );
+    const [loading, setLoading] = useState(true);
+    const [showModal, setShowModal] = useState(false);
     const [error, setError] = useState(null);
-    const [ isEditing, setIsEditing ] = useState( false );
-    const [ editingId, setEditingId ] = useState( null );
-    const [ properties, setProperties ] = useState([]);
+    const [isEditing, setIsEditing] = useState(false);
+    const [editingId, setEditingId] = useState(null);
+    const [properties, setProperties] = useState([]);
     const [activeCategory, setActiveCategory] = useState('active');
-    const [ formData, setFormData ] = useState({ ...initialFormData });
+    const [formData, setFormData] = useState({ ...initialFormData });
     const [isSubmitting, setIsSubmitting] = useState(false);
-    // Add this state to trigger refetching
     const [refreshData, setRefreshData] = useState(0);
-
-    const [ newAmenity, setNewAmenity ] = useState("");
+    const [newAmenity, setNewAmenity] = useState("");
+    const [formErrors, setFormErrors] = useState({});
+    const [submitError, setSubmitError] = useState(null);
+    const maxFileSize = 10 * 1024 * 1024; // 10MB in bytes
 
     useEffect(() => {
         let isMounted = true;
-    
-        const fetchData = async () => {
-          try {
-            setLoading(true);
-            setError(null);
-            
-            const response = activeCategory === 'active' 
-              ? await getProperties()
-              : await getArchivedProperties();
-    
-            if (isMounted && response?.data) {
-              setProperties(response.data);
-            } else if (isMounted) {
-              setProperties([]);
-              setError('No properties found');
-            }
-          } catch (error) {
-            if (isMounted) {
-              console.error('Error fetching properties:', error);
-              setError('Failed to fetch properties. Please try again later.');
-              setProperties([]);
-            }
-          } finally {
-            if (isMounted) {
-              setLoading(false);
-            }
-          }
-        };
-    
-        fetchData();
-    
-        return () => {
-          isMounted = false;
-        };
-      }, [activeCategory, refreshData]); // Added refreshData as a dependency
 
-      const handleCategoryChange = (category) => {
+        const fetchData = async () => {
+            try {
+                setLoading(true);
+                setError(null);
+
+                const response = activeCategory === 'active'
+                    ? await getProperties()
+                    : await getArchivedProperties();
+
+                if (isMounted && response?.data) {
+                    setProperties(response.data);
+                } else if (isMounted) {
+                    setProperties([]);
+                    setError('No properties found');
+                }
+            } catch (error) {
+                if (isMounted) {
+                    console.error('Error fetching properties:', error);
+                    setError('Failed to fetch properties. Please try again later.');
+                    setProperties([]);
+                }
+            } finally {
+                if (isMounted) {
+                    setLoading(false);
+                }
+            }
+        };
+
+        fetchData();
+
+        return () => {
+            isMounted = false;
+        };
+    }, [activeCategory, refreshData]); // Added refreshData as a dependency
+
+    const handleCategoryChange = (category) => {
         setActiveCategory(category);
         setLoading(true);
         setError(null);
-      };
-    
-    const fetchAndConvertToFile = async (url, fileName) => {
-        try {
-            const response = await fetch(url);
-            const blob = await response.blob();
-            return new File([blob], fileName, { type: blob.type });
-        } catch (error) {
-            console.error('Error converting URL to File:', error);
-            return null;
-        }
     };
 
     const handleEdit = (property) => {
         if (!property) return;
-        
+
         setIsEditing(true);
         setEditingId(property.id);
 
@@ -130,7 +120,7 @@ const PropertiesPage = () => {
                 const response = await deleteProperty(propertyId);
                 if (response && response.status) {
                     // Update local state immediately after successful deletion
-                    setProperties(currentProperties => 
+                    setProperties(currentProperties =>
                         currentProperties.filter(property => property.id !== propertyId)
                     );
                     window.alert('Property deleted successfully');
@@ -191,12 +181,12 @@ const PropertiesPage = () => {
             }
         }
     };
-    
-    const handleInputChange = ( e ) => {
+
+    const handleInputChange = (e) => {
         const { name, value, type, checked } = e.target;
         setFormData(prev => ({
             ...prev,
-            [ name ]: type === 'checkbox' ? checked : value
+            [name]: type === 'checkbox' ? checked : value
         }));
     };
 
@@ -209,13 +199,12 @@ const PropertiesPage = () => {
         const { name, files } = e.target;
 
         setFormData(prev => (
-            { 
-                ...prev, 
-                [name]: Array.from( files ) 
+            {
+                ...prev,
+                [name]: Array.from(files)
             }
         ));
     };
-    
 
     const handleAddAmenity = () => {
         if (newAmenity.trim() && !formData.amenities.includes(newAmenity)) {
@@ -233,75 +222,113 @@ const PropertiesPage = () => {
             amenities: formData.amenities.filter((a) => a !== amenity),
         });
     };
-    
+
+    const validateForm = () => {
+        const errors = {};
+
+        // Basic field validation
+        if (!formData.location) errors.location = 'Location is required';
+        if (!formData.price) errors.price = 'Price is required';
+        if (!formData.property_description) errors.property_description = 'Description is required';
+        if (!formData.property_availability) errors.property_availability = 'Availability date is required';
+        if (formData.amenities.length === 0) errors.amenities = 'At least one amenity is required';
+
+        // Media validation
+        if (!isEditing && formData.property_images.length === 0) {
+            errors.property_images = 'At least one property image is required';
+        }
+
+        // File size validation
+        const validateFileSize = (files, fieldName) => {
+            const invalidFiles = files.filter(file => file.size > maxFileSize);
+            if (invalidFiles.length > 0) {
+                errors[fieldName] = `Some files exceed 10MB limit: ${invalidFiles.map(f => f.name).join(', ')}`;
+            }
+        };
+
+        if (formData.property_images.length) validateFileSize(formData.property_images, 'property_images');
+        if (formData.floor_plan.length) validateFileSize(formData.floor_plan, 'floor_plan');
+        if (formData.video_upload.length) validateFileSize(formData.video_upload, 'video_upload');
+
+        setFormErrors(errors);
+        return Object.keys(errors).length === 0;
+    };
+
     const handleSubmit = async (e) => {
-    e.preventDefault();
-    setIsSubmitting(true);
+        e.preventDefault();
+        setSubmitError(null);
 
-    try {
-        const updatedFormData = new FormData();
-
-        updatedFormData.append("type", formData.type);
-        updatedFormData.append("location", formData.location);
-        updatedFormData.append("agent_id", formData.agent_id);
-        updatedFormData.append("property_availability", formData.property_availability);
-        updatedFormData.append("price", formData.price);
-        updatedFormData.append("living_room", formData.living_room);
-        updatedFormData.append("bedroom", formData.bedroom);
-        updatedFormData.append("bathroom", formData.bathroom);
-        updatedFormData.append("finance", formData.finance);
-        updatedFormData.append("property_description", formData.property_description);
-        updatedFormData.append("property_type_id", formData.property_type_id);
-
-        updatedFormData.append("amenities", JSON.stringify(formData.amenities));
-
-        // Only append new files if they exist
-        if (formData.property_images.length > 0) {
-            formData.property_images.forEach(file => {
-                updatedFormData.append('property_images', file);
-            });
+        if (!validateForm()) {
+            window.alert('Please fix the form errors before submitting');
+            return;
         }
 
-        if (formData.floor_plan.length > 0) {
-            formData.floor_plan.forEach(file => {
-                updatedFormData.append('floor_plan', file);
-            });
-        }
+        setIsSubmitting(true);
 
-        if (formData.video_upload.length > 0) {
-            formData.video_upload.forEach(file => {
-                updatedFormData.append('video_upload', file);
-            });
-        }
+        try {
+            const updatedFormData = new FormData();
 
-        let response;
-        if (isEditing) {
-            response = await updateProperty(editingId, updatedFormData);
-        } else {
-            response = await createProperty(updatedFormData);
-        }
+            updatedFormData.append("type", formData.type);
+            updatedFormData.append("location", formData.location);
+            updatedFormData.append("agent_id", formData.agent_id);
+            updatedFormData.append("property_availability", formData.property_availability);
+            updatedFormData.append("price", formData.price);
+            updatedFormData.append("living_room", formData.living_room);
+            updatedFormData.append("bedroom", formData.bedroom);
+            updatedFormData.append("bathroom", formData.bathroom);
+            updatedFormData.append("finance", formData.finance);
+            updatedFormData.append("property_description", formData.property_description);
+            updatedFormData.append("property_type_id", formData.property_type_id);
 
-        if (response && response.status) {
-            console.log('Property saved successfully:', response);
-            window.alert('Property saved successfully');
-            setRefreshData(prev => prev + 1);
-        } else {
-            window.alert(response?.error || 'An error occurred');
+            updatedFormData.append("amenities", JSON.stringify(formData.amenities));
+
+            // Only append new files if they exist
+            if (formData.property_images.length > 0) {
+                formData.property_images.forEach(file => {
+                    updatedFormData.append('property_images', file);
+                });
+            }
+
+            if (formData.floor_plan.length > 0) {
+                formData.floor_plan.forEach(file => {
+                    updatedFormData.append('floor_plan', file);
+                });
+            }
+
+            if (formData.video_upload.length > 0) {
+                formData.video_upload.forEach(file => {
+                    updatedFormData.append('video_upload', file);
+                });
+            }
+
+            let response;
+            if (isEditing) {
+                response = await updateProperty(editingId, updatedFormData);
+            } else {
+                response = await createProperty(updatedFormData);
+            }
+
+            if (response?.status) {
+                setRefreshData(prev => prev + 1);
+                closeModal();
+            } else {
+                setSubmitError(response?.error || 'An error occurred while saving the property');
+            }
+        } catch (error) {
+            console.error('Error saving property:', error);
+            setSubmitError(error.response?.data?.message || 'An error occurred while saving the property');
+        } finally {
+            setIsSubmitting(false);
         }
-    } catch (error) {
-        console.error('Error saving property:', error);
-        window.alert('An error occurred while saving the property. Please try again.');
-    } finally {
-        setIsSubmitting(false);
-        closeModal();
-    }
-};
-    
+    };
+
     const closeModal = () => {
-        setShowModal( false );
-        setIsEditing( false );
-        setEditingId( null );
+        setShowModal(false);
+        setIsEditing(false);
+        setEditingId(null);
         setFormData({ ...initialFormData });
+        setFormErrors({});
+        setSubmitError(null);
     };
 
     const renderMediaPreview = (item, type = 'image') => {
@@ -336,315 +363,343 @@ const PropertiesPage = () => {
             // When editing, just ensure required fields have values
             // Include existing media in the validation
             return (
-                formData.location && 
-                formData.price && 
-                formData.property_description && 
-                formData.amenities.length > 0 && 
+                formData.location &&
+                formData.price &&
+                formData.property_description &&
+                formData.amenities.length > 0 &&
                 formData.property_availability &&
                 (formData.property_images.length > 0 || formData.existingImages?.length > 0)
             );
         } else {
             // For new properties, require all fields including new uploads
             return (
-                formData.location && 
-                formData.price && 
-                formData.property_description && 
-                formData.property_images.length > 0 && 
-                formData.amenities.length > 0 && 
+                formData.location &&
+                formData.price &&
+                formData.property_description &&
+                formData.property_images.length > 0 &&
+                formData.amenities.length > 0 &&
                 formData.property_availability
             );
         }
     };
 
-  return (
-    <div className="p-4">
-      <TopSection />
-      <PropertyMetrics properties={properties} />
-      <PropertyHeader onCreateProperty={() => setShowModal(true)} />
-      <PropertyCategories
-       activeCategory={activeCategory}
-       onCategoryChange={handleCategoryChange}
-      />
-      <PropertyList 
-        loading={loading}
-        properties={properties}
-        onEdit={handleEdit}
-        onDelete={handleDelete}
-        onArchive={handleArchive}
-        onUnarchive={handleUnarchive}
-        error={error}
-        activeCategory={activeCategory}
-      />
+    const renderError = (fieldName) => {
+        if (!formErrors[fieldName]) return null;
+        return (
+            <div className="text-red-500 text-xs flex items-center gap-1 mt-1">
+                <AlertCircle className="w-3 h-3" />
+                <span>{formErrors[fieldName]}</span>
+            </div>
+        );
+    };
 
-      {/* Modal */}
-      <Modal onClose={closeModal} isEditing={isEditing} show={showModal}>
-        <form onSubmit={ handleSubmit } className="p-6 space-y-6">
+    return (
+        <div className="p-4">
+            <TopSection />
+            <PropertyMetrics properties={properties} />
+            <PropertyHeader onCreateProperty={() => setShowModal(true)} />
+            <PropertyCategories
+                activeCategory={activeCategory}
+                onCategoryChange={handleCategoryChange}
+            />
+            <PropertyList
+                loading={loading}
+                properties={properties}
+                onEdit={handleEdit}
+                onDelete={handleDelete}
+                onArchive={handleArchive}
+                onUnarchive={handleUnarchive}
+                error={error}
+                activeCategory={activeCategory}
+            />
 
-        <div className="space-y-4">
-                <label className="block text-[14px] font-medium text-[#383E49]">Property Images</label>
-                <div className="flex justify-center items-start gap-5 flex-wrap">
-                    <div className="border border-dashed border-[#9D9D9D] w-[100px] h-[100px] rounded-lg relative hover:bg-gray-50 transition-colors cursor-pointer">
-                        <div className="grid grid-cols-2 gap-1 absolute inset-0 p-2">
-                            {/* Show existing images */}
-                            {formData.existingImages?.slice(0, 4).map((url, index) => (
-                                <div key={`existing-${index}`} className="relative w-full h-full">
-                                    {renderMediaPreview(url, 'image')}
-                                </div>
-                            ))}
-                            {/* Show new uploads */}
-                            {formData.property_images.slice(0, 4).map((file, index) => (
-                                <div key={`new-${index}`} className="relative w-full h-full">
-                                    {renderMediaPreview(file, 'image')}
-                                </div>
-                            ))}
+            {/* Modal */}
+            <Modal onClose={closeModal} isEditing={isEditing} show={showModal}>
+                <form onSubmit={handleSubmit} className="p-6 space-y-6">
+                    {submitError && (
+                        <div className="bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-lg flex items-center gap-2">
+                            <AlertCircle className="w-5 h-5" />
+                            <p>{submitError}</p>
                         </div>
-                        <input
-                            id="fileInput"
-                            type="file"
-                            accept="image/*"
-                            className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-                            onChange={handleFileChange}
-                            multiple
-                        />
-                    </div>
-                    <div className='w-[100px]'>
-                        <p className="text-[12px] text-[#858D9D]">Drop files here or click to upload</p>
-                        <p className="text-xs text-[#80D3A1] mt-1">Maximum file size: 10MB</p>
-                    </div>
-                </div>
-            </div>
-
-            <div className="flex justify-between items-center gap-5">
-                <label className="block text-[14px] font-medium text-[#383E49]">Property Type</label>
-                <select
-                    name="type"
-                    value={ formData.type }
-                    onChange={ handleInputChange }
-                    className="w-[60%] border border-[#858D9D] text-[#858D9D] text-[14px] rounded-lg p-2 outline-none cursor-pointer"
-                >
-                    <option value="Sell" className=''>Sell</option>
-                    <option value="Lease">Lease</option>
-                </select>
-            </div>
-
-            <div className="flex justify-between items-center gap-5">
-                <label className="block text-[14px] font-medium text-[#383E49]">Location</label>
-                <input
-                    type="text"
-                    name="location"
-                    value={ formData.location }
-                    onChange={ handleInputChange }
-                    className="w-[60%] border border-[#858D9D] text-[#858D9D] text-[14px] rounded-lg p-2 outline-none"
-                    placeholder="Enter property location"
-                />
-            </div>
-
-            <div className="flex justify-between items-center gap-5">
-                <label className="block text-[14px] font-medium text-[#383E49]">Price</label>
-                <input
-                    type="number"
-                    name="price"
-                    value={ formData.price }
-                    onChange={ handleInputChange }
-                    className="w-[60%] border border-[#858D9D] text-[#858D9D] text-[14px] rounded-lg p-2 outline-none"
-                    placeholder="Enter property price"
-                    min="0"
-                />
-            </div>
-
-            <div className="flex justify-between items-center gap-5">
-                <label className="block text-[14px] font-medium text-[#383E49]">Available From</label>
-                <input 
-                    type="datetime-local" 
-                    className="w-[60%] border border-[#858D9D] text-[#858D9D] text-[14px] rounded-lg p-2 outline-none"
-                    name="property_availability"
-                    value={ formData.property_availability }
-                    onChange={ handleInputChange}
-                />
-            </div>
-
-            <div className="grid grid-cols-3 gap-4">
-                {
-                    ["living_room", "bedroom", "bathroom"].map( field => (
-                        <div key={ field } className="flex justify-between items-center gap-1">
-                            <label className="block text-[12px] font-medium text-[#383E49]">
-                                { field.split('_').map( word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ') }
-                            </label>
-                            <select
-                                name={ field }
-                                value={ formData[ field ] }
-                                onChange={ handleInputChange }
-                                className="w-[60%] border border-[#858D9D] text-[#858D9D] text-[14px] rounded-lg p-2 outline-none cursor-pointer"
-                            >
-                                {
-                                    [ ...Array( field === 'living_room' ? 5 : 10 ) ].map( ( _, i ) => (
-                                        <option key={i + 1} value={String(i + 1)} className='cursor-pointer'>{i + 1}</option>
-                                    ))
-                                }
-                                <option value={ field === 'living_room' ? '5+' : '10+' }>{ field === 'living_room' ? '5+' : '10+' }</option>
-                            </select>
-                        </div>
-                    ))
-                }
-            </div>
-
-            <div className="flex items-center gap-2">
-                <input
-                    type="checkbox"
-                    name="finance"
-                    checked={ formData.finance }
-                    onChange={ handleInputChange }
-                    className="w-4 h-4 cursor-pointer"
-                />
-                <label className="block text-[14px] font-medium text-[#383E49]">Financing Available</label>
-            </div>
-
-                {/* Amenities Input */}
-                <div className="space-y-2">
-                <label className="block text-[14px] font-medium text-[#383E49]">Amenities</label>
-                <div className="flex space-x-2">
-                    <input
-                        type="text"
-                        value={newAmenity}
-                        onChange={(e) => setNewAmenity(e.target.value)}
-                        className="flex-1 border border-[#858D9D] text-[#858D9D] text-[14px] rounded-lg p-2 outline-none"
-                        placeholder="Add an amenity"
-                    />
-                    <button
-                        onClick={handleAddAmenity}
-                        type="button"
-                        className="px-4 py-2 bg-[#4DA981] text-white rounded-lg cursor-pointer  transition"
-                    >
-                        Add
-                    </button>
-                </div>
-                <ul className="space-y-1 mt-2 text-sm text-[#383E49]">
-                    {formData.amenities.map((amenity, index) => (
-                        <li
-                            key={index}
-                            className="flex items-center justify-between border rounded-lg px-3 py-2"
-                        >
-                            <span>{amenity}</span>
-                            <button
-                                onClick={() => handleRemoveAmenity( amenity ) }
-                                type="button"
-                                className="text-red-500 hover:underline text-xs"
-                            >
-                                Remove
-                            </button>
-                        </li>
-                    ))}
-                </ul>
-            </div>
-
-            <div className="flex justify-between items-start">
-                <label className="block text-[12px] font-medium text-[#383E49]">Property Description</label>
-                <textarea
-                    name="property_description"
-                    value={ formData.property_description }
-                    onChange={ handleInputChange }
-                    className="w-[60%] border border-[#858D9D] text-[#858D9D] text-[14px] rounded-lg p-2 h-32 outline-none"
-                    placeholder="Enter property description"
-                />
-            </div>
-
-            
-
-            {/* Video Upload */}
-            <div className="space-y-2 bg-[#F1F1F1] p-2">
-                <label className="block text-[14px] font-medium text-[#383E49]">Virtual Tour</label>
-                <div className="flex justify-center items-start gap-5">
-                    <div className="border border-dashed border-[#9D9D9D] bg-white w-[100px] h-[100px] rounded-lg relative hover:bg-gray-50 transition-colors cursor-pointer">
-                        {/* Show existing video */}
-                        {formData.existingVideo && (
-                            <div className="absolute inset-0">
-                                {renderMediaPreview(formData.existingVideo, 'video')}
-                            </div>
-                        )}
-                        {/* Show new video upload */}
-                        {formData.video_upload.length > 0 && (
-                            <div className="absolute inset-0">
-                                {renderMediaPreview(formData.video_upload[0], 'video')}
-                            </div>
-                        )}
-                        <input
-                            type="file"
-                            name="video_upload"
-                            accept="video/*"
-                            className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-                            onChange={handleVideoAndFloorPlanChange}
-                        />
-                    </div>
-                    <div className='w-[100px]'>
-                        <p className="text-[12px] text-[#858D9D]">Drop videos here or click to upload</p>
-                        <p className="text-xs text-[#80D3A1] mt-1">Supported formats: mp4, avi</p>
-                    </div>
-                </div>
-            </div>
-
-            {/* Image Upload */}
-            <div className="space-y-2 bg-[#F1F1F1] p-2">
-                <label className="block text-[14px] font-medium text-[#383E49]">Floor Plan</label>
-                <div className="flex justify-center items-start gap-5">
-                    <div className="border border-dashed border-[#9D9D9D] bg-white w-[100px] h-[100px] rounded-lg relative hover:bg-gray-50 transition-colors cursor-pointer">
-                        <div className="grid grid-cols-2 gap-1 absolute inset-0 p-2">
-                            {/* Show existing floor plans */}
-                            {formData.existingFloorPlans?.slice(0, 4).map((url, index) => (
-                                <div key={`existing-${index}`} className="relative w-full h-full">
-                                    {renderMediaPreview(url, 'image')}
-                                </div>
-                            ))}
-                            {/* Show new floor plan uploads */}
-                            {formData.floor_plan.slice(0, 4).map((file, index) => (
-                                <div key={`new-${index}`} className="relative w-full h-full">
-                                    {renderMediaPreview(file, 'image')}
-                                </div>
-                            ))}
-                        </div>
-                        <input
-                            type="file"
-                            name="floor_plan"
-                            accept="image/*"
-                            multiple
-                            className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-                            onChange={handleVideoAndFloorPlanChange}
-                        />
-                    </div>
-                    <div className='w-[100px]'>
-                        <p className="text-[12px] text-[#858D9D]">Drop images here or click to upload</p>
-                        <p className="text-xs text-[#80D3A1] mt-1">Supported formats: jpg, png</p>
-                    </div>
-                </div>
-            </div>
-
-            <div className="flex items-center justify-end gap-4 pt-4">
-                <button
-                    type="button"
-                    onClick={ closeModal }
-                    disabled={isSubmitting}
-                    className="px-5 py-2  cursor-pointer text-[14px] text-[#858D9D] disabled:opacity-50"
-                >
-                    Discard
-                </button>
-                <button
-                    type="submit"
-                    className="px-5 py-2 bg-[#4DA981] text-white rounded-lg  cursor-pointer disabled:opacity-60 text-[14px] flex items-center gap-2"
-                    disabled={isSubmitting || !isFormValid()}
-                >
-                    {isSubmitting ? (
-                        <>
-                            <Loader2 className="w-4 h-4 animate-spin" />
-                            {isEditing ? 'Saving...' : 'Creating...'}
-                        </>
-                    ) : (
-                        isEditing ? 'Save Changes' : 'Add Property'
                     )}
-                </button>
-            </div>
-        </form>
-      </Modal>
-    </div>
-  )
+
+                    <div className="space-y-4">
+                        <label className="block text-[14px] font-medium text-[#383E49]">
+                            Property Images {isEditing ? '(Optional)' : '*'}
+                        </label>
+                        <div className="flex justify-center items-start gap-5 flex-wrap">
+                            <div className="border border-dashed border-[#9D9D9D] w-[100px] h-[100px] rounded-lg relative hover:bg-gray-50 transition-colors cursor-pointer">
+                                <div className="grid grid-cols-2 gap-1 absolute inset-0 p-2">
+                                    {/* Show existing images */}
+                                    {formData.existingImages?.slice(0, 4).map((url, index) => (
+                                        <div key={`existing-${index}`} className="relative w-full h-full">
+                                            {renderMediaPreview(url, 'image')}
+                                        </div>
+                                    ))}
+                                    {/* Show new uploads */}
+                                    {formData.property_images.slice(0, 4).map((file, index) => (
+                                        <div key={`new-${index}`} className="relative w-full h-full">
+                                            {renderMediaPreview(file, 'image')}
+                                        </div>
+                                    ))}
+                                </div>
+                                <input
+                                    id="fileInput"
+                                    type="file"
+                                    accept="image/*"
+                                    className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                                    onChange={handleFileChange}
+                                    multiple
+                                />
+                            </div>
+                            <div className='w-[100px]'>
+                                <p className="text-[12px] text-[#858D9D]">Drop files here or click to upload</p>
+                                <p className="text-xs text-[#80D3A1] mt-1">Maximum file size: 10MB</p>
+                            </div>
+                        </div>
+                        {renderError('property_images')}
+                    </div>
+
+                    <div className="flex justify-between items-center gap-5">
+                        <label className="block text-[14px] font-medium text-[#383E49]">Property Type</label>
+                        <select
+                            name="type"
+                            value={formData.type}
+                            onChange={handleInputChange}
+                            className="w-[60%] border border-[#858D9D] text-[#858D9D] text-[14px] rounded-lg p-2 outline-none cursor-pointer"
+                        >
+                            <option value="Sell" className=''>Sell</option>
+                            <option value="Lease">Lease</option>
+                        </select>
+                    </div>
+
+                    <div className="flex justify-between items-center gap-5">
+                        <label className="block text-[14px] font-medium text-[#383E49]">
+                            Location*
+                        </label>
+                        <div className="w-[60%]">
+                            <input
+                                type="text"
+                                name="location"
+                                value={formData.location}
+                                onChange={handleInputChange}
+                                className={`w-full border ${formErrors.location ? 'border-red-500' : 'border-[#858D9D]'} text-[#858D9D] text-[14px] rounded-lg p-2 outline-none`}
+                                placeholder="Enter property location"
+                            />
+                            {renderError('location')}
+                        </div>
+                    </div>
+
+                    <div className="flex justify-between items-center gap-5">
+                        <label className="block text-[14px] font-medium text-[#383E49]">Price</label>
+                        <input
+                            type="number"
+                            name="price"
+                            value={formData.price}
+                            onChange={handleInputChange}
+                            className="w-[60%] border border-[#858D9D] text-[#858D9D] text-[14px] rounded-lg p-2 outline-none"
+                            placeholder="Enter property price"
+                            min="0"
+                        />
+                        {renderError('price')}
+                    </div>
+
+                    <div className="flex justify-between items-center gap-5">
+                        <label className="block text-[14px] font-medium text-[#383E49]">Available From</label>
+                        <input
+                            type="datetime-local"
+                            className="w-[60%] border border-[#858D9D] text-[#858D9D] text-[14px] rounded-lg p-2 outline-none"
+                            name="property_availability"
+                            value={formData.property_availability}
+                            onChange={handleInputChange}
+                        />
+                        {renderError('property_availability')}
+                    </div>
+
+                    <div className="grid grid-cols-3 gap-4">
+                        {
+                            ["living_room", "bedroom", "bathroom"].map(field => (
+                                <div key={field} className="flex justify-between items-center gap-1">
+                                    <label className="block text-[12px] font-medium text-[#383E49]">
+                                        {field.split('_').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ')}
+                                    </label>
+                                    <select
+                                        name={field}
+                                        value={formData[field]}
+                                        onChange={handleInputChange}
+                                        className="w-[60%] border border-[#858D9D] text-[#858D9D] text-[14px] rounded-lg p-2 outline-none cursor-pointer"
+                                    >
+                                        {
+                                            [...Array(field === 'living_room' ? 5 : 10)].map((_, i) => (
+                                                <option key={i + 1} value={String(i + 1)} className='cursor-pointer'>{i + 1}</option>
+                                            ))
+                                        }
+                                        <option value={field === 'living_room' ? '5+' : '10+'}>{field === 'living_room' ? '5+' : '10+'}</option>
+                                    </select>
+                                </div>
+                            ))
+                        }
+                    </div>
+
+                    <div className="flex items-center gap-2">
+                        <input
+                            type="checkbox"
+                            name="finance"
+                            checked={formData.finance}
+                            onChange={handleInputChange}
+                            className="w-4 h-4 cursor-pointer"
+                        />
+                        <label className="block text-[14px] font-medium text-[#383E49]">Financing Available</label>
+                    </div>
+
+                    {/* Amenities Input */}
+                    <div className="space-y-2">
+                        <label className="block text-[14px] font-medium text-[#383E49]">Amenities</label>
+                        <div className="flex space-x-2">
+                            <input
+                                type="text"
+                                value={newAmenity}
+                                onChange={(e) => setNewAmenity(e.target.value)}
+                                className="flex-1 border border-[#858D9D] text-[#858D9D] text-[14px] rounded-lg p-2 outline-none"
+                                placeholder="Add an amenity"
+                            />
+                            <button
+                                onClick={handleAddAmenity}
+                                type="button"
+                                className="px-4 py-2 bg-[#4DA981] text-white rounded-lg cursor-pointer  transition"
+                            >
+                                Add
+                            </button>
+                        </div>
+                        <ul className="space-y-1 mt-2 text-sm text-[#383E49]">
+                            {formData.amenities.map((amenity, index) => (
+                                <li
+                                    key={index}
+                                    className="flex items-center justify-between border rounded-lg px-3 py-2"
+                                >
+                                    <span>{amenity}</span>
+                                    <button
+                                        onClick={() => handleRemoveAmenity(amenity)}
+                                        type="button"
+                                        className="text-red-500 hover:underline text-xs"
+                                    >
+                                        Remove
+                                    </button>
+                                </li>
+                            ))}
+                        </ul>
+                        {renderError('amenities')}
+                    </div>
+
+                    <div className="flex justify-between items-start">
+                        <label className="block text-[12px] font-medium text-[#383E49]">Property Description</label>
+                        <textarea
+                            name="property_description"
+                            value={formData.property_description}
+                            onChange={handleInputChange}
+                            className="w-[60%] border border-[#858D9D] text-[#858D9D] text-[14px] rounded-lg p-2 h-32 outline-none"
+                            placeholder="Enter property description"
+                        />
+                        {renderError('property_description')}
+                    </div>
+
+                    {/* Video Upload */}
+                    <div className="space-y-2 bg-[#F1F1F1] p-2">
+                        <label className="block text-[14px] font-medium text-[#383E49]">Virtual Tour</label>
+                        <div className="flex justify-center items-start gap-5">
+                            <div className="border border-dashed border-[#9D9D9D] bg-white w-[100px] h-[100px] rounded-lg relative hover:bg-gray-50 transition-colors cursor-pointer">
+                                {/* Show existing video */}
+                                {formData.existingVideo && (
+                                    <div className="absolute inset-0">
+                                        {renderMediaPreview(formData.existingVideo, 'video')}
+                                    </div>
+                                )}
+                                {/* Show new video upload */}
+                                {formData.video_upload.length > 0 && (
+                                    <div className="absolute inset-0">
+                                        {renderMediaPreview(formData.video_upload[0], 'video')}
+                                    </div>
+                                )}
+                                <input
+                                    type="file"
+                                    name="video_upload"
+                                    accept="video/*"
+                                    className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                                    onChange={handleVideoAndFloorPlanChange}
+                                />
+                            </div>
+                            <div className='w-[100px]'>
+                                <p className="text-[12px] text-[#858D9D]">Drop videos here or click to upload</p>
+                                <p className="text-xs text-[#80D3A1] mt-1">Supported formats: mp4, avi</p>
+                            </div>
+                        </div>
+                        {renderError('video_upload')}
+                    </div>
+
+                    {/* Image Upload */}
+                    <div className="space-y-2 bg-[#F1F1F1] p-2">
+                        <label className="block text-[14px] font-medium text-[#383E49]">Floor Plan</label>
+                        <div className="flex justify-center items-start gap-5">
+                            <div className="border border-dashed border-[#9D9D9D] bg-white w-[100px] h-[100px] rounded-lg relative hover:bg-gray-50 transition-colors cursor-pointer">
+                                <div className="grid grid-cols-2 gap-1 absolute inset-0 p-2">
+                                    {/* Show existing floor plans */}
+                                    {formData.existingFloorPlans?.slice(0, 4).map((url, index) => (
+                                        <div key={`existing-${index}`} className="relative w-full h-full">
+                                            {renderMediaPreview(url, 'image')}
+                                        </div>
+                                    ))}
+                                    {/* Show new floor plan uploads */}
+                                    {formData.floor_plan.slice(0, 4).map((file, index) => (
+                                        <div key={`new-${index}`} className="relative w-full h-full">
+                                            {renderMediaPreview(file, 'image')}
+                                        </div>
+                                    ))}
+                                </div>
+                                <input
+                                    type="file"
+                                    name="floor_plan"
+                                    accept="image/*"
+                                    multiple
+                                    className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                                    onChange={handleVideoAndFloorPlanChange}
+                                />
+                            </div>
+                            <div className='w-[100px]'>
+                                <p className="text-[12px] text-[#858D9D]">Drop images here or click to upload</p>
+                                <p className="text-xs text-[#80D3A1] mt-1">Supported formats: jpg, png</p>
+                            </div>
+                        </div>
+                        {renderError('floor_plan')}
+                    </div>
+
+                    <div className="flex items-center justify-end gap-4 pt-4">
+                        <button
+                            type="button"
+                            onClick={closeModal}
+                            disabled={isSubmitting}
+                            className="px-5 py-2  cursor-pointer text-[14px] text-[#858D9D] disabled:opacity-50"
+                        >
+                            Discard
+                        </button>
+                        <button
+                            type="submit"
+                            className="px-5 py-2 bg-[#4DA981] text-white rounded-lg  cursor-pointer disabled:opacity-60 text-[14px] flex items-center gap-2"
+                            disabled={isSubmitting || !isFormValid()}
+                        >
+                            {isSubmitting ? (
+                                <>
+                                    <Loader2 className="w-4 h-4 animate-spin" />
+                                    {isEditing ? 'Saving...' : 'Creating...'}
+                                </>
+                            ) : (
+                                isEditing ? 'Save Changes' : 'Add Property'
+                            )}
+                        </button>
+                    </div>
+                </form>
+            </Modal>
+        </div>
+    )
 }
 
 export default PropertiesPage

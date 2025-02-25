@@ -45,7 +45,8 @@ export const createProperty = async ( formData ) => {
         const response = await axiosInstance.post( 
             `/admin/properties/add`,
             formData,
-            {
+            {   
+                timeout: 100000,
                 headers: {
                     "Content-Type": "multipart/form-data",
                 },
