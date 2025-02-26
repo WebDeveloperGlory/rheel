@@ -90,25 +90,23 @@ const PropertiesPage = () => {
 
     const handleEdit = (property) => {
         if (!property) return;
-
+    
         setIsEditing(true);
         setEditingId(property.id);
-
-        // Store existing media URLs directly
+    
         setFormData({
             ...formData,
             ...property,
-            // Store URLs in a separate field to distinguish between new files and existing URLs
             existingImages: property.property_images || [],
             existingFloorPlans: Array.isArray(property.floor_plan) ? property.floor_plan : [property.floor_plan],
             existingVideo: property.video_upload,
-            // Reset file inputs
             property_images: [],
             floor_plan: [],
             video_upload: [],
-            property_availability: property.property_availability?.slice(0, 16) || ''
+            property_availability: property.property_availability?.slice(0, 10) || '', // Ensure date is in YYYY-MM-DD format
+            amenities: property.amenities || [] // Ensure amenities are set
         });
-
+    
         setShowModal(true);
     };
 
@@ -567,17 +565,17 @@ const propertyTypes = [
     </select>
 </div>
 
-                    <div className="flex justify-between items-center gap-5">
-                        <label className="block text-[14px] font-medium text-[#383E49]">Available From</label>
-                        <input
-                            type="date"
-                            className="w-[60%] border border-[#858D9D] text-[#858D9D] text-[14px] rounded-lg p-2 outline-none"
-                            name="property_availability"
-                            value={formData.property_availability}
-                            onChange={handleInputChange}
-                        />
-                        {renderError('property_availability')}
-                    </div>
+<div className="flex justify-between items-center gap-5">
+    <label className="block text-[14px] font-medium text-[#383E49]">Available From</label>
+    <input
+        type="date"
+        className="w-[60%] border border-[#858D9D] text-[#858D9D] text-[14px] rounded-lg p-2 outline-none"
+        name="property_availability"
+        value={formData.property_availability}
+        onChange={handleInputChange}
+    />
+    {renderError('property_availability')}
+</div>
 
                     <div className="grid grid-cols-3 gap-4">
                         {
@@ -617,19 +615,18 @@ const propertyTypes = [
                      </select>
                     </div>
 
-                    {/* Amenities Input */}
                     <div className="space-y-2">
-                      <label className="block text-[14px] font-medium text-[#383E49]">Amenities</label>
-                      <Select
-                       isMulti
-                       name="amenities"
-                       options={amenitiesOptions}
-                       className="w-full border border-[#858D9D] text-[#858D9D] text-[14px] rounded-lg p-2 outline-none cursor-pointer"
-                       classNamePrefix="select"
-                       value={amenitiesOptions.filter(option => formData.amenities.includes(option.value))}
-                       onChange={(selectedOptions) => setFormData({ ...formData, amenities: selectedOptions.map(option => option.value) })}
-                      />
-                    </div>
+    <label className="block text-[14px] font-medium text-[#383E49]">Amenities</label>
+    <Select
+        isMulti
+        name="amenities"
+        options={amenitiesOptions}
+        className="w-full border border-[#858D9D] text-[#858D9D] text-[14px] rounded-lg p-2 outline-none cursor-pointer"
+        classNamePrefix="select"
+        value={amenitiesOptions.filter(option => formData.amenities.includes(option.value))}
+        onChange={(selectedOptions) => setFormData({ ...formData, amenities: selectedOptions.map(option => option.value) })}
+    />
+</div>
 
                     <div className="flex justify-between items-start">
                         <label className="block text-[12px] font-medium text-[#383E49]">Property Description</label>
