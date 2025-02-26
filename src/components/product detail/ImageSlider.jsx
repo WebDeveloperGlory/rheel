@@ -111,15 +111,13 @@ const ImageSlider = ({ images }) => {
 
       {/* Thumbnails */}
       <div className="px-4 mb-5">
-        <div className=" grid md:grid-cols-3 gap-2  max-w-2xl mx-auto">
+        <div className=" grid grid-cols-3 gap-2  max-w-2xl mx-auto">
           {images.map((image, index) => (
             <button
               key={index}
               onClick={() => handleThumbnailClick(index)}
               disabled={isTransitioning}
-              className={`relative group p-1 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#FF5B19] ${
-                activeIndex === index ? 'bg-blue-100' : 'hover:bg-gray-100'
-              }`}
+              className={`relative group w-fit rounded-lg focus:outline-none focus:ring-2 focus:ring-[#FF5B19]`}
             >
               <img
                 src={image}

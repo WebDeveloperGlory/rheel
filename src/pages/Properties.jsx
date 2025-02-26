@@ -25,8 +25,7 @@ const initialFormData = {
     property_images: [],
     floor_plan: [], // Changed to array
     video_upload: [],
-
-    property_type_id: 4
+    property_type_id: ""
 }
 
 const PropertiesPage = () => {
@@ -199,13 +198,26 @@ const PropertiesPage = () => {
 
     const handleVideoAndFloorPlanChange = (e) => {
         const { name, files } = e.target;
-
-        setFormData(prev => (
-            {
-                ...prev,
-                [name]: Array.from(files)
+        let allowedFormats = [];
+    
+        if (name === 'video_upload') {
+            allowedFormats = ['video/mp4', 'video/x-matroska', 'video/x-msvideo']; // mp4, mkv, avi
+        } else if (name === 'floor_plan') {
+            allowedFormats = ['image/jpeg', 'image/png', 'image/jpg']; // jpg, jpeg, png
+        }
+    
+        const validFiles = Array.from(files).filter(file => {
+            if (!allowedFormats.includes(file.type)) {
+                window.alert(`Unsupported file format: ${file.name}. Allowed formats are ${allowedFormats.join(', ')}.`);
+                return false;
             }
-        ));
+            return true;
+        });
+    
+        setFormData(prev => ({
+            ...prev,
+            [name]: validFiles
+        }));
     };
 
     const handleAddAmenity = () => {
@@ -396,6 +408,18 @@ const amenitiesOptions = [
     { value: 'Internet', label: 'Internet' },
 ];
 
+const propertyTypes = [
+    { id: 1, type: 'Duplex' },
+    { id: 2, type: 'Terrace' },
+    { id: 3, type: 'Bungalow' },
+    { id: 4, type: 'Apartments' },
+    { id: 5, type: 'Commercial' },
+    { id: 6, type: 'Carcass' },
+    { id: 7, type: 'Land' },
+    { id: 8, type: 'JV Land'}
+    // Add more property types as needed
+];
+
     return (
         <div className="p-4">
             <TopSection />
@@ -525,6 +549,23 @@ const amenitiesOptions = [
                             ))}
                         </select>
                     </div>
+
+                    <div className="flex justify-between items-center gap-5">
+    <label className="block text-[14px] font-medium text-[#383E49]">Property Type</label>
+    <select
+        name="property_type_id"
+        value={formData.property_type_id}
+        onChange={handleInputChange}
+        className="w-[60%] border border-[#858D9D] text-[#858D9D] text-[14px] rounded-lg p-2 outline-none cursor-pointer"
+    >
+        <option value="">Select Property Type</option>
+        {propertyTypes.map(propertyType => (
+            <option key={propertyType.id} value={propertyType.id}>
+                {propertyType.type}
+            </option>
+        ))}
+    </select>
+</div>
 
                     <div className="flex justify-between items-center gap-5">
                         <label className="block text-[14px] font-medium text-[#383E49]">Available From</label>
