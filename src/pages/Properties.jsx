@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { createProperty, deleteProperty, getProperties, updateProperty, archiveProperty, unarchiveProperty, getArchivedProperties } from '../api/properties/requests'
+import { getAgents } from '../api/agents/requests'
 import Modal from '../components/general/Modal'
 import TopSection from '../components/properties/TopSection'
 import PropertyMetrics from '../components/properties/PropertyMetrics'
@@ -7,11 +8,12 @@ import PropertyHeader from '../components/properties/PropertyHeader'
 import PropertyCategories from '../components/properties/PropertyCategories'
 import PropertyList from '../components/properties/PropertyList'
 import { Loader2, AlertCircle } from 'lucide-react';
+import Select from 'react-select';
 
 const initialFormData = {
     type: "Sell",
     location: "",
-    agent_id: 3,
+    agent_id: "",
     property_availability: "",
     price: "",
     living_room: "1",
@@ -34,6 +36,7 @@ const PropertiesPage = () => {
     const [isEditing, setIsEditing] = useState(false);
     const [editingId, setEditingId] = useState(null);
     const [properties, setProperties] = useState([]);
+    const [agents, setAgents] = useState([]);
     const [activeCategory, setActiveCategory] = useState('active');
     const [formData, setFormData] = useState({ ...initialFormData });
     const [isSubmitting, setIsSubmitting] = useState(false);
@@ -41,7 +44,6 @@ const PropertiesPage = () => {
     const [newAmenity, setNewAmenity] = useState("");
     const [formErrors, setFormErrors] = useState({});
     const [submitError, setSubmitError] = useState(null);
-    const maxFileSize = 10 * 1024 * 1024; // 10MB in bytes
 
     useEffect(() => {
         let isMounted = true;
@@ -51,21 +53,21 @@ const PropertiesPage = () => {
                 setLoading(true);
                 setError(null);
 
-                const response = activeCategory === 'active'
-                    ? await getProperties()
-                    : await getArchivedProperties();
+                const [propertiesResponse, agentsResponse] = await Promise.all([
+                    activeCategory === 'active' ? getProperties() : getArchivedProperties(),
+                    getAgents()
+                ]);
 
-                if (isMounted && response?.data) {
-                    setProperties(response.data);
-                } else if (isMounted) {
-                    setProperties([]);
-                    setError('No properties found');
+                if (isMounted) {
+                    setProperties(propertiesResponse?.data || []);
+                    setAgents(agentsResponse?.data || []);
                 }
             } catch (error) {
                 if (isMounted) {
-                    console.error('Error fetching properties:', error);
-                    setError('Failed to fetch properties. Please try again later.');
+                    console.error('Error fetching data:', error);
+                    setError('Failed to fetch data. Please try again later.');
                     setProperties([]);
+                    setAgents([]);
                 }
             } finally {
                 if (isMounted) {
@@ -79,7 +81,7 @@ const PropertiesPage = () => {
         return () => {
             isMounted = false;
         };
-    }, [activeCategory, refreshData]); // Added refreshData as a dependency
+    }, [activeCategory, refreshData]);
 
     const handleCategoryChange = (category) => {
         setActiveCategory(category);
@@ -225,31 +227,19 @@ const PropertiesPage = () => {
 
     const validateForm = () => {
         const errors = {};
-
+    
         // Basic field validation
         if (!formData.location) errors.location = 'Location is required';
         if (!formData.price) errors.price = 'Price is required';
         if (!formData.property_description) errors.property_description = 'Description is required';
         if (!formData.property_availability) errors.property_availability = 'Availability date is required';
         if (formData.amenities.length === 0) errors.amenities = 'At least one amenity is required';
-
+    
         // Media validation
         if (!isEditing && formData.property_images.length === 0) {
             errors.property_images = 'At least one property image is required';
         }
-
-        // File size validation
-        const validateFileSize = (files, fieldName) => {
-            const invalidFiles = files.filter(file => file.size > maxFileSize);
-            if (invalidFiles.length > 0) {
-                errors[fieldName] = `Some files exceed 10MB limit: ${invalidFiles.map(f => f.name).join(', ')}`;
-            }
-        };
-
-        if (formData.property_images.length) validateFileSize(formData.property_images, 'property_images');
-        if (formData.floor_plan.length) validateFileSize(formData.floor_plan, 'floor_plan');
-        if (formData.video_upload.length) validateFileSize(formData.video_upload, 'video_upload');
-
+    
         setFormErrors(errors);
         return Object.keys(errors).length === 0;
     };
@@ -393,6 +383,19 @@ const PropertiesPage = () => {
         );
     };
 
+        // Define options for amenities
+const amenitiesOptions = [
+    { value: 'Swimming Pool', label: 'Swimming Pool' },
+    { value: 'Elevator', label: 'Elevator' },
+    { value: 'Cinema', label: 'Cinema' },
+    { value: 'Gym', label: 'Gym' },
+    { value: 'Roof Top', label: 'Roof Top' },
+    { value: 'Smart Home', label: 'Smart Home' },
+    { value: 'Outdoor Lounge', label: 'Outdoor Lounge' },
+    { value: 'Playground', label: 'Playground' },
+    { value: 'Internet', label: 'Internet' },
+];
+
     return (
         <div className="p-4">
             <TopSection />
@@ -428,35 +431,37 @@ const PropertiesPage = () => {
                             Property Images {isEditing ? '(Optional)' : '*'}
                         </label>
                         <div className="flex justify-center items-start gap-5 flex-wrap">
-                            <div className="border border-dashed border-[#9D9D9D] w-[100px] h-[100px] rounded-lg relative hover:bg-gray-50 transition-colors cursor-pointer">
-                                <div className="grid grid-cols-2 gap-1 absolute inset-0 p-2">
-                                    {/* Show existing images */}
-                                    {formData.existingImages?.slice(0, 4).map((url, index) => (
-                                        <div key={`existing-${index}`} className="relative w-full h-full">
-                                            {renderMediaPreview(url, 'image')}
-                                        </div>
-                                    ))}
-                                    {/* Show new uploads */}
-                                    {formData.property_images.slice(0, 4).map((file, index) => (
-                                        <div key={`new-${index}`} className="relative w-full h-full">
-                                            {renderMediaPreview(file, 'image')}
-                                        </div>
-                                    ))}
-                                </div>
-                                <input
-                                    id="fileInput"
-                                    type="file"
-                                    accept="image/*"
-                                    className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-                                    onChange={handleFileChange}
-                                    multiple
-                                />
-                            </div>
-                            <div className='w-[100px]'>
-                                <p className="text-[12px] text-[#858D9D]">Drop files here or click to upload</p>
-                                <p className="text-xs text-[#80D3A1] mt-1">Maximum file size: 10MB</p>
-                            </div>
-                        </div>
+    <div className="border border-dashed border-[#9D9D9D] w-[100px] h-[100px] rounded-lg relative hover:bg-gray-50 transition-colors cursor-pointer">
+        {/* Add a scrollable container for previews */}
+        <div className="absolute inset-0 p-2 overflow-y-auto custom-scrollbar">
+            <div className="grid grid-cols-2 gap-1">
+                {/* Show existing images */}
+                {formData.existingImages?.slice(0, 20).map((url, index) => (
+                    <div key={`existing-${index}`} className="relative w-full aspect-square">
+                        {renderMediaPreview(url, 'image')}
+                    </div>
+                ))}
+                {/* Show new uploads */}
+                {formData.property_images.slice(0, 20).map((file, index) => (
+                    <div key={`new-${index}`} className="relative w-full aspect-square">
+                        {renderMediaPreview(file, 'image')}
+                    </div>
+                ))}
+            </div>
+        </div>
+        <input
+            id="fileInput"
+            type="file"
+            accept="image/*"
+            className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+            onChange={handleFileChange}
+            multiple
+        />
+    </div>
+    <div className='w-[100px]'>
+        <p className="text-[12px] text-[#858D9D]">Drop files here or click to upload</p>
+    </div>
+</div>
                         {renderError('property_images')}
                     </div>
 
@@ -505,9 +510,26 @@ const PropertiesPage = () => {
                     </div>
 
                     <div className="flex justify-between items-center gap-5">
+                        <label className="block text-[14px] font-medium text-[#383E49]">Agent</label>
+                        <select
+                            name="agent_id"
+                            value={formData.agent_id}
+                            onChange={handleInputChange}
+                            className="w-[60%] border border-[#858D9D] text-[#858D9D] text-[14px] rounded-lg p-2 outline-none cursor-pointer"
+                        >
+                            <option value="">Select Agent</option>
+                            {agents.map(agent => (
+                                <option key={agent.id} value={agent.id}>
+                                    {agent.first_name} {agent.last_name}
+                                </option>
+                            ))}
+                        </select>
+                    </div>
+
+                    <div className="flex justify-between items-center gap-5">
                         <label className="block text-[14px] font-medium text-[#383E49]">Available From</label>
                         <input
-                            type="datetime-local"
+                            type="date"
                             className="w-[60%] border border-[#858D9D] text-[#858D9D] text-[14px] rounded-lg p-2 outline-none"
                             name="property_availability"
                             value={formData.property_availability}
@@ -541,54 +563,31 @@ const PropertiesPage = () => {
                         }
                     </div>
 
-                    <div className="flex items-center gap-2">
-                        <input
-                            type="checkbox"
-                            name="finance"
-                            checked={formData.finance}
-                            onChange={handleInputChange}
-                            className="w-4 h-4 cursor-pointer"
-                        />
-                        <label className="block text-[14px] font-medium text-[#383E49]">Financing Available</label>
+                    <div className="flex justify-between items-center gap-5">
+                     <label className="block text-[14px] font-medium text-[#383E49]">Finance</label>
+                     <select
+                       name="finance"
+                       value={formData.finance ? "YES" : "NO"}
+                       onChange={(e) => setFormData({ ...formData, finance: e.target.value === "YES" })}
+                       className="w-[60%] border border-[#858D9D] text-[#858D9D] text-[14px] rounded-lg p-2 outline-none cursor-pointer"
+                     >
+                      <option value="YES">YES</option>
+                      <option value="NO">NO</option>
+                     </select>
                     </div>
 
                     {/* Amenities Input */}
                     <div className="space-y-2">
-                        <label className="block text-[14px] font-medium text-[#383E49]">Amenities</label>
-                        <div className="flex space-x-2">
-                            <input
-                                type="text"
-                                value={newAmenity}
-                                onChange={(e) => setNewAmenity(e.target.value)}
-                                className="flex-1 border border-[#858D9D] text-[#858D9D] text-[14px] rounded-lg p-2 outline-none"
-                                placeholder="Add an amenity"
-                            />
-                            <button
-                                onClick={handleAddAmenity}
-                                type="button"
-                                className="px-4 py-2 bg-[#4DA981] text-white rounded-lg cursor-pointer  transition"
-                            >
-                                Add
-                            </button>
-                        </div>
-                        <ul className="space-y-1 mt-2 text-sm text-[#383E49]">
-                            {formData.amenities.map((amenity, index) => (
-                                <li
-                                    key={index}
-                                    className="flex items-center justify-between border rounded-lg px-3 py-2"
-                                >
-                                    <span>{amenity}</span>
-                                    <button
-                                        onClick={() => handleRemoveAmenity(amenity)}
-                                        type="button"
-                                        className="text-red-500 hover:underline text-xs"
-                                    >
-                                        Remove
-                                    </button>
-                                </li>
-                            ))}
-                        </ul>
-                        {renderError('amenities')}
+                      <label className="block text-[14px] font-medium text-[#383E49]">Amenities</label>
+                      <Select
+                       isMulti
+                       name="amenities"
+                       options={amenitiesOptions}
+                       className="w-full border border-[#858D9D] text-[#858D9D] text-[14px] rounded-lg p-2 outline-none cursor-pointer"
+                       classNamePrefix="select"
+                       value={amenitiesOptions.filter(option => formData.amenities.includes(option.value))}
+                       onChange={(selectedOptions) => setFormData({ ...formData, amenities: selectedOptions.map(option => option.value) })}
+                      />
                     </div>
 
                     <div className="flex justify-between items-start">
