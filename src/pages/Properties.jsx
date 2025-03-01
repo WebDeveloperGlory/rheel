@@ -218,23 +218,6 @@ const PropertiesPage = () => {
         }));
     };
 
-    const handleAddAmenity = () => {
-        if (newAmenity.trim() && !formData.amenities.includes(newAmenity)) {
-            setFormData({
-                ...formData,
-                amenities: [...formData.amenities, newAmenity],
-            });
-            setNewAmenity(""); // Clear input
-        }
-    };
-
-    const handleRemoveAmenity = (amenity) => {
-        setFormData({
-            ...formData,
-            amenities: formData.amenities.filter((a) => a !== amenity),
-        });
-    };
-
     const validateForm = () => {
         const errors = {};
     
@@ -660,7 +643,7 @@ const propertyTypes = [
                                 <input
                                     type="file"
                                     name="video_upload"
-                                    accept="video/*"
+                                    accept="video/mp4,video/x-matroska,video/x-msvideo"
                                     className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
                                     onChange={handleVideoAndFloorPlanChange}
                                 />
