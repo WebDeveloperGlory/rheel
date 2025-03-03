@@ -1,10 +1,10 @@
-import React, { useState, useEffect } from 'react'
-import TopSection from '../components/affiliates/TopSection'
-import { getAgents } from '../api/agents/requests'
-import { getAffiliates, createAffliate } from '../api/affiliates/requests'
-import AffiliateMetrics from '../components/affiliates/AffiliateMetrics'
-import AffiliatesTable from '../components/affiliates/AffiliatesTable'
-import AffiliatesModal from '../components/affiliates/AffiliatesModal'
+import React, { useState, useEffect } from 'react';
+import TopSection from '../components/affiliates/TopSection';
+import { getAgents } from '../api/agents/requests';
+import { getAffiliates, createAffliate } from '../api/affiliates/requests';
+import AffiliateMetrics from '../components/affiliates/AffiliateMetrics';
+import AffiliatesTable from '../components/affiliates/AffiliatesTable';
+import AffiliatesModal from '../components/affiliates/AffiliatesModal';
 
 const initialFormState = {
   first_name: '',
@@ -14,7 +14,7 @@ const initialFormState = {
   value: '',
   status: '',
   payment_status: '',
-}
+};
 
 const Affiliates = () => {
   const [agents, setAgents] = useState([]);
@@ -54,7 +54,7 @@ const Affiliates = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);
-
+ 
     try {
       const response = await createAffliate(formData);
       if (response && response.status) {
@@ -71,7 +71,6 @@ const Affiliates = () => {
       setIsSubmitting(false);
     } 
   };
-
 
   const affilateMetrics = [
     { name: 'Registered Agents', value: agents?.length ?? 0 },
@@ -119,7 +118,7 @@ const Affiliates = () => {
         isSubmitting={isSubmitting}
       />
     </div>
-  )
-}
+  );
+};
 
-export default Affiliates
+export default Affiliates;

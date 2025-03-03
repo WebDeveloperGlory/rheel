@@ -9,7 +9,7 @@ const AffiliatesTable = ({ affiliates, onEdit, onDelete, loading, onStatusUpdate
   const [showAll, setShowAll] = useState(false);
   const itemsPerPage = 6;
 
-  const getStatusColor = (status) => {
+  const getStatusColor = (status) => { 
     const statusColors = {
       'Activated': '#0E3B8D',
       'Terminated': '#FF0000',
@@ -19,16 +19,19 @@ const AffiliatesTable = ({ affiliates, onEdit, onDelete, loading, onStatusUpdate
     return statusColors[status] || 'bg-gray-100';
   };
 
+  // Sort affiliates by latest
+  const sortedAffiliates = [...affiliates].sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+
   const paginatedData = useMemo(() => {
     if (showAll) {
-      return affiliates;
+      return sortedAffiliates;
     }
     const startIndex = (currentPage - 1) * itemsPerPage;
     const endIndex = startIndex + itemsPerPage;
-    return affiliates.slice(startIndex, endIndex);
-  }, [affiliates, currentPage, showAll]);
+    return sortedAffiliates.slice(startIndex, endIndex);
+  }, [sortedAffiliates, currentPage, showAll]);
 
-  const totalPages = Math.ceil(affiliates.length / itemsPerPage);
+  const totalPages = Math.ceil(sortedAffiliates.length / itemsPerPage);
 
   const handleDropdownClick = (e, id) => {
     e.stopPropagation();
@@ -160,13 +163,13 @@ const AffiliatesTable = ({ affiliates, onEdit, onDelete, loading, onStatusUpdate
                               <Edit2 className="h-4 w-4 cursor-pointer" />
                               <span>Update Payment Status</span>
                             </button>
-                            <button
+                            {/*<button
                               className="w-full px-4 py-2 text-sm text-red-600 hover:bg-gray-100 flex items-center gap-2"
                               onClick={(e) => handleActionClick(e, 'delete', affiliate)}
                             >
                               <Trash2 className="h-4 w-4 cursor-pointer" />
                               <span>Delete</span>
-                            </button>
+                            </button>*/}
                           </div>
                         </div>
                       )}
@@ -179,10 +182,10 @@ const AffiliatesTable = ({ affiliates, onEdit, onDelete, loading, onStatusUpdate
         </div>
       </div>
 
-      {!showAll && affiliates.length > itemsPerPage && (
+      {!showAll && sortedAffiliates.length > itemsPerPage && (
         <div className="flex items-center justify-between mt-4">
           <div className="text-sm text-gray-700">
-            Showing {((currentPage - 1) * itemsPerPage) + 1} to {Math.min(currentPage * itemsPerPage, affiliates.length)} of {affiliates.length} rows
+            Showing {((currentPage - 1) * itemsPerPage) + 1} to {Math.min(currentPage * itemsPerPage, sortedAffiliates.length)} of {sortedAffiliates.length} rows
           </div>
           <div className="flex gap-1">
             {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
@@ -204,7 +207,7 @@ const AffiliatesTable = ({ affiliates, onEdit, onDelete, loading, onStatusUpdate
 
       {showAll && (
         <div className="text-sm text-gray-700 mt-4">
-          Showing all {affiliates.length} rows
+          Showing all {sortedAffiliates.length} rows
         </div>
       )}
     </div>

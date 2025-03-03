@@ -1,8 +1,8 @@
-import React from 'react'
-import { X, Loader2 } from 'lucide-react'
+import React from 'react';
+import { X, Loader2 } from 'lucide-react';
 
 const AffiliatesModal = ({ show, onClose, onSubmit, formData, onChange, isSubmitting }) => {
-  if (!show) return null
+  if (!show) return null;
 
   return (
     <div className="fixed inset-0 bg-black/20 bg-opacity-50 flex items-center justify-center p-4"> 
@@ -105,7 +105,7 @@ const AffiliatesModal = ({ show, onClose, onSubmit, formData, onChange, isSubmit
             {/* Payment Status */}
             <div className="flex justify-between items-center p-2 px-5 mt-2">
              <label className="block text-[14px] font-medium text-[#383E49]">Payment Status</label>
-              <select
+              <select 
                 name="payment_status"
                 value={formData.payment_status}
                 onChange={onChange}
@@ -145,7 +145,7 @@ const AffiliatesModal = ({ show, onClose, onSubmit, formData, onChange, isSubmit
           </form>
         </div>
     </div>
-  )
-}
+  );
+};
 
-export default AffiliatesModal
+export default AffiliatesModal;
