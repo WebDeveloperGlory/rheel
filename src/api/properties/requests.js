@@ -70,6 +70,7 @@ export const updateProperty = async ( propertyId, formData ) => {
             `/admin/properties/edit/${ propertyId }`,
             formData,
             {
+                timeout: 1000000,
                 headers: {
                     "Content-Type": "multipart/form-data",
                 },

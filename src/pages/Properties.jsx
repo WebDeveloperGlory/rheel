@@ -25,6 +25,7 @@ const initialFormData = {
     property_images: [],
     floor_plan: [], // Changed to array
     video_upload: [],
+
     property_type_id: ""
 }
 
@@ -108,7 +109,7 @@ const PropertiesPage = () => {
         });
     
         setShowModal(true);
-    };
+    };;
 
     const handleDelete = async (propertyId) => {
         if (!propertyId) return;
@@ -196,26 +197,13 @@ const PropertiesPage = () => {
 
     const handleVideoAndFloorPlanChange = (e) => {
         const { name, files } = e.target;
-        let allowedFormats = [];
-    
-        if (name === 'video_upload') {
-            allowedFormats = ['video/mp4', 'video/x-matroska', 'video/x-msvideo']; // mp4, mkv, avi
-        } else if (name === 'floor_plan') {
-            allowedFormats = ['image/jpeg', 'image/png', 'image/jpg']; // jpg, jpeg, png
-        }
-    
-        const validFiles = Array.from(files).filter(file => {
-            if (!allowedFormats.includes(file.type)) {
-                window.alert(`Unsupported file format: ${file.name}. Allowed formats are ${allowedFormats.join(', ')}.`);
-                return false;
+
+        setFormData(prev => (
+            {
+                ...prev,
+                [name]: Array.from(files)
             }
-            return true;
-        });
-    
-        setFormData(prev => ({
-            ...prev,
-            [name]: validFiles
-        }));
+        ));
     };
 
     const validateForm = () => {
@@ -471,7 +459,7 @@ const propertyTypes = [
                     </div>
 
                     <div className="flex justify-between items-center gap-5">
-                        <label className="block text-[14px] font-medium text-[#383E49]">Property Type</label>
+                        <label className="block text-[14px] font-medium text-[#383E49]">Type</label>
                         <select
                             name="type"
                             value={formData.type}
@@ -485,7 +473,7 @@ const propertyTypes = [
 
                     <div className="flex justify-between items-center gap-5">
                         <label className="block text-[14px] font-medium text-[#383E49]">
-                            Location*
+                            Location
                         </label>
                         <div className="w-[60%]">
                             <input
@@ -548,7 +536,7 @@ const propertyTypes = [
     </select>
 </div>
 
-<div className="flex justify-between items-center gap-5">
+                    <div className="flex justify-between items-center gap-5">
     <label className="block text-[14px] font-medium text-[#383E49]">Available From</label>
     <input
         type="date"
@@ -598,18 +586,19 @@ const propertyTypes = [
                      </select>
                     </div>
 
+                    {/* Amenities Input */}
                     <div className="space-y-2">
-    <label className="block text-[14px] font-medium text-[#383E49]">Amenities</label>
-    <Select
-        isMulti
-        name="amenities"
-        options={amenitiesOptions}
-        className="w-full border border-[#858D9D] text-[#858D9D] text-[14px] rounded-lg p-2 outline-none cursor-pointer"
-        classNamePrefix="select"
-        value={amenitiesOptions.filter(option => formData.amenities.includes(option.value))}
-        onChange={(selectedOptions) => setFormData({ ...formData, amenities: selectedOptions.map(option => option.value) })}
-    />
-</div>
+                      <label className="block text-[14px] font-medium text-[#383E49]">Amenities</label>
+                      <Select
+                       isMulti
+                       name="amenities"
+                       options={amenitiesOptions}
+                       className="w-full border border-[#858D9D] text-[#858D9D] text-[14px] rounded-lg p-2 outline-none cursor-pointer"
+                       classNamePrefix="select"
+                       value={amenitiesOptions.filter(option => formData.amenities.includes(option.value))}
+                       onChange={(selectedOptions) => setFormData({ ...formData, amenities: selectedOptions.map(option => option.value) })}
+                      />
+                    </div>
 
                     <div className="flex justify-between items-start">
                         <label className="block text-[12px] font-medium text-[#383E49]">Property Description</label>
@@ -643,7 +632,7 @@ const propertyTypes = [
                                 <input
                                     type="file"
                                     name="video_upload"
-                                    accept="video/mp4,video/x-matroska,video/x-msvideo"
+                                    accept="video/*"
                                     className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
                                     onChange={handleVideoAndFloorPlanChange}
                                 />

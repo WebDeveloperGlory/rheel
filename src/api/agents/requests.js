@@ -91,3 +91,17 @@ export const getAgentById = async (id) => {
     }
 }
 
+export const deleteAgent = async (agentId) => {
+    try {
+        const response = await axiosInstance.delete(`/admin/agents/delete/${agentId}`);
+        const { data, status } = response;
+        if (!status) {
+            throw response;
+        }
+        return data;
+    } catch (error) {
+        console.error('Error deleting agent: ', error);
+        return null;
+    }
+}
+

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { getAdmins } from '../api/admins/requests';
+import { getAdmins, deleteAdmin } from '../api/admins/requests';
 import TopSection from '../components/admins/TopSection';
 import Header from '../components/admins/Header';
 import AdminsTable from '../components/admins/AdminsTable';
@@ -33,6 +33,23 @@ const Admins = () => {
     setShowModal(false);
   };
 
+  const handleDelete = async (userId) => {
+    if (window.confirm('Are you sure you want to delete this admin?')) {
+      try {
+        const data = await deleteAdmin(userId);
+        if (data && data.status) {
+          window.alert('Admin deleted successfully');
+          fetchData(); // Refetch data after deletion
+        } else {
+          window.alert('An Error Occurred');
+        }
+      } catch (error) {
+        console.error('Error deleting admin:', error);
+        window.alert('An Error Occurred');
+      }
+    }
+  };
+
   return (
     <div className='p-4'>
       <TopSection />
@@ -42,7 +59,7 @@ const Admins = () => {
           {error}
         </div>
       )}
-      <AdminsTable admins={adminUsers} loading={loading} />
+      <AdminsTable admins={adminUsers} loading={loading} onDelete={handleDelete} />
       <AdminsModal 
         show={showModal} 
         onClose={handleCloseModal}

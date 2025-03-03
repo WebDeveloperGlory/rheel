@@ -31,4 +31,14 @@ export const createAdmin = async (formData) => {
         const errorMessage = error.response?.data?.message || error.message || 'Failed to create admin';
         throw new Error(errorMessage);
     }
+}; 
+
+export const deleteAdmin = async (userId) => {
+  try {
+    const response = await axiosInstance.delete(`/admin/users/delete/${userId}`);
+    return response.data;
+  } catch (error) {
+    console.error('Error deleting admin:', error);
+    throw error;
+  }
 };

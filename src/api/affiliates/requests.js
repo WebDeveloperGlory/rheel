@@ -13,7 +13,7 @@ export const getAffiliates = async () => {
         console.error('Error fetching affiliates:', error);
         return []; // Always return an array to prevent `null` issues
     }
-};
+}; 
 
 export const createAffliate = async (formData) => {
     try {
@@ -40,6 +40,27 @@ export const createAffliate = async (formData) => {
         return {
             status: false,
             error: error.response?.data?.message || 'Failed to create affiliate'
+        };
+    }
+};
+
+export const updateAffiliateStatus = async (affiliateCode, status, paymentStatus) => {
+    try {
+        const response = await axiosInstance.put(`/admin/affiliate-status/${affiliateCode}`, {
+            status,
+            payment_status: paymentStatus
+        });
+
+        return {
+            data: response.data,
+            status: response.status === 200 || response.status === 201,
+            message: response.data?.message
+        };
+    } catch (error) {
+        console.error('Error updating affiliate status:', error);
+        return {
+            status: false,
+            error: error.response?.data?.message || 'Failed to update affiliate status'
         };
     }
 };

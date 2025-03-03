@@ -1,7 +1,8 @@
 import React, { useState, useMemo } from 'react';
 import AffiliateTableSkeleton from '../skeletons/AffiliateTableSkeleton';
+import { Trash2 } from 'lucide-react';
 
-const AdminsTable = ({ admins = [], loading = false }) => {
+const AdminsTable = ({ admins = [], loading = false, onDelete }) => {
     const [currentPage, setCurrentPage] = useState(1);
     const [showAll, setShowAll] = useState(false);
     const itemsPerPage = 5;
@@ -49,19 +50,16 @@ const AdminsTable = ({ admins = [], loading = false }) => {
                     <table className="w-full">
                         <thead className="bg-gray-50 text-[14px]">
                             <tr>
-                                <th className="px-6 py-3 text-left text-xs font-medium text-[#8B909A] uppercase tracking-wider">Role</th>
                                 <th className="px-6 py-3 text-left text-xs font-medium text-[#8B909A] uppercase tracking-wider">Created At</th>
                                 <th className="px-6 py-3 text-left text-xs font-medium text-[#8B909A] uppercase tracking-wider">Full Name</th>
                                 <th className="px-6 py-3 text-left text-xs font-medium text-[#8B909A] uppercase tracking-wider">Mail Address</th>
                                 <th className="px-6 py-3 text-left text-xs font-medium text-[#8B909A] uppercase tracking-wider">Phone Number</th>
+                                <th className="px-6 py-3 text-left text-xs font-medium text-[#8B909A] uppercase tracking-wider">Actions</th>
                             </tr>
                         </thead>
                         <tbody>
                             {paginatedData.map((admin) => (
                                 <tr key={admin.id} className="hover:bg-gray-50">
-                                    <td className="px-6 py-4 text-sm text-gray-500">
-                                        Admin
-                                    </td>
                                     <td className="px-6 py-4 whitespace-nowrap text-sm text-[#8B909A] uppercase">
                                         {admin.created_at}
                                     </td>
@@ -74,6 +72,14 @@ const AdminsTable = ({ admins = [], loading = false }) => {
                                     <td className="px-6 py-4 whitespace-nowrap text-sm text-[#8B909A] uppercase">
                                         {admin.phone_number}
                                     </td>
+                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-[#8B909A] uppercase">
+                                        <button
+                                          onClick={() => onDelete(admin.id)}
+                                          className="p-2 rounded-lg hover:bg-red-50 transition-colors"
+                                        >
+                                            <Trash2 className="w-5 h-5 text-red-500 cursor-pointer" />
+                                        </button>
+                                    </td>
                                 </tr>
                             ))}
                         </tbody>
@@ -81,10 +87,10 @@ const AdminsTable = ({ admins = [], loading = false }) => {
                 </div>
 
                 {showAll && (
-    <div className="text-sm text-gray-700 mt-4">
-        Showing all {admins.length} rows
-    </div>
-)}
+                    <div className="text-sm text-gray-700 mt-4">
+                        Showing all {admins.length} rows
+                    </div>
+                )}
             </div>
             {!showAll && admins.length > itemsPerPage && (
                 <div className="flex items-center justify-between mt-4">
@@ -108,8 +114,6 @@ const AdminsTable = ({ admins = [], loading = false }) => {
                     </div>
                 </div>
             )}
-            
-
         </div>
     );
 };

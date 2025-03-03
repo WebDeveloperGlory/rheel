@@ -1,8 +1,9 @@
 import React, { useState, useMemo } from 'react';
 import { MoreVertical, Edit2, Trash2 } from 'lucide-react';
 import AffiliateTableSkeleton from '../skeletons/AffiliateTableSkeleton';
+import { updateAffiliateStatus } from '../../api/affiliates/requests';
 
-const AffiliatesTable = ({ affiliates, onEdit, onDelete, loading }) => {
+const AffiliatesTable = ({ affiliates, onEdit, onDelete, loading, onStatusUpdate }) => {
   const [currentPage, setCurrentPage] = useState(1);
   const [openDropdownId, setOpenDropdownId] = useState(null);
   const [showAll, setShowAll] = useState(false);
@@ -34,13 +35,36 @@ const AffiliatesTable = ({ affiliates, onEdit, onDelete, loading }) => {
     setOpenDropdownId(openDropdownId === id ? null : id);
   };
 
-  const handleActionClick = (e, action, affiliate) => {
+  const handleActionClick = async (e, action, affiliate) => {
     e.stopPropagation();
     setOpenDropdownId(null);
+
     if (action === 'edit') {
       onEdit(affiliate);
     } else if (action === 'delete') {
       onDelete(affiliate);
+    } else if (action === 'updateStatus') {
+      const newStatus = prompt('Enter new status:', affiliate.status);
+      if (newStatus) {
+        const response = await updateAffiliateStatus(affiliate.affiliate_code, newStatus, affiliate.payment_status);
+        if (response.status) {
+          window.alert('Affiliate status updated successfully');
+          onStatusUpdate(); // Trigger data refresh
+        } else {
+          window.alert(response.error || 'Failed to update affiliate status');
+        }
+      }
+    } else if (action === 'updatePaymentStatus') {
+      const newPaymentStatus = prompt('Enter new payment status:', affiliate.payment_status);
+      if (newPaymentStatus) {
+        const response = await updateAffiliateStatus(affiliate.affiliate_code, affiliate.status, newPaymentStatus);
+        if (response.status) {
+          window.alert('Affiliate payment status updated successfully');
+          onStatusUpdate(); // Trigger data refresh
+        } else {
+          window.alert(response.error || 'Failed to update affiliate payment status');
+        }
+      }
     }
   };
 
@@ -89,6 +113,7 @@ const AffiliatesTable = ({ affiliates, onEdit, onDelete, loading }) => {
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Value</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Payment Status</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
               </tr>
             </thead>
             <tbody>
@@ -108,9 +133,8 @@ const AffiliatesTable = ({ affiliates, onEdit, onDelete, loading }) => {
                       </span>
                     </div>
                   </td>
-
                   <td className="px-6 py-4 text-sm text-gray-500">{affiliate.payment_status}</td>
-                  {/*<td className="px-6 py-4">
+                  <td className="px-6 py-4">
                     <div className="relative" onClick={e => e.stopPropagation()}>
                       <button
                         onClick={(e) => handleDropdownClick(e, affiliate.id)}
@@ -120,14 +144,21 @@ const AffiliatesTable = ({ affiliates, onEdit, onDelete, loading }) => {
                       </button>
                       
                       {openDropdownId === affiliate.id && (
-                        <div className="absolute right-0 mt-2 w-36 bg-white rounded-md shadow-lg border border-gray-200 z-10">
+                        <div className="absolute right-0 mt-2 w-60 bg-white rounded-md shadow-lg border border-gray-200 z-10">
                           <div className="py-1">
                             <button
                               className="w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center gap-2"
-                              onClick={(e) => handleActionClick(e, 'edit', affiliate)}
+                              onClick={(e) => handleActionClick(e, 'updateStatus', affiliate)}
                             >
                               <Edit2 className="h-4 w-4 cursor-pointer" />
-                              <span>Edit</span>
+                              <span>Update Status</span>
+                            </button>
+                            <button
+                              className="w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center gap-2"
+                              onClick={(e) => handleActionClick(e, 'updatePaymentStatus', affiliate)}
+                            >
+                              <Edit2 className="h-4 w-4 cursor-pointer" />
+                              <span>Update Payment Status</span>
                             </button>
                             <button
                               className="w-full px-4 py-2 text-sm text-red-600 hover:bg-gray-100 flex items-center gap-2"
@@ -140,7 +171,7 @@ const AffiliatesTable = ({ affiliates, onEdit, onDelete, loading }) => {
                         </div>
                       )}
                     </div>
-                  </td>*/}
+                  </td>
                 </tr>
               ))}
             </tbody>

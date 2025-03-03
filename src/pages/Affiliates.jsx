@@ -23,6 +23,7 @@ const Affiliates = () => {
   const [showModal, setShowModal] = useState(false);
   const [formData, setFormData] = useState(initialFormState);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [refreshData, setRefreshData] = useState(0);
 
   useEffect(() => { 
     const fetchData = async () => {
@@ -42,9 +43,8 @@ const Affiliates = () => {
       }
     };
     
-  
-    if (loading) fetchData();
-  }, [loading]);
+    fetchData();
+  }, [refreshData]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -59,7 +59,7 @@ const Affiliates = () => {
       const response = await createAffliate(formData);
       if (response && response.status) {
         window.alert('Affiliate created successfully');
-        setLoading(true);
+        setRefreshData(prev => prev + 1); // Trigger data refresh
         handleCloseModal();
       } else {
         window.alert(response.error || 'Failed to create affiliate');
@@ -69,7 +69,7 @@ const Affiliates = () => {
       window.alert('Error creating affiliate');
     } finally {
       setIsSubmitting(false);
-    }
+    } 
   };
 
 
@@ -108,6 +108,7 @@ const Affiliates = () => {
         loading={loading}
         onEdit={handleEdit}
         onDelete={handleDelete}
+        onStatusUpdate={() => setRefreshData(prev => prev + 1)} // Trigger data refresh on status update
       />
       <AffiliatesModal
         show={showModal}
