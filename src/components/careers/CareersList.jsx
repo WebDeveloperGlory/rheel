@@ -128,6 +128,10 @@ const CareersList = () => {
                     ₦{Number(career.salary).toLocaleString()}
                   </span>
                 </div>
+                <div className="flex items-center justify-between py-3 border-t border-gray-100">
+                  <span className="text-sm font-medium text-gray-500">Link</span>
+                  <span className="text-sm font-semibold text-blue-500">{career.link}</span>
+              </div>
               </div>
             </div>
           ))}

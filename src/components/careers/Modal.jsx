@@ -8,7 +8,8 @@ const Modal = ({ isOpen, onClose, onSubmit, initialData = null }) => {
     location: '',
     position: '',
     salary: '',
-    type: ''
+    type: '',
+    link: ''
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -110,6 +111,18 @@ const Modal = ({ isOpen, onClose, onSubmit, initialData = null }) => {
               <option value="Remote">Remote</option>
               <option value="On-site">On-site</option>
             </select>
+          </div>
+
+          {/* Link */}
+          <div className="flex justify-between items-center p-2 px-5 mt-2">
+            <label className="block text-[14px] font-medium text-[#383E49]">Link</label>
+            <input
+              type="text"
+              value={formData.link}
+              onChange={(e) => setFormData({...formData, link: e.target.value})}
+              className="w-[60%] border rounded-lg p-2 text-sm placeholder:text-[14px] focus:outline-none border-[#D0D5DD]"
+              placeholder="Enter job link"
+            />
           </div>
 
           <div className="flex justify-end gap-4 py-8 px-5">
