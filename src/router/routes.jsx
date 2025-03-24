@@ -11,6 +11,7 @@ import AgentsDetail from "../pages/AgentsDetail";
 import Inquiries from "../pages/Inquiries";
 import SignInPage from "../pages/SignIn";
 import Admins from "../pages/Admins";
+import Carrers from "../pages/Carrers";
 import ProtectedRoute from "../components/ProtectedRoute"; // Import ProtectedRoute
 
 const AppRoutes = () => {
@@ -61,6 +62,10 @@ const AppRoutes = () => {
         {
             path: "/login",
             element: <SignInPage />,
+        },
+        {
+            path: "/careers",
+            element: <ProtectedRoute element={<Carrers />} />
         },
         {
             path: "/admins",

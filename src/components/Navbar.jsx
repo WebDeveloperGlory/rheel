@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import logo from '../assets/images/logo.png';
-import { Bell, Menu, X, House, Users, Ticket, Star, Blend, Settings, Power, LayoutGrid, Columns2 } from 'lucide-react';
+import { Bell, Menu, X, House, Users, Ticket, Star, Blend, Settings, Power, LayoutGrid, Columns2, SquareChartGantt } from 'lucide-react';
 import { logout } from '../api/sign in/requests';
 
 const menuItems = [
@@ -11,7 +11,8 @@ const menuItems = [
   //{ icon: Ticket, name: 'Inquiries', path: '/inquiries' },
   { icon: Star, name: 'Affiliates', path: '/affiliates' },
   { icon: Columns2, name: 'Announcements', path: '/announcements' },
-  { icon: LayoutGrid, name: 'App Banners', path: '/app-banners' }
+  { icon: LayoutGrid, name: 'App Banners', path: '/app-banners' },
+  { icon: SquareChartGantt, name: 'Careers', path: '/careers' }
 ];
 
 const Navbar = () => {
