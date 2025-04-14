@@ -90,7 +90,7 @@ const Modal = ({ isOpen, onClose, onSubmit, initialData = null }) => {
           <div className="flex justify-between items-center p-2 px-5 mt-2">
             <label className="block text-[14px] font-medium text-[#383E49]">Salary</label>
             <input
-              type="text"
+              type="number"
               value={formData.salary}
               onChange={(e) => setFormData({...formData, salary: e.target.value})}
               className="w-[60%] border rounded-lg p-2 text-sm placeholder:text-[14px] focus:outline-none border-[#D0D5DD]"

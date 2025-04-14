@@ -130,8 +130,15 @@ const CareersList = () => {
                 </div>
                 <div className="flex items-center justify-between py-3 border-t border-gray-100">
                   <span className="text-sm font-medium text-gray-500">Link</span>
-                  <span className="text-sm font-semibold text-blue-500">{career.link}</span>
-              </div>
+                  <a 
+                    href={career.link}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-sm font-semibold text-blue-500 hover:text-blue-700 underline break-words"
+                  >
+                    View Job
+                  </a>
+                </div>
               </div>
             </div>
           ))}
