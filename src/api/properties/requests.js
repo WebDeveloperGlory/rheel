@@ -73,7 +73,7 @@ export const createProperty = async (formData, onProgress) => {
             `/admin/properties/add`,
             formData,
             {
-                timeout: 30000, // Reduced timeout
+                timeout: 3600000, // Reduced timeout
                 headers: {
                     "Content-Type": "multipart/form-data",
                 },
@@ -98,7 +98,7 @@ export const updateProperty = async (propertyId, formData, onProgress) => {
             `/admin/properties/edit/${propertyId}`,
             formData,
             {
-                timeout: 30000, // Reduced timeout
+                timeout: 3600000, // Reduced timeout
                 headers: {
                     "Content-Type": "multipart/form-data",
                 },
