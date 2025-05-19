@@ -69,11 +69,11 @@ export const getPropertyById = async ( id ) => {
 
 export const createProperty = async (formData, onProgress) => {
     try {
-        const response = await axiosInstance.post( 
+        const response = await axiosInstance.post(
             `/admin/properties/add`,
             formData,
-            {   
-                timeout: 3600000,
+            {
+                timeout: 30000, // Reduced timeout
                 headers: {
                     "Content-Type": "multipart/form-data",
                 },
@@ -82,23 +82,23 @@ export const createProperty = async (formData, onProgress) => {
         );
         const { data, status } = response;
 
-        if( !status ) {
-            throw response;
+        if (status < 200 || status >= 300) {
+            throw new Error(response.data?.message || 'Failed to create property');
         }
         return data;
-    } catch( err ) {
-        console.error('Error creating property: ', err );
-        return null;
+    } catch (err) {
+        console.error('Error creating property:', err);
+        throw new Error(err.message || 'Failed to create property'); // Propagate raw error message
     }
-}
+};
 
 export const updateProperty = async (propertyId, formData, onProgress) => {
     try {
-        const response = await axiosInstance.put( 
+        const response = await axiosInstance.put(
             `/admin/properties/edit/${propertyId}`,
             formData,
             {
-                timeout: 3600000,
+                timeout: 30000, // Reduced timeout
                 headers: {
                     "Content-Type": "multipart/form-data",
                 },
@@ -107,15 +107,15 @@ export const updateProperty = async (propertyId, formData, onProgress) => {
         );
         const { data, status } = response;
 
-        if( !status ) {
-            throw response;
+        if (status < 200 || status >= 300) {
+            throw new Error(response.data?.message || 'Failed to update property');
         }
         return data;
-    } catch( err ) {
-        console.error('Error updating property: ', err );
-        return null;
+    } catch (err) {
+        console.error('Error updating property:', err);
+        throw new Error(err.message || 'Failed to update property'); // Propagate raw error message
     }
-}
+};
 
 export const deleteProperty = async (propertyId) => {
     try {

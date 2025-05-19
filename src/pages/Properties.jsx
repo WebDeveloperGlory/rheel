@@ -269,7 +269,6 @@ const PropertiesPage = () => {
 
         try {
             const updatedFormData = new FormData();
-
             updatedFormData.append("type", formData.type);
             updatedFormData.append("location", formData.location);
             updatedFormData.append("agent_id", formData.agent_id);
@@ -281,10 +280,8 @@ const PropertiesPage = () => {
             updatedFormData.append("finance", formData.finance);
             updatedFormData.append("property_description", formData.property_description);
             updatedFormData.append("property_type_id", formData.property_type_id);
-
             updatedFormData.append("amenities", JSON.stringify(formData.amenities));
 
-            // Only append new files if they exist
             if (formData.property_images.length > 0) {
                 formData.property_images.forEach(file => {
                     updatedFormData.append('property_images', file);
@@ -303,7 +300,6 @@ const PropertiesPage = () => {
                 });
             }
 
-            // Updated progress tracking for sequential uploads
             const updateProgress = (type, _, progress) => {
                 setUploadProgress(prev => {
                     switch (type) {
@@ -312,7 +308,7 @@ const PropertiesPage = () => {
                                 ...prev,
                                 images: Object.fromEntries(
                                     formData.property_images.map(file => [file.name, progress])
-                            )
+                                )
                             };
                         case 'video_upload':
                             return {
@@ -324,7 +320,7 @@ const PropertiesPage = () => {
                                 ...prev,
                                 floorPlans: Object.fromEntries(
                                     formData.floor_plan.map(file => [file.name, progress])
-                            )
+                                )
                             };
                         default:
                             return prev;
@@ -341,7 +337,6 @@ const PropertiesPage = () => {
 
             if (response?.status) {
                 setRefreshData(prev => prev + 1);
-                // Reset upload progress along with other form data
                 setUploadProgress({
                     images: {},
                     video: 0,
@@ -349,23 +344,11 @@ const PropertiesPage = () => {
                 });
                 closeModal();
             } else {
-                setSubmitError(response?.error || 'An error occurred while saving the property');
+                throw new Error('Failed to save property');
             }
         } catch (error) {
             console.error('Error saving property:', error);
-            let errorMessage = 'An error occurred while saving the property';
-            
-            if (error.name === 'AxiosError') {
-                if (error.code === 'ECONNABORTED') {
-                    errorMessage = 'Request timed out. Please try again.';
-                } else if (error.response?.data?.message) {
-                    errorMessage = error.response.data.message;
-                } else if (error.message) {
-                    errorMessage = error.message;
-                }
-            }
-            
-            setSubmitError(errorMessage);
+            setSubmitError(error.message); // Use the raw error message
         } finally {
             setIsSubmitting(false);
         }
@@ -801,7 +784,6 @@ const propertyTypes = [
                         <button
                             type="submit"
                             className="px-5 py-2 bg-[#4DA981] text-white rounded-lg  cursor-pointer disabled:opacity-60 text-[14px] flex items-center gap-2"
-                            disabled={isSubmitting || !isFormValid()}
                         >
                             {isSubmitting ? (
                                 <>
