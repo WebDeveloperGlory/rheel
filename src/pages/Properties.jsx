@@ -44,6 +44,11 @@ const PropertiesPage = () => {
     const [newAmenity, setNewAmenity] = useState("");
     const [formErrors, setFormErrors] = useState({});
     const [submitError, setSubmitError] = useState(null);
+    const [uploadProgress, setUploadProgress] = useState({
+        images: {},
+        video: 0,
+        floorPlans: {}
+    });
 
     useEffect(() => {
         let isMounted = true;
@@ -193,17 +198,43 @@ const PropertiesPage = () => {
     const handleFileChange = (e) => {
         const files = Array.from(e.target.files);
         setFormData({ ...formData, property_images: [...formData.property_images, ...files] });
+        
+        // Initialize progress for each file
+        const newProgress = { ...uploadProgress.images };
+        files.forEach(file => {
+            newProgress[file.name] = 0;
+        });
+        setUploadProgress(prev => ({
+            ...prev,
+            images: newProgress
+        }));
     };
 
     const handleVideoAndFloorPlanChange = (e) => {
         const { name, files } = e.target;
+        const fileArray = Array.from(files);
 
-        setFormData(prev => (
-            {
+        setFormData(prev => ({
+            ...prev,
+            [name]: fileArray
+        }));
+
+        // Initialize progress based on media type
+        if (name === 'video_upload') {
+            setUploadProgress(prev => ({
                 ...prev,
-                [name]: Array.from(files)
-            }
-        ));
+                video: 0
+            }));
+        } else if (name === 'floor_plan') {
+            const newProgress = { ...uploadProgress.floorPlans };
+            fileArray.forEach(file => {
+                newProgress[file.name] = 0;
+            });
+            setUploadProgress(prev => ({
+                ...prev,
+                floorPlans: newProgress
+            }));
+        }
     };
 
     const validateForm = () => {
@@ -272,22 +303,69 @@ const PropertiesPage = () => {
                 });
             }
 
+            // Updated progress tracking for sequential uploads
+            const updateProgress = (type, _, progress) => {
+                setUploadProgress(prev => {
+                    switch (type) {
+                        case 'property_images':
+                            return {
+                                ...prev,
+                                images: Object.fromEntries(
+                                    formData.property_images.map(file => [file.name, progress])
+                            )
+                            };
+                        case 'video_upload':
+                            return {
+                                ...prev,
+                                video: progress
+                            };
+                        case 'floor_plan':
+                            return {
+                                ...prev,
+                                floorPlans: Object.fromEntries(
+                                    formData.floor_plan.map(file => [file.name, progress])
+                            )
+                            };
+                        default:
+                            return prev;
+                    }
+                });
+            };
+
             let response;
             if (isEditing) {
-                response = await updateProperty(editingId, updatedFormData);
+                response = await updateProperty(editingId, updatedFormData, updateProgress);
             } else {
-                response = await createProperty(updatedFormData);
+                response = await createProperty(updatedFormData, updateProgress);
             }
 
             if (response?.status) {
                 setRefreshData(prev => prev + 1);
+                // Reset upload progress along with other form data
+                setUploadProgress({
+                    images: {},
+                    video: 0,
+                    floorPlans: {}
+                });
                 closeModal();
             } else {
                 setSubmitError(response?.error || 'An error occurred while saving the property');
             }
         } catch (error) {
             console.error('Error saving property:', error);
-            setSubmitError(error.response?.data?.message || 'An error occurred while saving the property');
+            let errorMessage = 'An error occurred while saving the property';
+            
+            if (error.name === 'AxiosError') {
+                if (error.code === 'ECONNABORTED') {
+                    errorMessage = 'Request timed out. Please try again.';
+                } else if (error.response?.data?.message) {
+                    errorMessage = error.response.data.message;
+                } else if (error.message) {
+                    errorMessage = error.message;
+                }
+            }
+            
+            setSubmitError(errorMessage);
         } finally {
             setIsSubmitting(false);
         }
@@ -300,33 +378,34 @@ const PropertiesPage = () => {
         setFormData({ ...initialFormData });
         setFormErrors({});
         setSubmitError(null);
+        // Reset upload progress when closing modal
+        setUploadProgress({
+            images: {},
+            video: 0,
+            floorPlans: {}
+        });
     };
 
     const renderMediaPreview = (item, type = 'image') => {
         if (!item) return null;
 
-        // Handle both File objects and URLs
         const isFile = item instanceof File;
         const url = isFile ? URL.createObjectURL(item) : item;
 
-        if (type === 'image') {
-            return (
-                <img
-                    src={url}
-                    alt="Preview"
-                    className="w-full h-full object-cover rounded"
-                    onLoad={() => isFile && URL.revokeObjectURL(url)}
-                />
-            );
-        } else {
-            return (
-                <video
-                    src={url}
-                    className="w-full h-full object-cover rounded"
-                    onLoad={() => isFile && URL.revokeObjectURL(url)}
-                />
-            );
-        }
+        return type === 'image' ? (
+            <img
+                src={url}
+                alt="Preview"
+                className="w-full h-full object-cover rounded"
+                onLoad={() => isFile && URL.revokeObjectURL(url)}
+            />
+        ) : (
+            <video
+                src={url}
+                className="w-full h-full object-cover rounded"
+                onLoad={() => isFile && URL.revokeObjectURL(url)}
+            />
+        );
     };
 
     const isFormValid = () => {
@@ -424,37 +503,46 @@ const propertyTypes = [
                             Property Images {isEditing ? '(Optional)' : '*'}
                         </label>
                         <div className="flex justify-center items-start gap-5 flex-wrap">
-    <div className="border border-dashed border-[#9D9D9D] w-[100px] h-[100px] rounded-lg relative hover:bg-gray-50 transition-colors cursor-pointer">
-        {/* Add a scrollable container for previews */}
-        <div className="absolute inset-0 p-2 overflow-y-auto custom-scrollbar">
-            <div className="grid grid-cols-2 gap-1">
-                {/* Show existing images */}
-                {formData.existingImages?.slice(0, 20).map((url, index) => (
-                    <div key={`existing-${index}`} className="relative w-full aspect-square">
-                        {renderMediaPreview(url, 'image')}
-                    </div>
-                ))}
-                {/* Show new uploads */}
-                {formData.property_images.slice(0, 20).map((file, index) => (
-                    <div key={`new-${index}`} className="relative w-full aspect-square">
-                        {renderMediaPreview(file, 'image')}
-                    </div>
-                ))}
-            </div>
-        </div>
-        <input
-            id="fileInput"
-            type="file"
-            accept="image/*"
-            className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-            onChange={handleFileChange}
-            multiple
-        />
-    </div>
-    <div className='w-[100px]'>
-        <p className="text-[12px] text-[#858D9D]">Drop files here or click to upload</p>
-    </div>
-</div>
+                            <div className="border border-dashed border-[#9D9D9D] w-[100px] h-[100px] rounded-lg relative hover:bg-gray-50 transition-colors cursor-pointer">
+                                <div className="absolute inset-0 p-2 overflow-y-auto custom-scrollbar">
+                                    <div className="grid grid-cols-2 gap-1">
+                                        {/* Show existing images */}
+                                        {formData.existingImages?.slice(0, 20).map((url, index) => (
+                                            <div key={`existing-${index}`} className="relative w-full aspect-square">
+                                                {renderMediaPreview(url, 'image')}
+                                            </div>
+                                        ))}
+                                        {/* Show new uploads */}
+                                        {formData.property_images.slice(0, 20).map((file, index) => (
+                                            <div key={`new-${index}`} className="relative w-full aspect-square">
+                                                {renderMediaPreview(file, 'image')}
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                                <input
+                                    type="file"
+                                    accept="image/*"
+                                    className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                                    onChange={handleFileChange}
+                                    multiple
+                                />
+                            </div>
+                            <div className='w-[100px]'>
+                                <p className="text-[12px] text-[#858D9D]">Drop files here or click to upload</p>
+                            </div>
+                        </div>
+                        {/* Progress bar for images */}
+                        {Object.keys(uploadProgress.images).length > 0 && (
+                            <div className="w-full bg-gray-200 rounded-full h-1.5">
+                                <div
+                                    className="bg-green-500 h-1.5 rounded-full transition-all duration-300"
+                                    style={{
+                                        width: `${Math.max(...Object.values(uploadProgress.images))}%`
+                                    }}
+                                />
+                            </div>
+                        )}
                         {renderError('property_images')}
                     </div>
 
@@ -643,6 +731,15 @@ const propertyTypes = [
                             </div>
                         </div>
                         {renderError('video_upload')}
+                        {/* Progress bar for video */}
+                        <div className="w-full bg-gray-200 rounded-full h-1.5 mt-2">
+                            <div
+                                className="bg-green-500 h-1.5 rounded-full transition-all duration-300"
+                                style={{
+                                    width: `${uploadProgress.video || 0}%`
+                                }}
+                            />
+                        </div>
                     </div>
 
                     {/* Image Upload */}
@@ -679,6 +776,17 @@ const propertyTypes = [
                             </div>
                         </div>
                         {renderError('floor_plan')}
+                        {/* Progress bar for floor plans */}
+                        {Object.keys(uploadProgress.floorPlans).length > 0 && (
+                            <div className="w-full bg-gray-200 rounded-full h-1.5 mt-2">
+                                <div
+                                    className="bg-green-500 h-1.5 rounded-full transition-all duration-300"
+                                    style={{
+                                        width: `${Math.max(...Object.values(uploadProgress.floorPlans), 0)}%`
+                                    }}
+                                />
+                            </div>
+                        )}
                     </div>
 
                     <div className="flex items-center justify-end gap-4 pt-4">

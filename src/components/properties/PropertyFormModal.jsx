@@ -17,7 +17,7 @@ const PropertyFormModal = ({
     formErrors,
     submitError,
     renderMediaPreview,
-    renderError,
+    renderError, 
     newAmenity,
     setNewAmenity,
     isFormValid

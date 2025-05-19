@@ -1,5 +1,32 @@
 import axiosInstance from "../axios";
 
+const handleUploadProgress = (onProgress, formData) => (progressEvent) => {
+    const { loaded, total } = progressEvent;
+    const percentCompleted = Math.round((loaded * 100) / total);
+
+    // Get sizes of each type of upload to determine which is being processed
+    const propertyImagesSize = [...formData.getAll('property_images')].reduce((sum, file) => sum + file.size, 0);
+    const videoSize = [...formData.getAll('video_upload')].reduce((sum, file) => sum + file.size, 0);
+    const floorPlanSize = [...formData.getAll('floor_plan')].reduce((sum, file) => sum + file.size, 0);
+
+    // Calculate progress ranges based on file sizes
+    const totalSize = propertyImagesSize + videoSize + floorPlanSize;
+    const ranges = {
+        propertyImages: [0, propertyImagesSize],
+        video: [propertyImagesSize, propertyImagesSize + videoSize],
+        floorPlan: [propertyImagesSize + videoSize, totalSize]
+    };
+
+    // Determine which type of file is being uploaded based on loaded size
+    if (loaded <= ranges.propertyImages[1]) {
+        onProgress('property_images', null, percentCompleted);
+    } else if (loaded <= ranges.video[1]) {
+        onProgress('video_upload', null, percentCompleted);
+    } else {
+        onProgress('floor_plan', null, percentCompleted);
+    }
+};
+
 export const getProperties = async () => {
     try {
         const response = await axiosInstance.get(
@@ -40,16 +67,17 @@ export const getPropertyById = async ( id ) => {
     }
 }
 
-export const createProperty = async ( formData ) => {
+export const createProperty = async (formData, onProgress) => {
     try {
         const response = await axiosInstance.post( 
             `/admin/properties/add`,
             formData,
             {   
-                timeout: 1000000,
+                timeout: 3600000,
                 headers: {
                     "Content-Type": "multipart/form-data",
                 },
+                onUploadProgress: handleUploadProgress(onProgress, formData)
             }
         );
         const { data, status } = response;
@@ -64,16 +92,17 @@ export const createProperty = async ( formData ) => {
     }
 }
 
-export const updateProperty = async ( propertyId, formData ) => {
+export const updateProperty = async (propertyId, formData, onProgress) => {
     try {
         const response = await axiosInstance.put( 
-            `/admin/properties/edit/${ propertyId }`,
+            `/admin/properties/edit/${propertyId}`,
             formData,
             {
-                timeout: 1000000,
+                timeout: 3600000,
                 headers: {
                     "Content-Type": "multipart/form-data",
                 },
+                onUploadProgress: handleUploadProgress(onProgress, formData)
             }
         );
         const { data, status } = response;
@@ -154,4 +183,4 @@ export const getArchivedProperties = async () => {
         console.error('Error fetching archived properties: ', err );
         return null;
     }
-} 
+}
