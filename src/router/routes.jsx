@@ -12,7 +12,6 @@ import Inquiries from "../pages/Inquiries";
 import SignInPage from "../pages/SignIn";
 import Admins from "../pages/Admins";
 import Carrers from "../pages/Carrers";
-import ProtectedRoute from "../components/ProtectedRoute"; // Import ProtectedRoute
 
 const AppRoutes = () => {
     const location = useLocation();
@@ -25,39 +24,39 @@ const AppRoutes = () => {
     return useRoutes([
         {
             path: "/",
-            element: <ProtectedRoute element={<Home />} />,
+            element: <Home />,
         },
         {
             path: "/properties",
-            element: <ProtectedRoute element={<Properties />} />,
+            element: <Properties />,
         },
         {
             path: "/app-banners",
-            element: <ProtectedRoute element={<Banners />} />,
+            element: <Banners />,
         },
         {
             path: "/announcements",
-            element: <ProtectedRoute element={<Announcements />} />,
+            element: <Announcements />,
         },
         {
             path: "/agents",
-            element: <ProtectedRoute element={<Agents />} />,
+            element: <Agents />,
         },
         {
             path: "/affiliates",
-            element: <ProtectedRoute element={<Affiliates />} />,
+            element: <Affiliates />,
         },
         {
             path: "/properties/:id",
-            element: <ProtectedRoute element={<PropertyDetail />} />,
+            element: <PropertyDetail />,
         },
         {
             path: "/agents/:id",
-            element: <ProtectedRoute element={<AgentsDetail />} />,
+            element: <AgentsDetail />,
         },
         {
             path: "/inquiries",
-            element: <ProtectedRoute element={<Inquiries />} />,
+            element: <Inquiries />,
         },
         {
             path: "/login",
@@ -65,12 +64,12 @@ const AppRoutes = () => {
         },
         {
             path: "/careers",
-            element: <ProtectedRoute element={<Carrers />} />
+            element: <Carrers />,
         },
         {
             path: "/admins",
-            element: <ProtectedRoute element={<Admins />} />
-        }
+            element: <Admins />,
+        },
     ]);
 };
 
